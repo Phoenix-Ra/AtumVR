@@ -1,6 +1,7 @@
-package me.phoenixra.atumvr.devices;
+package me.phoenixra.atumvr.api.devices;
 
-import is.dreams.library.DreamMod;
+
+import me.phoenixra.atumvr.api.AtumVRCore;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -41,5 +42,5 @@ public interface VRDevicesManager {
     VRDevice getLeftHand();
 
     @NotNull
-    DreamMod getDreamMod();
+    AtumVRCore getVrCore();
 }

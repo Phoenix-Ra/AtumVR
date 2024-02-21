@@ -1,4 +1,4 @@
-package me.phoenixra.atumvr.devices;
+package me.phoenixra.atumvr.api.devices;
 
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.openvr.VR;

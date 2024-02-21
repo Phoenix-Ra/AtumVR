@@ -1,9 +1,9 @@
-package me.phoenixra.atumvr.devices;
+package me.phoenixra.atumvr.api.devices;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import me.phoenixra.atumvr.devices.pose.VRDevicePose;
-import me.phoenixra.atumvr.devices.pose.bones.ControllerBones;
+import me.phoenixra.atumvr.api.devices.pose.VRDevicePose;
+import me.phoenixra.atumvr.api.devices.pose.bones.ControllerBones;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.openvr.VR;
 import org.lwjgl.openvr.VRSystem;

@@ -1,7 +1,7 @@
-package me.phoenixra.atumvr.devices.pose;
+package me.phoenixra.atumvr.api.devices.pose;
 
-import is.dreams.library.api.virtualreality.devices.VRDevice;
-import is.dreams.library.api.virtualreality.devices.pose.impl.*;
+import me.phoenixra.atumvr.api.devices.VRDevice;
+import me.phoenixra.atumvr.api.devices.pose.impl.*;
 import org.jetbrains.annotations.NotNull;
 
 

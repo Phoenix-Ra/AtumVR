@@ -1,4 +1,4 @@
-package me.phoenixra.atumvr.devices.pose.bones;
+package me.phoenixra.atumvr.api.devices.pose.bones;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

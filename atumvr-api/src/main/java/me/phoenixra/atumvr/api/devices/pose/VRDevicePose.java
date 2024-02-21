@@ -1,8 +1,9 @@
-package me.phoenixra.atumvr.devices.pose;
+package me.phoenixra.atumvr.api.devices.pose;
 
-import is.dreams.library.api.misc.AtumQuaternion;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import me.phoenixra.atumvr.api.misc.VRLocation;
 
 
 @Getter
@@ -11,7 +12,7 @@ public class VRDevicePose {
     private boolean poseValid;
     private TrackingState trackingState;
 
-    private AtumQuaternion position;
+    private VRLocation location;
 
     private float[] velocity;
     private float[] angularVelocity;
