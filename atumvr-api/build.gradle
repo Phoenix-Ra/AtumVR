@@ -1,0 +1,20 @@
+plugins {
+    id 'java'
+}
+
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    api 'com.github.Phoenix-Ra:AtumConfiguration:3.0.1'
+    api("org.lwjgl:lwjgl-openvr:3.3.3")
+    api("org.lwjgl:lwjgl-openvr:3.3.3:natives-linux")
+    api("org.lwjgl:lwjgl-openvr:3.3.3:natives-macos")
+    api("org.lwjgl:lwjgl-openvr:3.3.3:natives-windows")
+}
+
+test {
+    useJUnitPlatform()
+}
