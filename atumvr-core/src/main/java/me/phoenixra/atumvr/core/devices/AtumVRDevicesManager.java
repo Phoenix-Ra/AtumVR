@@ -1,7 +1,7 @@
 package me.phoenixra.atumvr.core.devices;
 
 import lombok.Getter;
-import me.phoenixra.atumvr.api.AtumVRCore;
+import me.phoenixra.atumvr.api.VRCore;
 import me.phoenixra.atumvr.api.devices.VRDevice;
 import me.phoenixra.atumvr.api.devices.VRDeviceRole;
 import me.phoenixra.atumvr.api.devices.VRDeviceType;
@@ -18,18 +18,19 @@ import org.lwjgl.system.MemoryStack;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 public class AtumVRDevicesManager implements VRDevicesManager {
 
     @Getter
-    private final AtumVRCore vrCore;
+    private final VRCore vrCore;
     private final Map<String, VRDevice> devices = new ConcurrentHashMap<>();
 
     private final Map<String, List<Consumer<VRDevice>>> onDisconnected = new ConcurrentHashMap<>();
     private final Map<String, List<Consumer<VRDevice>>> onConnected = new ConcurrentHashMap<>();
 
 
-    public AtumVRDevicesManager(@NotNull AtumVRCore dreamMod){
+    public AtumVRDevicesManager(@NotNull VRCore dreamMod){
         this.vrCore = dreamMod;
     }
     @Override
@@ -284,17 +285,17 @@ public class AtumVRDevicesManager implements VRDevicesManager {
 
     @Override
     public @NotNull List<VRDevice> getAvailableDevices() {
-        return devices.values().stream().toList();
+        return new ArrayList<>(devices.values());
     }
 
     @Override
     public @NotNull List<VRDevice> getDevicesByRole(@NotNull VRDeviceRole role) {
-        return devices.values().stream().filter(it->it.getRole() == role).toList();
+        return devices.values().stream().filter(it->it.getRole() == role).collect(Collectors.toList());
     }
 
     @Override
     public @NotNull List<VRDevice> getDevicesByType(@NotNull VRDeviceType type) {
-        return devices.values().stream().filter(it->it.getType() == type).toList();
+        return devices.values().stream().filter(it->it.getType() == type).collect(Collectors.toList());
     }
 
 

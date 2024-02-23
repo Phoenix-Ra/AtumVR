@@ -1,6 +1,6 @@
 package me.phoenixra.atumvr.api.overlays;
 
-import me.phoenixra.atumvr.api.AtumVRCore;
+import me.phoenixra.atumvr.api.VRCore;
 import me.phoenixra.atumvr.api.devices.VRDevice;
 import me.phoenixra.atumvr.api.misc.AtumColor;
 import me.phoenixra.atumvr.api.overlays.variable.OverlayVariableNotNull;
@@ -159,7 +159,7 @@ public interface VROverlay {
 
 
     @NotNull
-    AtumVRCore getVrCore();
+    VRCore getVrCore();
 
 
 }

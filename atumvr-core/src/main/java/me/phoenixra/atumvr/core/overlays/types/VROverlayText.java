@@ -2,7 +2,7 @@ package me.phoenixra.atumvr.core.overlays.types;
 
 import me.phoenixra.atumconfig.api.placeholders.context.PlaceholderContext;
 import me.phoenixra.atumconfig.api.utils.StringUtils;
-import me.phoenixra.atumvr.api.AtumVRCore;
+import me.phoenixra.atumvr.api.VRCore;
 import me.phoenixra.atumvr.api.overlays.VROverlayLocation;
 import me.phoenixra.atumvr.api.overlays.impl.BaseVROverlay;
 import org.lwjgl.BufferUtils;
@@ -38,7 +38,7 @@ public class VROverlayText extends BaseVROverlay {
     private int currentPBOIndex = 0;
     private boolean graphicsInit;
 
-    public VROverlayText(AtumVRCore vrCore, String overlayKey,
+    public VROverlayText(VRCore vrCore, String overlayKey,
                          VROverlayLocation vrOverlayPosition, float width,
                          Font font,
                          String text,

@@ -2,10 +2,9 @@ package me.phoenixra.atumvr.api.overlays.impl;
 
 
 import lombok.Getter;
-import me.phoenixra.atumvr.api.AtumVRCore;
+import me.phoenixra.atumvr.api.VRCore;
 import me.phoenixra.atumvr.api.devices.VRDevice;
 import me.phoenixra.atumvr.api.misc.AtumColor;
-import me.phoenixra.atumvr.api.misc.VRLocation;
 import me.phoenixra.atumvr.api.overlays.VROverlay;
 import me.phoenixra.atumvr.api.overlays.VROverlayLocation;
 import me.phoenixra.atumvr.api.overlays.variable.OverlayVariableNotNull;
@@ -26,7 +25,7 @@ import static org.lwjgl.openvr.VROverlay.*;
 public abstract class BaseVROverlay implements VROverlay {
 
     @Getter
-    private final AtumVRCore vrCore;
+    private final VRCore vrCore;
 
     @Getter
     private long overlayHandle;
@@ -60,7 +59,7 @@ public abstract class BaseVROverlay implements VROverlay {
     @Getter
     private boolean initialized;
 
-    public BaseVROverlay(AtumVRCore vrCore,
+    public BaseVROverlay(VRCore vrCore,
                          String overlayKey,
                          VROverlayLocation vrLocation,
                          float width) {

@@ -1,7 +1,7 @@
 package me.phoenixra.atumvr.api.overlays;
 
 
-import me.phoenixra.atumvr.api.AtumVRCore;
+import me.phoenixra.atumvr.api.VRCore;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -17,6 +17,6 @@ public interface VROverlaysManager {
     VROverlay getVROverlay(@NotNull String overlayKey);
 
     @NotNull
-    AtumVRCore getVrCore();
+    VRCore getVrCore();
 
 }

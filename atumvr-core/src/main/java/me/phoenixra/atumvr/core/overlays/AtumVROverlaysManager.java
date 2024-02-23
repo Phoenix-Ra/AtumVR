@@ -1,7 +1,7 @@
 package me.phoenixra.atumvr.core.overlays;
 
 import lombok.Getter;
-import me.phoenixra.atumvr.api.AtumVRCore;
+import me.phoenixra.atumvr.api.VRCore;
 import me.phoenixra.atumvr.api.overlays.VROverlay;
 import me.phoenixra.atumvr.api.overlays.VROverlaysManager;
 import org.jetbrains.annotations.NotNull;
@@ -12,12 +12,12 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class AtumVROverlaysManager implements VROverlaysManager {
     @Getter
-    private final AtumVRCore vrCore;
+    private final VRCore vrCore;
 
     private final Map<String, VROverlay> overlays = new ConcurrentHashMap<>();
 
 
-    public AtumVROverlaysManager(@NotNull AtumVRCore vrCore){
+    public AtumVROverlaysManager(@NotNull VRCore vrCore){
         this.vrCore = vrCore;
     }
     @Override

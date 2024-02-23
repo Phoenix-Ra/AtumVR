@@ -1,4 +1,5 @@
 rootProject.name = 'AtumVR'
 include 'atumvr-api'
 include 'atumvr-core'
+include 'atumvr-example'
 

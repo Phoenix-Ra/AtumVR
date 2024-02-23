@@ -9,7 +9,7 @@ import org.joml.Vector3f;
 public class DevicePoseControllerDown implements DevicePoseMatch {
     @Override
     public boolean isMatching(@NotNull VRDevice vrDevice) {
-        Quaternionf devicePosition = vrDevice.getPose().getPosition();
+        Quaternionf devicePosition = vrDevice.getPose().getLocation().getRotation();
 
         Vector3f forward = new Vector3f(0, 0, -1f);
         Vector3f down = new Vector3f(0, -1, 0); // Down direction in world space

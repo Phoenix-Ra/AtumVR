@@ -1,6 +1,6 @@
 package me.phoenixra.atumvr.core.overlays.types;
 
-import me.phoenixra.atumvr.api.AtumVRCore;
+import me.phoenixra.atumvr.api.VRCore;
 import me.phoenixra.atumvr.api.misc.AtumColor;
 import me.phoenixra.atumvr.api.overlays.VROverlay;
 import me.phoenixra.atumvr.api.overlays.VROverlayLocation;
@@ -26,7 +26,7 @@ public class VROverlaySimple extends BaseVROverlay {
      * @param textureColor - color for the texture
      */
 
-    public VROverlaySimple(@NotNull AtumVRCore vrCore,
+    public VROverlaySimple(@NotNull VRCore vrCore,
                            String overlayKey,
                            VROverlayLocation vrLocation,
                            float widthInMeters,

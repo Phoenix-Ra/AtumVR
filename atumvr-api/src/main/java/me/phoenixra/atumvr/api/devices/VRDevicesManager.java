@@ -1,7 +1,7 @@
 package me.phoenixra.atumvr.api.devices;
 
 
-import me.phoenixra.atumvr.api.AtumVRCore;
+import me.phoenixra.atumvr.api.VRCore;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -42,5 +42,5 @@ public interface VRDevicesManager {
     VRDevice getLeftHand();
 
     @NotNull
-    AtumVRCore getVrCore();
+    VRCore getVrCore();
 }

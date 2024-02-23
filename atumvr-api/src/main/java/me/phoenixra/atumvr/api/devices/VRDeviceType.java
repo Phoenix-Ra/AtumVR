@@ -16,13 +16,19 @@ public enum VRDeviceType {
 
     @NotNull
     public static VRDeviceType parseFromInt(int roleHint) {
-        return switch (roleHint) {
-            case VR.ETrackedDeviceClass_TrackedDeviceClass_HMD -> HMD;
-            case VR.ETrackedDeviceClass_TrackedDeviceClass_Controller -> CONTROLLER;
-            case VR.ETrackedDeviceClass_TrackedDeviceClass_GenericTracker -> GENERIC_TRACKER;
-            case VR.ETrackedDeviceClass_TrackedDeviceClass_TrackingReference -> TRACKING_REFERENCE;
-            case VR.ETrackedDeviceClass_TrackedDeviceClass_DisplayRedirect -> DISPLAY_REDIRECT;
-            default -> UNKNOWN;
-        };
+        switch (roleHint) {
+            case VR.ETrackedDeviceClass_TrackedDeviceClass_HMD:
+                return HMD;
+            case VR.ETrackedDeviceClass_TrackedDeviceClass_Controller:
+                return CONTROLLER;
+            case VR.ETrackedDeviceClass_TrackedDeviceClass_GenericTracker:
+                return GENERIC_TRACKER;
+            case VR.ETrackedDeviceClass_TrackedDeviceClass_TrackingReference:
+                return TRACKING_REFERENCE;
+            case VR.ETrackedDeviceClass_TrackedDeviceClass_DisplayRedirect:
+                return DISPLAY_REDIRECT;
+            default:
+                return UNKNOWN;
+        }
     }
 }

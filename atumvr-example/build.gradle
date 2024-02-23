@@ -1,0 +1,14 @@
+plugins {
+    id 'java'
+}
+
+
+dependencies {
+    implementation(project(":atumvr-core"))
+
+}
+jar {
+    manifest {
+        attributes 'Main-Class': 'me.phoenixra.atumvr.example.ExampleVRApp'
+    }
+}

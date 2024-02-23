@@ -83,6 +83,7 @@ allprojects {
     repositories {
         mavenCentral()
         maven { url = 'https://jitpack.io' }
+        maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
     }
     dependencies {
 
@@ -92,4 +93,14 @@ allprojects {
         annotationProcessor("org.projectlombok:lombok:1.18.24")
         annotationProcessor("org.jetbrains:annotations:23.0.0")
     }
+    build{
+        dependsOn(shadowJar)
+    }
+    compileJava{
+        sourceCompatibility = targetCompatibility = '1.8'
+        [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
+        dependsOn(clean)
+    }
+
+
 }
