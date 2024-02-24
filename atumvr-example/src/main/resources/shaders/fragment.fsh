@@ -3,38 +3,71 @@ uniform float timer;
 uniform vec3 resolution;
 out vec4 FragColor;
 
-vec3 palette( float t ) {
-    vec3 a = vec3(0.5, 0.5, 0.5);
-    vec3 b = vec3(0.5, 0.5, 0.5);
-    vec3 c = vec3(1.0, 1.0, 1.0);
-    vec3 d = vec3(0.463,0.216,0.557);
+// Star Nest by Pablo Roman Andrioli
+// License: MIT
 
-    return a + b*cos( 3.28318*(c*t+d) );
-}
+#define iterations 17
+#define formuparam 0.53
 
-void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
-    vec2 uv = (fragCoord * 2.0 - resolution.xy) / resolution.y;
-    vec2 uv0 = uv;
-    vec3 finalColor = vec3(0.0);
+#define volsteps 20
+#define stepsize 0.1
 
-    for (float i = 0.0; i < 4.0; i++) {
-        uv = fract(uv * 1.25) - 0.5;
+#define zoom   0.800
+#define tile   0.850
+#define speed  0.010
 
-        float d = length(uv) * exp(-length(uv0));
+#define brightness 0.0015
+#define darkmatter 0.300
+#define distfading 0.730
+#define saturation 0.850
 
-        vec3 col = palette(length(uv0) + i*.2 + timer*0.4 * 0.2);
 
-        d = sin(d*8. + (0.2 * timer))/8.;
-        d = abs(d);
+void mainImage(out vec4 fragColor, in vec2 fragCoord)
+{
+    //get coords and direction
+    vec2 uv = fragCoord.xy / resolution.xy - .5;
+    uv.y *= resolution.y / resolution.x;
+    vec3 dir = vec3(uv * zoom, 1.);
+    float time = timer * speed + .25;
 
-        d = pow(0.01 / d, 1.25);
+    //mouse rotation
+    float a1 = .5 + 100 / resolution.x * 2.;
+    float a2 = .8 + 100 / resolution.y * 2.;
+    mat2 rot1 = mat2(cos(a1), sin(a1), -sin(a1), cos(a1));
+    mat2 rot2 = mat2(cos(a2), sin(a2), -sin(a2), cos(a2));
+    dir.xz *= rot1;
+    dir.xy *= rot2;
+    vec3 from = vec3(1., .5, 0.5);
+    from += vec3(time * 2., time, -2.);
+    from.xz *= rot1;
+    from.xy *= rot2;
 
-        finalColor += col * d;
+    //volumetric rendering
+    float s = 0.1, fade = 1.;
+    vec3 v = vec3(0.);
+    for (int r = 0; r < volsteps; r++) {
+        vec3 p = from + s * dir * .5;
+        p = abs(vec3(tile) - mod(p, vec3(tile * 2.))); // tiling fold
+        float pa = 0.0;
+        float a = 0.0;
+        for (int i = 0; i < iterations; i++) {
+            p = abs(p) / dot(p, p) - formuparam; // the magic formula
+            a += abs(length(p) - pa); // absolute sum of average change
+            pa = length(p);
+        }
+        float dm = max(0., darkmatter - a * a * .001); //dark matter
+        a *= a * a; // add contrast
+        if (r > 6) fade *= 1. - dm; // dark matter, don't render near
+        //v+=vec3(dm,dm*.5,0.);
+        v += fade;
+        v += vec3(s, s * s, s * s * s * s) * a * brightness * fade; // coloring based on distance
+        fade *= distfading; // distance fading
+        s += stepsize;
     }
+    v = mix(vec3(length(v)), v, saturation); //color adjust
+    fragColor = vec4(v * .01, 1.);
 
-    fragColor = vec4(finalColor, 1.0);
 }
-
 void main() {
     mainImage(FragColor, gl_FragCoord.xy);
 }
