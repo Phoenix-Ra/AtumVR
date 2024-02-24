@@ -12,9 +12,11 @@ dependencies {
 
     api("org.lwjgl:lwjgl")
     api("org.lwjgl:lwjgl-opengl")
+    api("org.lwjgl:lwjgl-glfw")
     api("org.lwjgl:lwjgl-openvr")
 
     api("org.lwjgl:lwjgl::natives-windows")
     api("org.lwjgl:lwjgl-opengl::natives-windows")
+    api("org.lwjgl:lwjgl-glfw::natives-windows")
     api("org.lwjgl:lwjgl-openvr::natives-windows")
 }

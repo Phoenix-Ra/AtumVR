@@ -1,6 +1,6 @@
 package me.phoenixra.atumvr.api;
 
-import me.phoenixra.atumvr.api.rendering.VRSceneRenderer;
+import me.phoenixra.atumvr.api.scene.VRSceneRenderer;
 import org.jetbrains.annotations.NotNull;
 
 public interface VRApp {
@@ -13,6 +13,7 @@ public interface VRApp {
 
 
     boolean isInitialized();
+
 
     @NotNull
     String getAppKey();

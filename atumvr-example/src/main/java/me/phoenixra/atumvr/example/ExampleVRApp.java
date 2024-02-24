@@ -1,13 +1,13 @@
 package me.phoenixra.atumvr.example;
 
 import lombok.Getter;
-import me.phoenixra.atumconfig.api.utils.FileUtils;
+import me.phoenixra.atumvr.api.VRApp;
+import me.phoenixra.atumvr.api.scene.VRSceneRenderer;
 import me.phoenixra.atumvr.core.AtumVRCore;
+import me.phoenixra.atumvr.example.scene.ExampleSceneRenderer;
 import org.jetbrains.annotations.NotNull;
 
-import javax.swing.filechooser.FileSystemView;
 import java.io.File;
-import java.nio.file.Paths;
 import java.util.Scanner;
 import java.util.logging.Logger;
 
@@ -22,28 +22,13 @@ public class ExampleVRApp extends AtumVRCore {
     }
 
     public static void main(String[] args) {
-        try {
-            instance = new ExampleVRApp();
-            instance.initializeVR();
-        }catch (Throwable throwable){
-            throwable.printStackTrace();
-            return;
-        }
-
-        Thread updateThread = new Thread(() -> {
-            do {
-                try {
-                    Thread.sleep(50);
-                } catch (InterruptedException e) {
-                    break;
-                }
-                instance.update();
-
-            } while (true);
-        });
+        Thread updateThread = getThread();
         updateThread.start();
+
         Scanner scanner = new Scanner(System.in);
-        scanner.nextLine(); // Wait for user input to terminate
+        while(!scanner.nextLine().equals("stop")){
+            System.out.println("Use 'stop' to exit");
+        }
 
         updateThread.interrupt(); // Stop the update thread
         try {
@@ -53,7 +38,33 @@ public class ExampleVRApp extends AtumVRCore {
         }
 
         scanner.close();
-        instance.clear();
+    }
+
+    @NotNull
+    private static Thread getThread() {
+        return new Thread(() -> {
+            boolean init = false;
+            do {
+                if(!init){
+                    try {
+                        instance = new ExampleVRApp();
+                        instance.initializeVR();
+                    }catch (Throwable throwable){
+                        throwable.printStackTrace();
+                        System.out.println("WHAT tick");
+                        break;
+                    }
+                    init=true;
+                    continue;
+                }
+                if(Thread.interrupted()){
+                    instance.clear();
+                    break;
+                }
+                instance.update();
+
+            } while (true);
+        });
     }
 
     @Override
@@ -79,5 +90,10 @@ public class ExampleVRApp extends AtumVRCore {
     @Override
     public void logError(String message) {
         logger.severe(message);
+    }
+
+    @Override
+    public @NotNull VRSceneRenderer createSceneRenderer(@NotNull VRApp vrApp) {
+        return new ExampleSceneRenderer(vrApp);
     }
 }
