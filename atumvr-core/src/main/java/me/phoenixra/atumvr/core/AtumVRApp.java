@@ -68,7 +68,7 @@ public class AtumVRApp implements VRApp {
                     true
             );
             appKey = vrAppManifest.getString("app_key");
-            System.out.println("Appkey: " + appKey);
+            /*System.out.println("Appkey: " + appKey);
 
             if (VRApplications_IsApplicationInstalled(appKey)) {
                 System.out.println("Application manifest already installed");
@@ -102,7 +102,7 @@ public class AtumVRApp implements VRApp {
                 System.out.println("Failed to identify application: " + VRApplications_GetApplicationsErrorNameFromEnum(k));
             } else {
                 System.out.println("Application identified successfully");
-            }
+            }*/
             vrCore.getDevicesManager().update();
 
             sceneRenderer.init();

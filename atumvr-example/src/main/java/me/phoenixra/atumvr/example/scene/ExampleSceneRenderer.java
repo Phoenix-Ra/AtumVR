@@ -1,39 +1,24 @@
 package me.phoenixra.atumvr.example.scene;
 
-import me.phoenixra.atumconfig.api.utils.FileUtils;
+
 import me.phoenixra.atumvr.api.VRApp;
 import me.phoenixra.atumvr.api.rendering.VRShaderProgram;
 import me.phoenixra.atumvr.api.scene.EyeType;
 import me.phoenixra.atumvr.api.scene.impl.BaseVRSceneRenderer;
+import me.phoenixra.atumvr.api.utils.MathUtils;
 import org.jetbrains.annotations.NotNull;
+import org.joml.Matrix4f;
+import org.joml.Vector3f;
 import org.lwjgl.opengl.GL30;
+import org.lwjgl.system.MemoryStack;
 
-import java.io.File;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
-import java.util.Arrays;
 
 public class ExampleSceneRenderer extends BaseVRSceneRenderer {
 
     private VRShaderProgram shaderProgram;
 
-    private float[] vertices = {
-            -0.25f, -0.25f, 0.0f, // Bottom left
-            0.25f, -0.25f, 0.0f, // Bottom right
-            0.25f,  0.25f, 0.0f, // Top right
-
-            // Second triangle
-            0.25f,  0.25f, 0.0f, // Top right
-            -0.25f,  0.25f, 0.0f, // Top left
-            -0.25f, -0.25f, 0.0f  // Bottom left
-    };
-    private int vertexArraysLeftId;
-    private int vertexBufferLeftId;
-
-    private int vertexArraysRightId;
-    private int vertexBufferRightId;
+    private ExampleCube exampleCube;
+    private float timer;
     public ExampleSceneRenderer(@NotNull VRApp vrApp) {
         super(vrApp);
     }
@@ -42,62 +27,57 @@ public class ExampleSceneRenderer extends BaseVRSceneRenderer {
     public void onInit() {
         initShaders();
 
-        vertexArraysLeftId = GL30.glGenVertexArrays();
-        vertexBufferLeftId = GL30.glGenBuffers();
-
-        vertexArraysRightId = GL30.glGenVertexArrays();
-        vertexBufferRightId = GL30.glGenBuffers();
-
         GL30.glBindFramebuffer(GL30.GL_FRAMEBUFFER,
-                getFrameBufferLeftEye().getFrameBufferId()
+                0
         );
-        initFrameBuffer(vertexArraysLeftId,vertexBufferLeftId);
-
-        GL30.glBindFramebuffer(GL30.GL_FRAMEBUFFER,
-                getFrameBufferRightEye().getFrameBufferId()
+        exampleCube = new ExampleCube(
+                new Vector3f(-1f,1f,-1.5f),
+                new Vector3f(1f,1f,1f),
+                new Vector3f(20f,40f,0f)
         );
-        initFrameBuffer(vertexArraysRightId,vertexBufferRightId);
+        exampleCube.init();
 
-        GL30.glBindFramebuffer(GL30.GL_FRAMEBUFFER, 0);
         System.out.println("Successfully attached vertices to frame buffer");
     }
 
     @Override
     public void updateEyeTexture(@NotNull EyeType eyeType) {
+        timer+=0.0005f;
         shaderProgram.useShader();
-        int timerLocation = shaderProgram.getShaderVariableLocation("timer");
-        GL30.glUniform1f(
-                timerLocation,
-                GL30.glGetUniformf(
-                        shaderProgram.getShaderProgramId(),
-                        timerLocation
-                )+0.01f
-        );
-        GL30.glBindVertexArray(eyeType == EyeType.LEFT ?
-                vertexArraysLeftId : vertexArraysRightId
-        );
-        GL30.glDrawArrays(GL30.GL_TRIANGLES, 0, 6);
-        GL30.glBindVertexArray(0);
-        GL30.glUseProgram(0);
-    }
+        updateShaderVariables(eyeType, exampleCube.getModelMatrix());
 
-
-    private void initFrameBuffer(int verticesId, int vertexBufferId){
-        GL30.glBindVertexArray(verticesId);
-        GL30.glBindBuffer(GL30.GL_ARRAY_BUFFER, vertexBufferId);
-        GL30.glBufferData(GL30.GL_ARRAY_BUFFER, vertices, GL30.GL_STATIC_DRAW);
-
-        GL30.glVertexAttribPointer(0,
-                3,
-                GL30.GL_FLOAT,
-                false,
-                3 * Float.BYTES,
+        exampleCube.getRotation().set(
+                timer*360,
+                timer*360,
                 0
         );
-        GL30.glEnableVertexAttribArray(0);
-
-        GL30.glBindBuffer(GL30.GL_ARRAY_BUFFER, 0);
-        GL30.glBindVertexArray(0);
+        exampleCube.draw();
+        GL30.glUseProgram(0);
+    }
+    private void updateShaderVariables(EyeType eyeType, Matrix4f modelMatrix){
+        int timerLocation = shaderProgram.getShaderVariableLocation("iTimer");
+        int mvpLocation = shaderProgram.getShaderVariableLocation("uMVP");
+        float timer = GL30.glGetUniformf(
+                shaderProgram.getShaderProgramId(),
+                timerLocation
+        ) + 0.01f;
+        GL30.glUniform1f(
+                timerLocation,
+                timer
+        );
+        Matrix4f projection = eyeType==EyeType.LEFT ?
+                getVrCameraLeftEye().getProjectionMatrix() :
+                getVrCameraRightEye().getProjectionMatrix();
+        Matrix4f view = eyeType==EyeType.LEFT ?
+                getVrCameraLeftEye().getViewMatrix() :
+                getVrCameraRightEye().getViewMatrix();
+        GL30.glUniformMatrix4fv(mvpLocation,
+                true,
+                MemoryStack.stackFloats(
+                    modelMatrix.mul(view,new Matrix4f()).mul(projection)
+                            .get(new float[16])
+                )
+        );
     }
     private void initShaders(){
         shaderProgram = new VRShaderProgram(getVrApp());
@@ -105,16 +85,22 @@ public class ExampleSceneRenderer extends BaseVRSceneRenderer {
         shaderProgram.bindFragmentShader("fragment.fsh");
         shaderProgram.finishShader();
 
-        shaderProgram.createShaderVariable("timer");
-        shaderProgram.createShaderVariable("resolution");
+        shaderProgram.createShaderVariable("uMVP");
+        shaderProgram.createShaderVariable("iTimer");
+        shaderProgram.createShaderVariable("iResolution");
 
         shaderProgram.useShader();
+        GL30.glUniformMatrix4fv(
+                shaderProgram.getShaderVariableLocation("uMVP"),
+                true,
+                new float[16]
+        );
         GL30.glUniform1f(
-                shaderProgram.getShaderVariableLocation("timer"),
+                shaderProgram.getShaderVariableLocation("iTimer"),
                 0
         );
         GL30.glUniform3f(
-                shaderProgram.getShaderVariableLocation("resolution"),
+                shaderProgram.getShaderVariableLocation("iResolution"),
                 getResolutionWidth(),
                 getResolutionHeight(),
                 0

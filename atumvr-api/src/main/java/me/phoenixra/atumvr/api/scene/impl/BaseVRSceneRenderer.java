@@ -6,13 +6,17 @@ import me.phoenixra.atumvr.api.rendering.VRFrameBuffer;
 import me.phoenixra.atumvr.api.rendering.VRTexture;
 import me.phoenixra.atumvr.api.scene.EyeType;
 import me.phoenixra.atumvr.api.scene.VRSceneRenderer;
+import me.phoenixra.atumvr.api.scene.camera.VRCamera;
+import me.phoenixra.atumvr.api.utils.MathUtils;
 import org.jetbrains.annotations.NotNull;
+import org.joml.Matrix4f;
+import org.joml.Quaternionf;
+import org.joml.Vector3f;
+import org.joml.Vector4f;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL30;
-import org.lwjgl.openvr.Texture;
-import org.lwjgl.openvr.VR;
-import org.lwjgl.openvr.VRSystem;
+import org.lwjgl.openvr.*;
 import org.lwjgl.system.MemoryStack;
 
 import java.nio.ByteBuffer;
@@ -46,42 +50,60 @@ public abstract class BaseVRSceneRenderer implements VRSceneRenderer {
     private long windowId;
 
 
-    public BaseVRSceneRenderer(VRApp vrApp){
+    @Getter
+    private VRCamera vrCameraRightEye;
+    @Getter
+    private VRCamera vrCameraLeftEye;
+
+    public BaseVRSceneRenderer(VRApp vrApp) {
         this.vrApp = vrApp;
+
     }
 
     public abstract void updateEyeTexture(@NotNull EyeType eyeType);
+
     public abstract void onInit();
+
     @Override
     public void init() {
-        setupGLContext();
-        setupResolution();
-        setupFrameBuffers();
-        onInit();
+        try (MemoryStack stack = MemoryStack.stackPush()) {
+            setupGLContext();
+
+            vrCameraLeftEye = new VRCamera(getVrApp().getVrCore(),new Vector3f(),new Quaternionf());
+            vrCameraRightEye = new VRCamera(getVrApp().getVrCore(),new Vector3f(),new Quaternionf());
+            setupMvp(stack);
+
+            setupResolution(stack);
+            setupFrameBuffers();
+            onInit();
+        }
     }
 
     @Override
     public void updateFrame() {
-        GL30.glViewport(0,0,resolutionWidth,resolutionHeight);
+        try (MemoryStack stack = MemoryStack.stackPush()) {
+            GL30.glViewport(0, 0, resolutionWidth, resolutionHeight);
+            GL30.glEnable(GL30.GL_DEPTH_TEST);
+            //update mvp variable
+            setupMvp(stack);
 
-        GL30.glBindFramebuffer(GL30.GL_FRAMEBUFFER, frameBufferLeftEye.getFrameBufferId());
-        GL30.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-        GL30.glClear(GL30.GL_COLOR_BUFFER_BIT);
-        updateEyeTexture(EyeType.LEFT);
+            GL30.glBindFramebuffer(GL30.GL_FRAMEBUFFER, frameBufferLeftEye.getFrameBufferId());
+            GL30.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+            GL30.glClear(GL30.GL_COLOR_BUFFER_BIT | GL30.GL_DEPTH_BUFFER_BIT);
+            updateEyeTexture(EyeType.LEFT);
 
-        GL30.glBindFramebuffer(GL30.GL_FRAMEBUFFER, frameBufferRightEye.getFrameBufferId());
-        GL30.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-        GL30.glClear(GL30.GL_COLOR_BUFFER_BIT);
-        updateEyeTexture(EyeType.RIGHT);
+            GL30.glBindFramebuffer(GL30.GL_FRAMEBUFFER, frameBufferRightEye.getFrameBufferId());
+            GL30.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+            GL30.glClear(GL30.GL_COLOR_BUFFER_BIT | GL30.GL_DEPTH_BUFFER_BIT);
+            updateEyeTexture(EyeType.RIGHT);
 
-        GL30.glBindFramebuffer(GL30.GL_FRAMEBUFFER, 0);
+            GL30.glBindFramebuffer(GL30.GL_FRAMEBUFFER, 0);
 
 
-        //@TODO test update without creating new texture each time
-        try(MemoryStack stack = MemoryStack.stackPush()) {
+            //@TODO test update without creating new texture each time
             VRCompositor_Submit(EVREye_Eye_Left,
                     frameBufferLeftEye.getVrTexture().applyDataToTexture(
-                        Texture.malloc(stack)
+                            Texture.malloc(stack)
                     ),
                     null,
                     0
@@ -111,15 +133,17 @@ public abstract class BaseVRSceneRenderer implements VRSceneRenderer {
     }
 
 
-
-    private void setupGLContext(){
+    private void setupGLContext() {
         GLFWErrorCallback.createPrint(System.out).set();
 
         if (!glfwInit()) {
             throw new IllegalStateException("Unable to initialize GLFW");
         }
 
+
         glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
+        glfwWindowHint(GLFW_DEPTH_BITS, 24);
+        glfwWindowHint(GLFW_STENCIL_BITS, 8);
 
         windowId = glfwCreateWindow(640, 480, getVrApp().getVrCore().getName(), 0L, 0L);
         if (windowId == 0L) {
@@ -130,20 +154,20 @@ public abstract class BaseVRSceneRenderer implements VRSceneRenderer {
         glfwSwapInterval(1);
 
         GL.createCapabilities();
+        GL30.glEnable(GL30.GL_DEPTH_TEST);
 
     }
 
-    private void setupResolution(){
-        try(MemoryStack stack = MemoryStack.stackPush()) {
-            IntBuffer widthBuffer = stack.mallocInt(1);
-            IntBuffer heightBuffer = stack.mallocInt(1);
-            VRSystem.VRSystem_GetRecommendedRenderTargetSize(widthBuffer, heightBuffer);
+    private void setupResolution(MemoryStack stack) {
+        IntBuffer widthBuffer = stack.mallocInt(1);
+        IntBuffer heightBuffer = stack.mallocInt(1);
+        VRSystem.VRSystem_GetRecommendedRenderTargetSize(widthBuffer, heightBuffer);
 
-            resolutionWidth = widthBuffer.get(0);
-            resolutionHeight = heightBuffer.get(0);
-        }
+        resolutionWidth = widthBuffer.get(0);
+        resolutionHeight = heightBuffer.get(0);
     }
-    private void setupFrameBuffers(){
+
+    private void setupFrameBuffers() {
         VRTexture textureLeft = new VRTexture(
                 resolutionWidth,
                 resolutionHeight,
@@ -158,6 +182,14 @@ public abstract class BaseVRSceneRenderer implements VRSceneRenderer {
         );
         frameBufferRightEye = new VRFrameBuffer(textureRight);
 
+    }
+
+    private void setupMvp(MemoryStack stack) {
+        vrCameraLeftEye.setupProjectionMatrix(EyeType.LEFT,stack);
+        vrCameraLeftEye.setupViewMatrix(EyeType.LEFT,stack);
+
+        vrCameraRightEye.setupProjectionMatrix(EyeType.RIGHT,stack);
+        vrCameraRightEye.setupViewMatrix(EyeType.RIGHT,stack);
     }
 
 }

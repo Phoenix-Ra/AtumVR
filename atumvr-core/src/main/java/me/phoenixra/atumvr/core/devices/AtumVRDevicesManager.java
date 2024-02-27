@@ -10,6 +10,7 @@ import me.phoenixra.atumvr.api.devices.pose.TrackingState;
 import me.phoenixra.atumvr.api.devices.pose.VRDevicePose;
 import me.phoenixra.atumvr.api.devices.pose.bones.ControllerBones;
 import me.phoenixra.atumvr.api.misc.VRLocation;
+import me.phoenixra.atumvr.api.utils.VRUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.openvr.*;
@@ -75,7 +76,7 @@ public class AtumVRDevicesManager implements VRDevicesManager {
                     //----POSE
                     TrackedDevicePose pose = TrackedDevicePose.malloc(stack);
                     VRCompositor.VRCompositor_GetLastPoseForTrackedDeviceIndex(
-                            deviceIndex, pose, null
+                            deviceIndex, null, pose
                     );
 
                     VRLocation location = new VRLocation(
@@ -99,6 +100,7 @@ public class AtumVRDevicesManager implements VRDevicesManager {
                             pose.bPoseIsValid(),
                             TrackingState.parseFromInt(pose.eTrackingResult()),
                             location,
+                            VRUtils.convertVrMatrix( pose.mDeviceToAbsoluteTracking()),
                             velocity,
                             angularVelocity
                     );

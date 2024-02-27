@@ -74,7 +74,7 @@ public class VRShaderProgram {
         variables.put(name,location);
     }
     public int getShaderVariableLocation(String name){
-        return variables.get(name);
+        return GL30.glGetUniformLocation(shaderProgramId, name);
     }
     public void finishShader(){
         GL30.glLinkProgram(shaderProgramId);
