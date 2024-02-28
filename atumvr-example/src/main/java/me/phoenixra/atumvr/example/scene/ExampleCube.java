@@ -1,24 +1,51 @@
 package me.phoenixra.atumvr.example.scene;
 
 import lombok.Getter;
-import org.joml.Matrix3f;
+import me.phoenixra.atumvr.example.texture.StbTexture;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.lwjgl.opengl.GL30;
 
 public class ExampleCube {
 
+
+    private StbTexture texture;
+
     private float[] vertices = {
+            //[x,y,z  textureX,textureY]
             // Front face
-            -0.5f, -0.5f, -0.5f,
-            -0.5f, 0.5f, -0.5f,
-            0.5f, 0.5f, -0.5f,
-            0.5f, -0.5f, -0.5f,
+            -0.5f, -0.5f, -0.5f,   0.0f, 0.0f,
+            -0.5f, 0.5f, -0.5f,    0.0f, 1.0f,
+            0.5f, 0.5f, -0.5f,     1.0f, 1.0f,
+            0.5f, -0.5f, -0.5f,    1.0f, 0.0f,
             // Back face
-            0.5f, -0.5f, 0.5f,
-            0.5f, 0.5f, 0.5f,
-            -0.5f, 0.5f, 0.5f,
-            -0.5f, -0.5f, 0.5f,
+            0.5f, -0.5f, 0.5f,     0.0f, 0.0f,
+            0.5f, 0.5f, 0.5f,      0.0f, 1.0f,
+            -0.5f, 0.5f, 0.5f,     1.0f, 1.0f,
+            -0.5f, -0.5f, 0.5f,    1.0f, 0.0f,
+
+            // Up face
+            -0.5f, 0.5f, -0.5f,    0.0f, 0.0f,
+            0.5f, 0.5f, -0.5f,     0.0f, 1.0f,
+            0.5f, 0.5f, 0.5f,      1.0f, 1.0f,
+            -0.5f, 0.5f, 0.5f,     1.0f, 0.0f,
+            //Bottom Face
+            -0.5f, -0.5f, -0.5f,   0.0f, 0.0f,
+            0.5f, -0.5f, -0.5f,    0.0f, 1.0f,
+            0.5f, -0.5f, 0.5f,     1.0f, 1.0f,
+            -0.5f, -0.5f, 0.5f,    1.0f, 0.0f,
+
+            //Right Face
+            0.5f, 0.5f, -0.5f,     0.0f, 0.0f,
+            0.5f, -0.5f, -0.5f,    0.0f, 1.0f,
+            0.5f, -0.5f, 0.5f,     1.0f, 1.0f,
+            0.5f, 0.5f, 0.5f,      1.0f, 0.0f,
+            //Left Face
+            -0.5f, -0.5f, -0.5f,   0.0f, 0.0f,
+            -0.5f, 0.5f, -0.5f,    0.0f, 1.0f,
+            -0.5f, 0.5f, 0.5f,     1.0f, 1.0f,
+            -0.5f, -0.5f, 0.5f,    1.0f, 0.0f
+
     };
     private int[] indices = {
             0, 1, 2, //front
@@ -27,22 +54,17 @@ public class ExampleCube {
             4, 5, 6, //back
             6, 7, 4,
 
-            1, 6, 5, //top
-            5, 2, 1,
+            8, 11, 10, //top
+            10, 9, 8,
 
-            7, 0, 3, //bottom
-            3, 4, 7,
+            15, 12, 13, //bottom
+            13, 14, 15,
 
-            3, 2, 5, //right
-            5, 4, 3,
+            17, 16, 19, //right
+            19, 18, 17,
 
-            7, 6, 1, //left
-            1, 0, 7
-    };
-    private int[] lineIndices = {
-            0, 1,  1, 2,  2, 3,  3, 0, // Front face
-            4, 5,  5, 6,  6, 7,  7, 4, // Back face
-            0, 7,  1, 6,  2, 5,  3, 4  // Connecting edges
+            23, 22, 21, //left
+            21, 20, 23
     };
 
     private int vao;
@@ -59,7 +81,8 @@ public class ExampleCube {
     @Getter
     private Vector3f rotation;
 
-    public ExampleCube(Vector3f position, Vector3f scale, Vector3f rotation){
+    public ExampleCube(StbTexture texture,Vector3f position, Vector3f scale, Vector3f rotation){
+        this.texture = texture;
         this.position = position;
         this.scale = scale;
         this.rotation = rotation;
@@ -82,21 +105,32 @@ public class ExampleCube {
                 3,
                 GL30.GL_FLOAT,
                 false,
-                3 * Float.BYTES,
+                5 * Float.BYTES,
                 0
         );
         GL30.glEnableVertexAttribArray(0);
+
+        GL30.glVertexAttribPointer(1,
+                2,
+                GL30.GL_FLOAT,
+                false,
+                5 * Float.BYTES,
+                3 * Float.BYTES
+        );
+        GL30.glEnableVertexAttribArray(1);
 
         GL30.glBindBuffer(GL30.GL_ARRAY_BUFFER, 0);
         GL30.glBindVertexArray(0);
     }
 
     protected void draw() {
+        GL30.glBindTexture(GL30.GL_TEXTURE_2D, texture.getTextureId());
         GL30.glBindVertexArray(vao);
         GL30.glDrawElements(GL30.GL_TRIANGLES, 36, GL30.GL_UNSIGNED_INT, 0);
         GL30.glBindVertexArray(0);
-    }
+        GL30.glBindTexture(GL30.GL_TEXTURE_2D, 0);
 
+    }
 
     protected Matrix4f getModelMatrix(){
         Matrix4f rotationMatrix = createRotationMatrix(

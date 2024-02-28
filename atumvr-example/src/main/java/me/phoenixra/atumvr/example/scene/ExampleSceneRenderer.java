@@ -5,7 +5,7 @@ import me.phoenixra.atumvr.api.VRApp;
 import me.phoenixra.atumvr.api.rendering.VRShaderProgram;
 import me.phoenixra.atumvr.api.scene.EyeType;
 import me.phoenixra.atumvr.api.scene.impl.BaseVRSceneRenderer;
-import me.phoenixra.atumvr.api.utils.MathUtils;
+import me.phoenixra.atumvr.example.texture.StbTexture;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
@@ -31,6 +31,7 @@ public class ExampleSceneRenderer extends BaseVRSceneRenderer {
                 0
         );
         exampleCube = new ExampleCube(
+                new StbTexture("textures/test.png"),
                 new Vector3f(-1f,1f,-1.5f),
                 new Vector3f(1f,1f,1f),
                 new Vector3f(20f,40f,0f)

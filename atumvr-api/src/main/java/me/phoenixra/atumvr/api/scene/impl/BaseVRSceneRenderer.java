@@ -156,6 +156,10 @@ public abstract class BaseVRSceneRenderer implements VRSceneRenderer {
         GL.createCapabilities();
         GL30.glEnable(GL30.GL_DEPTH_TEST);
 
+        //texture staff, better be moved to a renderers of objects
+        GL30.glEnable(GL30.GL_CULL_FACE);
+        GL30.glCullFace(GL30.GL_BACK);
+
     }
 
     private void setupResolution(MemoryStack stack) {
