@@ -22,3 +22,20 @@ dependencies {
     api("org.lwjgl:lwjgl-stb::natives-windows")
     api("org.lwjgl:lwjgl-openvr::natives-windows")
 }
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    archiveClassifier.set('javadoc')
+    from javadoc.destinationDir
+}
+artifacts {
+    archives javadocJar
+}
+publishing {
+    publications {
+        jar(MavenPublication) {
+            from components.java
+            artifactId 'atumvr-api'
+            artifact javadocJar
+        }
+    }
+}
