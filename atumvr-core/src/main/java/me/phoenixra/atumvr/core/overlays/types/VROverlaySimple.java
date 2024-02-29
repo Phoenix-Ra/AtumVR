@@ -20,6 +20,7 @@ public class VROverlaySimple extends BaseVROverlay {
      * <br>
      * If you want to change it use {@link VROverlay#getTexelAspect()}
      *
+     * @param vrCore core
      * @param overlayKey key
      * @param vrLocation position
      * @param widthInMeters width

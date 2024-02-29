@@ -108,6 +108,8 @@ public interface VROverlay {
      * Get sort order of an overlay.
      * <br>
      * The value is positive or 0
+     *
+     * @return sort order variable
      */
     @NotNull
     OverlayVariableNotNull<Integer> getSortOrder();

@@ -9,7 +9,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * MathUtils
- * <p></p>
+ * <br><br>
  * Contains fast trigonometry methods
  * and other
  */
