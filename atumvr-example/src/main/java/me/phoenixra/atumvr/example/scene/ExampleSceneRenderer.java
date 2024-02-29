@@ -5,6 +5,7 @@ import me.phoenixra.atumvr.api.VRApp;
 import me.phoenixra.atumvr.api.rendering.VRShaderProgram;
 import me.phoenixra.atumvr.api.scene.EyeType;
 import me.phoenixra.atumvr.api.scene.impl.BaseVRSceneRenderer;
+import me.phoenixra.atumvr.api.utils.MathUtils;
 import me.phoenixra.atumvr.example.texture.StbTexture;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4f;
@@ -12,12 +13,17 @@ import org.joml.Vector3f;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.system.MemoryStack;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 public class ExampleSceneRenderer extends BaseVRSceneRenderer {
 
     private VRShaderProgram shaderProgram;
 
-    private ExampleCube exampleCube;
+    private List<ExampleCube> exampleCubes = new ArrayList<>();
+    private ExampleCube floorCube;
+
     private float timer;
     public ExampleSceneRenderer(@NotNull VRApp vrApp) {
         super(vrApp);
@@ -30,13 +36,48 @@ public class ExampleSceneRenderer extends BaseVRSceneRenderer {
         GL30.glBindFramebuffer(GL30.GL_FRAMEBUFFER,
                 0
         );
-        exampleCube = new ExampleCube(
-                new StbTexture("textures/test.png"),
-                new Vector3f(-1f,1f,-1.5f),
-                new Vector3f(1f,1f,1f),
-                new Vector3f(20f,40f,0f)
+        floorCube =  new ExampleCube(
+                new StbTexture("textures/test1.png"),
+                new Vector3f(0f,0f,0f),
+                new Vector3f(2f,1f,2f),
+                new Vector3f(0f,0f,0f)
         );
-        exampleCube.init();
+        floorCube.init();
+        exampleCubes.add(
+                new ExampleCube(
+                        new StbTexture("textures/test.png"),
+                        new Vector3f(-2f,1f,-2.5f),
+                        new Vector3f(1f,1f,1f),
+                        new Vector3f(0f,0f,0f)
+                )
+        );
+        exampleCubes.add(
+                new ExampleCube(
+                        new StbTexture("textures/test.png"),
+                        new Vector3f(2f,1f,-2.5f),
+                        new Vector3f(1f,1f,1f),
+                        new Vector3f(0f,0f,0f)
+                )
+        );
+        exampleCubes.add(
+                new ExampleCube(
+                        new StbTexture("textures/test.png"),
+                        new Vector3f(-2f,1f,2.5f),
+                        new Vector3f(1f,1f,1f),
+                        new Vector3f(0f,0f,0f)
+                )
+        );
+        exampleCubes.add(
+                new ExampleCube(
+                        new StbTexture("textures/test.png"),
+                        new Vector3f(2f,1f,2.5f),
+                        new Vector3f(1f,1f,1f),
+                        new Vector3f(0f,0f,0f)
+                )
+        );
+        for(ExampleCube cube : exampleCubes){
+            cube.init();
+        }
 
         System.out.println("Successfully attached vertices to frame buffer");
     }
@@ -45,14 +86,28 @@ public class ExampleSceneRenderer extends BaseVRSceneRenderer {
     public void updateEyeTexture(@NotNull EyeType eyeType) {
         timer+=0.0005f;
         shaderProgram.useShader();
-        updateShaderVariables(eyeType, exampleCube.getModelMatrix());
 
-        exampleCube.getRotation().set(
-                timer*360,
-                timer*360,
+        GL30.glUniform1i(
+                shaderProgram.getShaderVariableLocation("uNegative"),
                 0
         );
-        exampleCube.draw();
+        updateShaderVariables(eyeType, floorCube.getModelMatrix());
+        floorCube.draw();
+
+        GL30.glUniform1i(
+                shaderProgram.getShaderVariableLocation("uNegative"),
+                1
+        );
+        for(ExampleCube exampleCube : exampleCubes) {
+            updateShaderVariables(eyeType, exampleCube.getModelMatrix());
+
+            exampleCube.getPositionOffset().set(
+                    0,
+                    MathUtils.fastSin(timer*10),
+                    0
+            );
+            exampleCube.draw();
+        }
         GL30.glUseProgram(0);
     }
     private void updateShaderVariables(EyeType eyeType, Matrix4f modelMatrix){
@@ -89,6 +144,7 @@ public class ExampleSceneRenderer extends BaseVRSceneRenderer {
         shaderProgram.createShaderVariable("uMVP");
         shaderProgram.createShaderVariable("iTimer");
         shaderProgram.createShaderVariable("iResolution");
+        shaderProgram.createShaderVariable("uNegative");
 
         shaderProgram.useShader();
         GL30.glUniformMatrix4fv(
@@ -104,6 +160,10 @@ public class ExampleSceneRenderer extends BaseVRSceneRenderer {
                 shaderProgram.getShaderVariableLocation("iResolution"),
                 getResolutionWidth(),
                 getResolutionHeight(),
+                0
+        );
+        GL30.glUniform1i(
+                shaderProgram.getShaderVariableLocation("uNegative"),
                 0
         );
         GL30.glUseProgram(0);

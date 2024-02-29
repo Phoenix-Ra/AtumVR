@@ -1,6 +1,7 @@
 package me.phoenixra.atumvr.example.scene;
 
 import lombok.Getter;
+import me.phoenixra.atumvr.api.utils.MathUtils;
 import me.phoenixra.atumvr.example.texture.StbTexture;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
@@ -74,8 +75,9 @@ public class ExampleCube {
 
 
 
-    @Getter
     private Vector3f position;
+    @Getter
+    private Vector3f positionOffset;
     @Getter
     private Vector3f scale;
     @Getter
@@ -86,6 +88,7 @@ public class ExampleCube {
         this.position = position;
         this.scale = scale;
         this.rotation = rotation;
+        positionOffset = new Vector3f();
     }
 
 
@@ -140,9 +143,9 @@ public class ExampleCube {
         );
 
         Matrix4f translationMatrix = new Matrix4f(
-                1, 0, 0, position.x,
-                0, 1, 0, position.y,
-                0, 0, 1, position.z,
+                1, 0, 0, position.x + positionOffset.x,
+                0, 1, 0, position.y + positionOffset.y,
+                0, 0, 1, position.z + positionOffset.z,
                 0, 0, 0, 1
         );
 
@@ -164,23 +167,23 @@ public class ExampleCube {
         // Rotation matrix around X-axis
         Matrix4f rotX = new Matrix4f(
                 1, 0, 0, 0,
-                0, (float)Math.cos(radiansX), -(float)Math.sin(radiansX), 0,
-                0, (float)Math.sin(radiansX), (float)Math.cos(radiansX), 0,
+                0, (float)MathUtils.fastCos(radiansX), -(float)MathUtils.fastSin(radiansX), 0,
+                0, (float)MathUtils.fastSin(radiansX), (float)MathUtils.fastCos(radiansX), 0,
                 0, 0, 0, 1
         );
 
         // Rotation matrix around Y-axis
         Matrix4f rotY = new Matrix4f(
-                (float)Math.cos(radiansY), 0, (float)Math.sin(radiansY), 0,
+                (float) MathUtils.fastCos(radiansY), 0, (float)MathUtils.fastSin(radiansY), 0,
                 0, 1, 0, 0,
-                -(float)Math.sin(radiansY), 0, (float)Math.cos(radiansY), 0,
+                -(float)MathUtils.fastSin(radiansY), 0, (float)MathUtils.fastCos(radiansY), 0,
                 0, 0, 0, 1
         );
 
         // Rotation matrix around Z-axis
         Matrix4f rotZ = new Matrix4f(
-                (float)Math.cos(radiansZ), -(float)Math.sin(radiansZ), 0, 0,
-                (float)Math.sin(radiansZ), (float)Math.cos(radiansZ), 0, 0,
+                (float)MathUtils.fastCos(radiansZ), -(float)MathUtils.fastSin(radiansZ), 0, 0,
+                (float)MathUtils.fastSin(radiansZ), (float)MathUtils.fastCos(radiansZ), 0, 0,
                 0, 0, 1, 0,
                 0, 0, 0, 1
         );
