@@ -1,6 +1,7 @@
 package me.phoenixra.atumvr.core;
 
 import lombok.Getter;
+import lombok.Setter;
 import me.phoenixra.atumconfig.api.config.ConfigType;
 import me.phoenixra.atumconfig.api.config.LoadableConfig;
 import me.phoenixra.atumvr.api.VRApp;
@@ -9,13 +10,10 @@ import me.phoenixra.atumvr.api.scene.VRSceneRenderer;
 import org.lwjgl.openvr.OpenVR;
 import org.lwjgl.openvr.VR;
 import org.lwjgl.system.MemoryStack;
-
-import java.lang.management.ManagementFactory;
 import java.nio.IntBuffer;
-
 import static org.lwjgl.openvr.VR.*;
-import static org.lwjgl.openvr.VRApplications.*;
 import static org.lwjgl.openvr.VRCompositor.VRCompositor_SetTrackingSpace;
+import static org.lwjgl.openvr.VRSystem.VRSystem_ShouldApplicationPause;
 
 public class AtumVRApp implements VRApp {
     @Getter
@@ -26,6 +24,8 @@ public class AtumVRApp implements VRApp {
     @Getter
     private VRSceneRenderer sceneRenderer;
 
+    @Getter @Setter
+    private boolean paused;
     @Getter
     private boolean initialized = false;
     public AtumVRApp(VRCore vrCore){
@@ -34,6 +34,7 @@ public class AtumVRApp implements VRApp {
     }
     @Override
     public void init() {
+        if(initialized) return;
         try(MemoryStack stack = MemoryStack.stackPush()) {
             vrCore.logInfo("Initializing VR App");
             IntBuffer error = stack.mallocInt(1);
@@ -113,14 +114,28 @@ public class AtumVRApp implements VRApp {
     }
 
     @Override
-    public void update() {
+    public void onPreTick() {
+        if(!initialized) return;
+        setPaused(VRSystem_ShouldApplicationPause());
+    }
+
+    @Override
+    public void onTick() {
+        if(!initialized) return;
+        getVrCore().getDevicesManager().update();
         sceneRenderer.updateFrame();
+    }
+
+    @Override
+    public void onPostTick() {
+        getVrCore().getOverlaysManager().update();
     }
 
     @Override
     public void destroy() {
         VR.VR_ShutdownInternal();
         sceneRenderer.destroy();
+        initialized = false;
     }
 
 

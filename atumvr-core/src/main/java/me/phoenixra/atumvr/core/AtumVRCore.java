@@ -33,12 +33,6 @@ public abstract class AtumVRCore implements VRCore {
 
     }
 
-    @Override
-    public void update() {
-        devicesManager.update();
-        vrApp.update();
-        overlaysManager.update();
-    }
 
     @Override
     public void initializeVR() {

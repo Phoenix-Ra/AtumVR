@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
 
 public interface VRCore extends ConfigOwner {
 
-    void update();
+
 
 
     void initializeVR();

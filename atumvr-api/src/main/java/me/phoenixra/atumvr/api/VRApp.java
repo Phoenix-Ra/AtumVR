@@ -7,12 +7,19 @@ public interface VRApp {
 
     void init();
 
-    void update();
+
+
+    void onPreTick();
+    void onTick();
+    void onPostTick();
 
     void destroy();
 
 
     boolean isInitialized();
+
+    boolean isPaused();
+    void setPaused(boolean value);
 
 
     @NotNull
