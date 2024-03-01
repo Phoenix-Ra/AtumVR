@@ -36,24 +36,24 @@ public abstract class BaseVRSceneRenderer implements VRSceneRenderer {
 
 
     @Getter
-    private int resolutionWidth;
+    protected int resolutionWidth;
     @Getter
-    private int resolutionHeight;
-
-
-    @Getter
-    private VRFrameBuffer frameBufferRightEye;
-    @Getter
-    private VRFrameBuffer frameBufferLeftEye;
-
-
-    private long windowId;
+    protected int resolutionHeight;
 
 
     @Getter
-    private VRCamera vrCameraRightEye;
+    protected VRFrameBuffer frameBufferRightEye;
     @Getter
-    private VRCamera vrCameraLeftEye;
+    protected VRFrameBuffer frameBufferLeftEye;
+
+
+    protected long windowId;
+
+
+    @Getter
+    protected VRCamera vrCameraRightEye;
+    @Getter
+    protected VRCamera vrCameraLeftEye;
 
     public BaseVRSceneRenderer(VRApp vrApp) {
         this.vrApp = vrApp;
@@ -133,7 +133,7 @@ public abstract class BaseVRSceneRenderer implements VRSceneRenderer {
     }
 
 
-    private void setupGLContext() {
+    protected void setupGLContext() {
         GLFWErrorCallback.createPrint(System.out).set();
 
         if (!glfwInit()) {
@@ -162,7 +162,7 @@ public abstract class BaseVRSceneRenderer implements VRSceneRenderer {
 
     }
 
-    private void setupResolution(MemoryStack stack) {
+    protected void setupResolution(MemoryStack stack) {
         IntBuffer widthBuffer = stack.mallocInt(1);
         IntBuffer heightBuffer = stack.mallocInt(1);
         VRSystem.VRSystem_GetRecommendedRenderTargetSize(widthBuffer, heightBuffer);
@@ -171,7 +171,7 @@ public abstract class BaseVRSceneRenderer implements VRSceneRenderer {
         resolutionHeight = heightBuffer.get(0);
     }
 
-    private void setupFrameBuffers() {
+    protected void setupFrameBuffers() {
         VRTexture textureLeft = new VRTexture(
                 resolutionWidth,
                 resolutionHeight,
@@ -188,7 +188,7 @@ public abstract class BaseVRSceneRenderer implements VRSceneRenderer {
 
     }
 
-    private void setupMvp(MemoryStack stack) {
+    protected void setupMvp(MemoryStack stack) {
         vrCameraLeftEye.setupProjectionMatrix(EyeType.LEFT,stack);
         vrCameraLeftEye.setupViewMatrix(EyeType.LEFT,stack);
 
