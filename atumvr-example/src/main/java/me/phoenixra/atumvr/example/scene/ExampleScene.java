@@ -1,10 +1,10 @@
 package me.phoenixra.atumvr.example.scene;
 
 
-import me.phoenixra.atumvr.api.VRApp;
-import me.phoenixra.atumvr.api.rendering.VRShaderProgram;
-import me.phoenixra.atumvr.api.scene.EyeType;
-import me.phoenixra.atumvr.api.scene.impl.BaseVRSceneRenderer;
+import me.phoenixra.atumvr.api.rendering.VRRenderer;
+import me.phoenixra.atumvr.api.rendering.texture.VRShaderProgram;
+import me.phoenixra.atumvr.api.scene.camera.EyeType;
+import me.phoenixra.atumvr.api.scene.SimpleVRScene;
 import me.phoenixra.atumvr.api.utils.MathUtils;
 import me.phoenixra.atumvr.example.texture.StbTexture;
 import org.jetbrains.annotations.NotNull;
@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class ExampleSceneRenderer extends BaseVRSceneRenderer {
+public class ExampleScene extends SimpleVRScene {
 
     private VRShaderProgram shaderProgram;
 
@@ -25,8 +25,8 @@ public class ExampleSceneRenderer extends BaseVRSceneRenderer {
     private ExampleCube floorCube;
 
     private float timer;
-    public ExampleSceneRenderer(@NotNull VRApp vrApp) {
-        super(vrApp);
+    public ExampleScene(@NotNull VRRenderer vrRenderer) {
+        super(vrRenderer);
     }
 
     @Override
@@ -136,7 +136,7 @@ public class ExampleSceneRenderer extends BaseVRSceneRenderer {
         );
     }
     private void initShaders(){
-        shaderProgram = new VRShaderProgram(getVrApp());
+        shaderProgram = new VRShaderProgram(getVrRenderer().getVrApp());
         shaderProgram.bindVertexShader("vertex.fsh");
         shaderProgram.bindFragmentShader("fragment.fsh");
         shaderProgram.finishShader();
@@ -158,8 +158,8 @@ public class ExampleSceneRenderer extends BaseVRSceneRenderer {
         );
         GL30.glUniform3f(
                 shaderProgram.getShaderVariableLocation("iResolution"),
-                getResolutionWidth(),
-                getResolutionHeight(),
+                getVrRenderer().getResolutionWidth(),
+                getVrRenderer().getResolutionHeight(),
                 0
         );
         GL30.glUniform1i(
@@ -170,4 +170,8 @@ public class ExampleSceneRenderer extends BaseVRSceneRenderer {
     }
 
 
+    @Override
+    public void destroy() {
+        //release all resources attached to scene
+    }
 }

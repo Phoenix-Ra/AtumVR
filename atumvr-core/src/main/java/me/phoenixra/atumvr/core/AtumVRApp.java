@@ -2,11 +2,9 @@ package me.phoenixra.atumvr.core;
 
 import lombok.Getter;
 import lombok.Setter;
-import me.phoenixra.atumconfig.api.config.ConfigType;
-import me.phoenixra.atumconfig.api.config.LoadableConfig;
 import me.phoenixra.atumvr.api.VRApp;
 import me.phoenixra.atumvr.api.VRCore;
-import me.phoenixra.atumvr.api.scene.VRSceneRenderer;
+import me.phoenixra.atumvr.api.rendering.VRRenderer;
 import org.lwjgl.openvr.OpenVR;
 import org.lwjgl.openvr.VR;
 import org.lwjgl.system.MemoryStack;
@@ -22,7 +20,7 @@ public class AtumVRApp implements VRApp {
     private String appKey = "empty";
 
     @Getter
-    private VRSceneRenderer sceneRenderer;
+    private VRRenderer vrRenderer;
 
     @Getter @Setter
     private boolean paused;
@@ -30,7 +28,7 @@ public class AtumVRApp implements VRApp {
     private boolean initialized = false;
     public AtumVRApp(VRCore vrCore){
         this.vrCore = vrCore;
-        this.sceneRenderer = vrCore.createSceneRenderer(this);
+        this.vrRenderer = vrCore.createVRRenderer(this);
     }
     @Override
     public void init() {
@@ -106,7 +104,7 @@ public class AtumVRApp implements VRApp {
             }*/
             vrCore.getDevicesManager().update();
 
-            sceneRenderer.init();
+            vrRenderer.init();
 
             initialized = true;
 
@@ -123,7 +121,7 @@ public class AtumVRApp implements VRApp {
     public void onTick() {
         if(!initialized) return;
         getVrCore().getDevicesManager().update();
-        sceneRenderer.updateFrame();
+        vrRenderer.updateFrame();
     }
 
     @Override
@@ -134,7 +132,7 @@ public class AtumVRApp implements VRApp {
     @Override
     public void destroy() {
         VR.VR_ShutdownInternal();
-        sceneRenderer.destroy();
+        vrRenderer.destroy();
         initialized = false;
     }
 

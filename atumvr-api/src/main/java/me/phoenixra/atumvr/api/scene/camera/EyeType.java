@@ -1,4 +1,4 @@
-package me.phoenixra.atumvr.api.scene;
+package me.phoenixra.atumvr.api.scene.camera;
 
 import lombok.Getter;
 

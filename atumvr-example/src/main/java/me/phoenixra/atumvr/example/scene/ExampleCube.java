@@ -191,4 +191,10 @@ public class ExampleCube {
         // Combined rotation matrix
         return rotZ.mul(rotY).mul(rotX);
     }
+
+    public void destroy(){
+        GL30.glDeleteBuffers(ebo);
+        GL30.glDeleteBuffers(vbo);
+        GL30.glDeleteBuffers(vao);
+    }
 }

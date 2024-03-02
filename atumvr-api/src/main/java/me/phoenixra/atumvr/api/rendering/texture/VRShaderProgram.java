@@ -1,4 +1,4 @@
-package me.phoenixra.atumvr.api.rendering;
+package me.phoenixra.atumvr.api.rendering.texture;
 
 import lombok.Getter;
 import me.phoenixra.atumconfig.api.tuples.PairRecord;

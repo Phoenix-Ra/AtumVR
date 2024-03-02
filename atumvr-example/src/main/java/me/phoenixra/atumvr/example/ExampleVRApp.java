@@ -2,9 +2,9 @@ package me.phoenixra.atumvr.example;
 
 import lombok.Getter;
 import me.phoenixra.atumvr.api.VRApp;
-import me.phoenixra.atumvr.api.scene.VRSceneRenderer;
+import me.phoenixra.atumvr.api.rendering.VRRenderer;
 import me.phoenixra.atumvr.core.AtumVRCore;
-import me.phoenixra.atumvr.example.scene.ExampleSceneRenderer;
+import me.phoenixra.atumvr.example.rendering.ExampleVRRenderer;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -95,7 +95,7 @@ public class ExampleVRApp extends AtumVRCore {
     }
 
     @Override
-    public @NotNull VRSceneRenderer createSceneRenderer(@NotNull VRApp vrApp) {
-        return new ExampleSceneRenderer(vrApp);
+    public @NotNull VRRenderer createVRRenderer(@NotNull VRApp vrApp) {
+        return new ExampleVRRenderer(vrApp);
     }
 }
