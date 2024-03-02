@@ -62,14 +62,14 @@ public class AtumVRApp implements VRApp {
             vrCore.logInfo("Successfully initialized VR Compositor...");
 
 
-            LoadableConfig vrAppManifest = vrCore.getConfigManager().createLoadableConfig(
+            /*LoadableConfig vrAppManifest = vrCore.getConfigManager().createLoadableConfig(
                     "vrApp_manifest",
                     "",
                     ConfigType.JSON,
                     true
             );
             appKey = vrAppManifest.getString("app_key");
-            /*System.out.println("Appkey: " + appKey);
+            System.out.println("Appkey: " + appKey);
 
             if (VRApplications_IsApplicationInstalled(appKey)) {
                 System.out.println("Application manifest already installed");
