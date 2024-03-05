@@ -16,8 +16,9 @@ public interface VRCore extends ConfigOwner {
 
     void clear();
 
+
     @NotNull
-    VRRenderer createVRRenderer(@NotNull VRApp vrApp);
+    VRApp createVRApp();
 
     @NotNull
     VRApp getVrApp();

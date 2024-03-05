@@ -13,7 +13,7 @@ import static org.lwjgl.openvr.VR.*;
 import static org.lwjgl.openvr.VRCompositor.VRCompositor_SetTrackingSpace;
 import static org.lwjgl.openvr.VRSystem.VRSystem_ShouldApplicationPause;
 
-public class AtumVRApp implements VRApp {
+public abstract class AtumVRApp implements VRApp {
     @Getter
     private VRCore vrCore;
     @Getter
@@ -28,7 +28,7 @@ public class AtumVRApp implements VRApp {
     private boolean initialized = false;
     public AtumVRApp(VRCore vrCore){
         this.vrCore = vrCore;
-        this.vrRenderer = vrCore.createVRRenderer(this);
+        this.vrRenderer = createVRRenderer(this);
     }
     @Override
     public void init() {

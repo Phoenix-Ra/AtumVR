@@ -26,7 +26,7 @@ public abstract class AtumVRCore implements VRCore {
     public AtumVRCore(){
         configManager = new AtumConfigManager(this);
 
-        vrApp = new AtumVRApp(this);
+        vrApp = createVRApp();
 
         devicesManager = new AtumVRDevicesManager(this);
         overlaysManager = new AtumVROverlaysManager(this);

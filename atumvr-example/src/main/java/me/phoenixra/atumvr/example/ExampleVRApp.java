@@ -1,101 +1,20 @@
 package me.phoenixra.atumvr.example;
 
-import lombok.Getter;
 import me.phoenixra.atumvr.api.VRApp;
+import me.phoenixra.atumvr.api.VRCore;
 import me.phoenixra.atumvr.api.rendering.VRRenderer;
-import me.phoenixra.atumvr.core.AtumVRCore;
+import me.phoenixra.atumvr.core.AtumVRApp;
 import me.phoenixra.atumvr.example.rendering.ExampleVRRenderer;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.File;
-import java.util.Scanner;
-import java.util.logging.Logger;
-
-public class ExampleVRApp extends AtumVRCore {
-    public static ExampleVRApp instance;
-    private final Logger logger;
-    @Getter
-    private final File dataFolder;
-    public ExampleVRApp(){
-        logger = Logger.getLogger("ExampleVRApp");
-        dataFolder = new File("data");
-    }
-
-    public static void main(String[] args) {
-        Thread updateThread = getThread();
-        updateThread.start();
-
-        Scanner scanner = new Scanner(System.in);
-        while(!scanner.nextLine().equals("stop")){
-            System.out.println("Use 'stop' to exit");
-        }
-
-        updateThread.interrupt(); // Stop the update thread
-        try {
-            updateThread.join(); // Wait for the update thread to finish
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        scanner.close();
-    }
-
-    @NotNull
-    private static Thread getThread() {
-        return new Thread(() -> {
-            boolean init = false;
-            do {
-                if(!init){
-                    try {
-                        instance = new ExampleVRApp();
-                        instance.initializeVR();
-                    }catch (Throwable throwable){
-                        throwable.printStackTrace();
-                        System.out.println("WHAT tick");
-                        break;
-                    }
-                    init=true;
-                    continue;
-                }
-                if(Thread.interrupted()){
-                    instance.clear();
-                    break;
-                }
-                instance.getVrApp().onPreTick();
-                instance.getVrApp().onTick();
-                instance.getVrApp().onPostTick();
-
-            } while (true);
-        });
-    }
-
-    @Override
-    public @NotNull String getName() {
-        return "Example App";
-    }
-
-    @Override
-    public boolean supportMinecraft() {
-        return false;
-    }
-
-    @Override
-    public void logInfo(String message) {
-        logger.info(message);
-    }
-
-    @Override
-    public void logWarning(String message) {
-        logger.warning(message);
-    }
-
-    @Override
-    public void logError(String message) {
-        logger.severe(message);
+public class ExampleVRApp extends AtumVRApp {
+    public ExampleVRApp(VRCore vrCore) {
+        super(vrCore);
     }
 
     @Override
     public @NotNull VRRenderer createVRRenderer(@NotNull VRApp vrApp) {
         return new ExampleVRRenderer(vrApp);
     }
+
 }

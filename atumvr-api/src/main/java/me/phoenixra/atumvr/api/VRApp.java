@@ -7,7 +7,8 @@ public interface VRApp {
 
     void init();
 
-
+    @NotNull
+    VRRenderer createVRRenderer(@NotNull VRApp vrApp);
 
     void onPreTick();
     void onTick();

@@ -34,7 +34,7 @@ public class VRCamera {
     protected Matrix4f projectionMatrix = new Matrix4f();
 
 
-    public VRCamera(VRCore vrCore,Vector3f location, Quaternionf rotation){
+    public VRCamera(VRCore vrCore, Vector3f location, Quaternionf rotation){
         this.vrCore = vrCore;
         this.location = location;
         this.rotation = rotation;
