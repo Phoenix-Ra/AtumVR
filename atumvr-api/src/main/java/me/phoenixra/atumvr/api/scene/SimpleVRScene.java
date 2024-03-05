@@ -66,10 +66,16 @@ public abstract class SimpleVRScene implements VRScene {
 
 
     protected void setupMvp(MemoryStack stack) {
-        vrCameraLeftEye.setupProjectionMatrix(EyeType.LEFT,stack);
+        vrCameraLeftEye.setupProjectionMatrix(EyeType.LEFT,
+                0.02f,100f,
+                stack
+        );
         vrCameraLeftEye.setupViewMatrix(EyeType.LEFT,stack);
 
-        vrCameraRightEye.setupProjectionMatrix(EyeType.RIGHT,stack);
+        vrCameraRightEye.setupProjectionMatrix(EyeType.RIGHT,
+                0.02f,100f,
+                stack
+        );
         vrCameraRightEye.setupViewMatrix(EyeType.RIGHT,stack);
     }
 

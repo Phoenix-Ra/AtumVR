@@ -66,12 +66,14 @@ public class VRCamera {
 
     }
 
-    public void setupProjectionMatrix(EyeType eyeType, MemoryStack stack) {
+    public void setupProjectionMatrix(EyeType eyeType,
+                                      float nearClip, float farClip,
+                                      MemoryStack stack) {
         HmdMatrix44 hmdMatrix44 = HmdMatrix44.malloc(stack);
         VRSystem.VRSystem_GetProjectionMatrix(
                 eyeType.getId(),
-                0.01f,
-                100,
+                nearClip,
+                farClip,
                 hmdMatrix44
         );
         projectionMatrix = new Matrix4f(
