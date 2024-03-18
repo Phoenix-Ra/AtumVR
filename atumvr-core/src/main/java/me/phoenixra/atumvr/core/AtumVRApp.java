@@ -4,17 +4,21 @@ import lombok.Getter;
 import lombok.Setter;
 import me.phoenixra.atumvr.api.VRApp;
 import me.phoenixra.atumvr.api.VRCore;
-import me.phoenixra.atumvr.api.exceptions.ActionManifestException;
+import me.phoenixra.atumvr.api.exceptions.VRInputException;
 import me.phoenixra.atumvr.api.rendering.VRRenderer;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.openvr.OpenVR;
 import org.lwjgl.openvr.VR;
+import org.lwjgl.openvr.VRInput;
 import org.lwjgl.system.MemoryStack;
 import java.io.File;
 import java.nio.IntBuffer;
+import java.nio.LongBuffer;
+
 import static org.lwjgl.openvr.VR.*;
 import static org.lwjgl.openvr.VRCompositor.VRCompositor_SetTrackingSpace;
-import static org.lwjgl.openvr.VRInput.VRInput_SetActionManifestPath;
+import static org.lwjgl.openvr.VRInput.*;
 import static org.lwjgl.openvr.VRSystem.VRSystem_ShouldApplicationPause;
 
 public abstract class AtumVRApp implements VRApp {
@@ -118,7 +122,7 @@ public abstract class AtumVRApp implements VRApp {
         }
     }
 
-    private void loadActionManifest() {
+    protected void loadActionManifest() {
         if(actionManifest == null) {
             return;
         }
@@ -127,7 +131,7 @@ public abstract class AtumVRApp implements VRApp {
                 actionManifest.getAbsolutePath()
         );
         if (error != 0) {
-            throw new ActionManifestException(
+            throw new VRInputException(
                     "Error while loading action manifest", error
             );
         }
@@ -152,6 +156,60 @@ public abstract class AtumVRApp implements VRApp {
     public void onPostTick() {
         getVrCore().getOverlaysManager().update();
     }
+
+
+
+
+
+    @Override
+    public final long getInputActionHandle(@NotNull String actionPath,
+                                           @NotNull MemoryStack stack) throws VRInputException{
+
+        LongBuffer longbyreference = stack.mallocLong(1);
+        int error = VRInput.VRInput_GetActionHandle(actionPath, longbyreference);
+
+        if (error != 0) {
+            throw new VRInputException(
+                    "Error getting action handle for '" + actionPath+"'",
+                    error
+            );
+        }
+        return longbyreference.get(0);
+    }
+    @Override
+    public final long getInputActionSetHandle(@NotNull String actionSetPath,
+                                              @NotNull MemoryStack stack) throws VRInputException{
+        LongBuffer longbyreference = stack.mallocLong(1);
+        int error = VRInput_GetActionSetHandle(
+                actionSetPath,
+                longbyreference
+        );
+
+        if (error != 0) {
+            throw new VRInputException(
+                    "Error getting action set handle for '"+actionSetPath+"'", error
+            );
+        }
+        return longbyreference.get(0);
+    }
+    @Override
+    public final long getInputSourceHandle(@NotNull String path,
+                                           @NotNull MemoryStack stack) throws VRInputException{
+        LongBuffer longbyreference = stack.mallocLong(1);
+        int error = VRInput_GetInputSourceHandle(
+                path,
+                longbyreference
+        );
+
+        if (error != 0) {
+            throw new VRInputException(
+                    "Error getting input source handle for '"+path+"'", error
+            );
+        }
+        return longbyreference.get(0);
+    }
+
+
 
     @Override
     public void destroy() {
