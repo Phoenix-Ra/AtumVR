@@ -3,6 +3,7 @@ package me.phoenixra.atumvr.api.scene.camera;
 import lombok.Getter;
 import lombok.Setter;
 import me.phoenixra.atumvr.api.VRCore;
+import me.phoenixra.atumvr.api.devices.hmd.EyeType;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;

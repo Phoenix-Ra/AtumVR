@@ -1,4 +1,4 @@
-package me.phoenixra.atumvr.api.scene.camera;
+package me.phoenixra.atumvr.api.devices.hmd;
 
 import lombok.Getter;
 
@@ -12,5 +12,8 @@ public enum EyeType {
        this.id = id;
     }
 
-
+    public static EyeType fromInt(int id){
+        if(id == 0) return LEFT;
+        return RIGHT;
+    }
 }

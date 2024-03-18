@@ -3,7 +3,7 @@ package me.phoenixra.atumvr.example.scene;
 
 import me.phoenixra.atumvr.api.rendering.VRRenderer;
 import me.phoenixra.atumvr.api.rendering.texture.VRShaderProgram;
-import me.phoenixra.atumvr.api.scene.camera.EyeType;
+import me.phoenixra.atumvr.api.devices.hmd.EyeType;
 import me.phoenixra.atumvr.api.scene.SimpleVRScene;
 import me.phoenixra.atumvr.api.utils.MathUtils;
 import me.phoenixra.atumvr.example.texture.StbTexture;
