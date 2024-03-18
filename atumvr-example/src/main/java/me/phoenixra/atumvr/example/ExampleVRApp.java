@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class ExampleVRApp extends AtumVRApp {
     public ExampleVRApp(VRCore vrCore) {
-        super(vrCore);
+        super(vrCore, null);
     }
 
     @Override

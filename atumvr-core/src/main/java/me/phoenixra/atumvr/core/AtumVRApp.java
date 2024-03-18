@@ -4,13 +4,17 @@ import lombok.Getter;
 import lombok.Setter;
 import me.phoenixra.atumvr.api.VRApp;
 import me.phoenixra.atumvr.api.VRCore;
+import me.phoenixra.atumvr.api.exceptions.ActionManifestException;
 import me.phoenixra.atumvr.api.rendering.VRRenderer;
+import org.jetbrains.annotations.Nullable;
 import org.lwjgl.openvr.OpenVR;
 import org.lwjgl.openvr.VR;
 import org.lwjgl.system.MemoryStack;
+import java.io.File;
 import java.nio.IntBuffer;
 import static org.lwjgl.openvr.VR.*;
 import static org.lwjgl.openvr.VRCompositor.VRCompositor_SetTrackingSpace;
+import static org.lwjgl.openvr.VRInput.VRInput_SetActionManifestPath;
 import static org.lwjgl.openvr.VRSystem.VRSystem_ShouldApplicationPause;
 
 public abstract class AtumVRApp implements VRApp {
@@ -22,13 +26,16 @@ public abstract class AtumVRApp implements VRApp {
     @Getter
     private VRRenderer vrRenderer;
 
+    private File actionManifest;
+
     @Getter @Setter
     private boolean paused;
     @Getter
     private boolean initialized = false;
-    public AtumVRApp(VRCore vrCore){
+    public AtumVRApp(VRCore vrCore, @Nullable File actionManifest){
         this.vrCore = vrCore;
         this.vrRenderer = createVRRenderer(this);
+        this.actionManifest = actionManifest;
     }
     @Override
     public void init() {
@@ -59,7 +66,7 @@ public abstract class AtumVRApp implements VRApp {
             );
             vrCore.logInfo("Successfully initialized VR Compositor...");
 
-
+            loadActionManifest();
             /*LoadableConfig vrAppManifest = vrCore.getConfigManager().createLoadableConfig(
                     "vrApp_manifest",
                     "",
@@ -109,6 +116,23 @@ public abstract class AtumVRApp implements VRApp {
             initialized = true;
 
         }
+    }
+
+    private void loadActionManifest() {
+        if(actionManifest == null) {
+            return;
+        }
+        getVrCore().logInfo("[LOADING] Action manifest");
+        int error = VRInput_SetActionManifestPath(
+                actionManifest.getAbsolutePath()
+        );
+        if (error != 0) {
+            throw new ActionManifestException(
+                    "Error while loading action manifest", error
+            );
+        }
+        getVrCore().logInfo("[SUCCESS] Action manifest");
+
     }
 
     @Override
