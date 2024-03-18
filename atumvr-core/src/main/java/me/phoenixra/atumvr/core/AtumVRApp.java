@@ -143,12 +143,12 @@ public abstract class AtumVRApp implements VRApp {
     public void onPreTick() {
         if(!initialized) return;
         setPaused(VRSystem_ShouldApplicationPause());
+        getVrCore().getDevicesManager().update();
     }
 
     @Override
     public void onTick() {
         if(!initialized) return;
-        getVrCore().getDevicesManager().update();
         vrRenderer.updateFrame();
     }
 
