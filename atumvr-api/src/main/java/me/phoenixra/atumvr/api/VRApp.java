@@ -3,6 +3,7 @@ package me.phoenixra.atumvr.api;
 import me.phoenixra.atumvr.api.exceptions.VRInputException;
 import me.phoenixra.atumvr.api.input.InputAnalogData;
 import me.phoenixra.atumvr.api.input.InputDigitalData;
+import me.phoenixra.atumvr.api.input.InputOriginDeviceInfo;
 import me.phoenixra.atumvr.api.rendering.VRRenderer;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.system.MemoryStack;
@@ -39,6 +40,8 @@ public interface VRApp {
     InputAnalogData getAnalogData(long controllerHandle,
                                   long actionHandle,
                                   @NotNull String nameForLog);
+    InputOriginDeviceInfo readOriginInfo(long actionHandle);
+
     boolean isInitialized();
 
     boolean isPaused();

@@ -7,6 +7,7 @@ import me.phoenixra.atumvr.api.VRCore;
 import me.phoenixra.atumvr.api.exceptions.VRInputException;
 import me.phoenixra.atumvr.api.input.InputAnalogData;
 import me.phoenixra.atumvr.api.input.InputDigitalData;
+import me.phoenixra.atumvr.api.input.InputOriginDeviceInfo;
 import me.phoenixra.atumvr.api.rendering.VRRenderer;
 import me.phoenixra.atumvr.api.utils.VRUtils;
 import org.jetbrains.annotations.NotNull;
@@ -294,6 +295,26 @@ public abstract class AtumVRApp implements VRApp {
                         out.deltaZ()
                 );
             }
+        }
+    }
+    @Override
+    public InputOriginDeviceInfo readOriginInfo(long actionHandle) {
+        try(MemoryStack stack =  MemoryStack.stackPush()) {
+            InputOriginInfo out = InputOriginInfo.malloc(stack);
+            int error = VRInput_GetOriginTrackedDeviceInfo(
+                    actionHandle,
+                    out,
+                    InputOriginInfo.SIZEOF
+            );
+
+            if (error != 0) {
+                throw new RuntimeException("Error reading origin info: " + VRUtils.getInputErrorMessage(error));
+            }
+            return new InputOriginDeviceInfo(
+                    out.devicePath(),
+                    out.trackedDeviceIndex(),
+                    out.rchRenderModelComponentNameString()
+            );
         }
     }
 

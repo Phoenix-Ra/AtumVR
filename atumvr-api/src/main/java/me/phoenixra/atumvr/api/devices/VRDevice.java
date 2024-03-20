@@ -2,6 +2,7 @@ package me.phoenixra.atumvr.api.devices;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Setter;
 import me.phoenixra.atumvr.api.devices.pose.VRDevicePose;
 import me.phoenixra.atumvr.api.devices.pose.bones.ControllerBones;
 import org.jetbrains.annotations.Nullable;
@@ -15,6 +16,8 @@ import java.nio.IntBuffer;
 
 @Data @AllArgsConstructor
 public class VRDevice {
+    @Setter
+    private int deviceIndex;
 
     private final String modelNumber;
     private final String serialNumber;

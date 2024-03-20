@@ -165,6 +165,7 @@ public class AtumVRDevicesManager implements VRDevicesManager {
                     }*/
                     //--READY
                     VRDevice device = new VRDevice(
+                            deviceIndex,
                             modelNumber,
                             serialNumber,
                             manufacturerName,
@@ -187,6 +188,7 @@ public class AtumVRDevicesManager implements VRDevicesManager {
                                 device
                         );
                     }else{
+                        device1.setDeviceIndex(deviceIndex);
                         device1.updatePose(devicePose);
                     }
                 }
