@@ -20,12 +20,12 @@ public class InputDigitalData {
      * The current state of this action;
      * will be true if currently pressed
      **/
-    private boolean state;
+    private boolean pressed;
     /**
      * This is true if the state
      * has changed since the last frame
      **/
-    private boolean isChanged;
+    private boolean changed;
     /**
      * Time relative to now when this event happened.
      * Will be negative to indicate the past.
