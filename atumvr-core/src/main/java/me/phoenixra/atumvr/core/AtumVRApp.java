@@ -5,16 +5,19 @@ import lombok.Setter;
 import me.phoenixra.atumvr.api.VRApp;
 import me.phoenixra.atumvr.api.VRCore;
 import me.phoenixra.atumvr.api.exceptions.VRInputException;
+import me.phoenixra.atumvr.api.input.InputAnalogData;
+import me.phoenixra.atumvr.api.input.InputDigitalData;
 import me.phoenixra.atumvr.api.rendering.VRRenderer;
+import me.phoenixra.atumvr.api.utils.VRUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.lwjgl.openvr.OpenVR;
-import org.lwjgl.openvr.VR;
-import org.lwjgl.openvr.VRInput;
+import org.lwjgl.openvr.*;
 import org.lwjgl.system.MemoryStack;
 import java.io.File;
 import java.nio.IntBuffer;
 import java.nio.LongBuffer;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.lwjgl.openvr.VR.*;
 import static org.lwjgl.openvr.VRCompositor.VRCompositor_SetTrackingSpace;
@@ -157,10 +160,6 @@ public abstract class AtumVRApp implements VRApp {
         getVrCore().getOverlaysManager().update();
     }
 
-
-
-
-
     @Override
     public final long getInputActionHandle(@NotNull String actionPath,
                                            @NotNull MemoryStack stack) throws VRInputException{
@@ -209,7 +208,94 @@ public abstract class AtumVRApp implements VRApp {
         return longbyreference.get(0);
     }
 
+    @Override
+    public List<Long> getOrigins(String actionSet, long handle, String nameForLog) {
+        try (MemoryStack stack = MemoryStack.stackPush()) {
+            LongBuffer longbyreference = stack.mallocLong(16);
+            int i = VRInput_GetActionOrigins(
+                    getInputActionSetHandle(actionSet,stack),
+                    handle,
+                    longbyreference
+            );
 
+            if (i != 0) {
+                throw new RuntimeException("Error getting action origins for" +
+                        " '" + nameForLog + "': " + VRUtils.getInputErrorMessage(i));
+            } else {
+                List<Long> list = new ArrayList<>();
+
+                while (longbyreference.remaining() > 0) {
+                    long j = longbyreference.get();
+                    if (j != 0L) {
+                        list.add(j);
+                    }
+                }
+
+                return list;
+            }
+        }
+    }
+    @Override
+    public InputDigitalData getDigitalData(long controllerHandle,
+                                           long actionHandle,
+                                           @NotNull String nameForLog) {
+
+        try(MemoryStack stack =  MemoryStack.stackPush()) {
+            InputDigitalActionData out = InputDigitalActionData.malloc(stack);
+            int error = VRInput_GetDigitalActionData(actionHandle,
+                    out,
+                    InputDigitalActionData.SIZEOF,
+                    controllerHandle
+            );
+
+            if (error != 0) {
+                throw new RuntimeException("Error reading digital data for '"
+                        + nameForLog + "': " + VRUtils.getInputErrorMessage(error));
+            } else {
+                return new InputDigitalData(
+                        out.activeOrigin(),
+                        out.bActive(),
+                        out.bState(),
+                        out.bChanged(),
+                        out.fUpdateTime()
+                );
+            }
+        }
+
+    }
+
+    @Override
+    public InputAnalogData getAnalogData(long controllerHandle,
+                                         long actionHandle,
+                                         @NotNull String nameForLog) {
+        try(MemoryStack stack =  MemoryStack.stackPush()) {
+            InputAnalogActionData out = InputAnalogActionData.malloc(stack);
+            int j = VRInput_GetAnalogActionData(
+                    actionHandle,
+                    out,
+                    InputAnalogActionData.SIZEOF,
+                    controllerHandle
+            );
+
+            if (j != 0) {
+                throw new RuntimeException("Error reading analog data for '"
+                        + nameForLog + "': " + VRUtils.getInputErrorMessage(j));
+            } else {
+                return new InputAnalogData(
+                        out.activeOrigin(),
+                        out.bActive(),
+                        false,
+                        out.fUpdateTime(),
+                        out.x(),
+                        out.y(),
+                        out.z(),
+                        out.deltaX(),
+                        out.deltaY(),
+                        out.deltaZ()
+                );
+            }
+        }
+    }
 
     @Override
     public void destroy() {
