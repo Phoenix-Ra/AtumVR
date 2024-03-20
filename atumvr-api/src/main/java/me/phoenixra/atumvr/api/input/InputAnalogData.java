@@ -3,10 +3,11 @@ package me.phoenixra.atumvr.api.input;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.lwjgl.openvr.VRInput;
 
 
-@Data @AllArgsConstructor
+@Data @AllArgsConstructor @NoArgsConstructor
 public class InputAnalogData {
 
     /**
