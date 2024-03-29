@@ -66,9 +66,9 @@ public class VROverlaySimple extends BaseVROverlay {
         ByteBuffer buffer = ByteBuffer.allocateDirect(textureWidth * textureHeight * 4); // 4 bytes per pixel (RGBA)
 
         for (int i = 0; i < textureWidth * textureHeight; i++) {
-            buffer.put((byte) (getColor().getVariable().getRedAsInteger() & 0xFF)); // Red component
-            buffer.put((byte) (getColor().getVariable().getGreenAsInteger() & 0xFF));   // Green component
-            buffer.put((byte) (getColor().getVariable().getBlueAsInteger() & 0xFF));   // Blue component
+            buffer.put((byte) (getColor().getVariable().getRedInt() & 0xFF)); // Red component
+            buffer.put((byte) (getColor().getVariable().getGreenInt() & 0xFF));   // Green component
+            buffer.put((byte) (getColor().getVariable().getBlueInt() & 0xFF));   // Blue component
             buffer.put((byte) (0xFF));
         }
         buffer.flip();
