@@ -3,9 +3,6 @@ package me.phoenixra.atumvr.api.input;
 import lombok.Getter;
 import me.phoenixra.atumvr.api.VRCore;
 import me.phoenixra.atumvr.api.exceptions.VRInputException;
-import me.phoenixra.atumvr.api.input.VRInputAction;
-import me.phoenixra.atumvr.api.input.VRInputActionSet;
-import me.phoenixra.atumvr.api.input.VRInputHandler;
 import me.phoenixra.atumvr.api.utils.VRUtils;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.openvr.VRActiveActionSet;
@@ -51,14 +48,25 @@ public abstract class VRInputHandlerDefault implements VRInputHandler {
                 vrinputaction.setActionHandle(result.get(0));
             }
         }
-
-
         onInit();
 
     }
 
     @Override
     public void tick() {
+        //find and save action handles for input
+        try (MemoryStack stack = MemoryStack.stackPush()) {
+            LongBuffer result = stack.callocLong(1);
+            for (VRInputAction vrinputaction : getInputActions()) {
+                int error = VRInput_GetActionHandle(vrinputaction.getName(), result);
+
+                if (error != 0) {
+                    throw new RuntimeException("Error getting action handle for '" + vrinputaction.getName() + "': " + VRUtils.getInputErrorMessage(error));
+                }
+
+                vrinputaction.setActionHandle(result.get(0));
+            }
+        }
         //Update input states
         List<VRInputActionSet> actionSets = getActiveActionSets();
         if (!actionSets.isEmpty()) {
