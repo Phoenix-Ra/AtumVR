@@ -2,10 +2,10 @@ package me.phoenixra.atumvr.example;
 
 import lombok.Getter;
 import me.phoenixra.atumvr.api.VRApp;
-import me.phoenixra.atumvr.api.rendering.VRRenderer;
+import me.phoenixra.atumvr.api.input.VRInputHandler;
 import me.phoenixra.atumvr.core.AtumVRCore;
-import me.phoenixra.atumvr.example.rendering.ExampleVRRenderer;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.util.Scanner;
@@ -61,9 +61,9 @@ public class ExampleVRCore extends AtumVRCore {
                     instance.clear();
                     break;
                 }
-                instance.getVrApp().onPreTick();
-                instance.getVrApp().onTick();
-                instance.getVrApp().onPostTick();
+                instance.getVrApp().preTick();
+                instance.getVrApp().tick();
+                instance.getVrApp().postTick();
 
             } while (true);
         });
@@ -97,5 +97,10 @@ public class ExampleVRCore extends AtumVRCore {
     @Override
     public @NotNull VRApp createVRApp() {
         return new ExampleVRApp(this);
+    }
+
+    @Override
+    public @Nullable VRInputHandler createVRInputHandler() {
+        return null;
     }
 }

@@ -1,4 +1,4 @@
-package me.phoenixra.atumvr.api.input;
+package me.phoenixra.atumvr.api.input.data;
 
 
 import lombok.AllArgsConstructor;

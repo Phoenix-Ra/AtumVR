@@ -6,6 +6,7 @@ import me.phoenixra.atumconfig.core.config.AtumConfigManager;
 import me.phoenixra.atumvr.api.VRApp;
 import me.phoenixra.atumvr.api.VRCore;
 import me.phoenixra.atumvr.api.devices.VRDevicesManager;
+import me.phoenixra.atumvr.api.input.VRInputHandler;
 import me.phoenixra.atumvr.api.overlays.VROverlaysManager;
 import me.phoenixra.atumvr.core.devices.AtumVRDevicesManager;
 import me.phoenixra.atumvr.core.overlays.AtumVROverlaysManager;
@@ -21,12 +22,15 @@ public abstract class AtumVRCore implements VRCore {
     private VRDevicesManager devicesManager;
     @Getter
     private VROverlaysManager overlaysManager;
+    @Getter
+    private VRInputHandler inputHandler;
 
 
     public AtumVRCore(){
         configManager = new AtumConfigManager(this);
 
         vrApp = createVRApp();
+        inputHandler = createVRInputHandler();
 
         devicesManager = new AtumVRDevicesManager(this);
         overlaysManager = new AtumVROverlaysManager(this);
