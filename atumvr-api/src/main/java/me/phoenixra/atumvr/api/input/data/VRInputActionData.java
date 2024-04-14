@@ -1,4 +1,4 @@
-package me.phoenixra.atumvr.api.input;
+package me.phoenixra.atumvr.api.input.data;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -7,7 +7,7 @@ import lombok.ToString;
 import org.jetbrains.annotations.NotNull;
 
 @ToString @EqualsAndHashCode
-public class VRInputAction {
+public class VRInputActionData {
     @Getter
     private final String name;
     @Getter
@@ -15,17 +15,17 @@ public class VRInputAction {
     @Getter
     private final String type;
     @Getter
-    private final VRInputActionSet actionSet;
+    private final VRInputActionSetData actionSet;
 
 
     @Getter @Setter
     private long actionHandle;
 
 
-    public VRInputAction(@NotNull String name,
-                         @NotNull String requirement,
-                         @NotNull String type,
-                         @NotNull VRInputActionSet actionSet){
+    public VRInputActionData(@NotNull String name,
+                             @NotNull String requirement,
+                             @NotNull String type,
+                             @NotNull VRInputActionSetData actionSet){
         this.name = name;
         this.requirement = requirement;
         this.type = type;

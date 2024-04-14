@@ -2,9 +2,7 @@ package me.phoenixra.atumvr.api.input;
 
 import me.phoenixra.atumvr.api.VRCore;
 import me.phoenixra.atumvr.api.exceptions.VRInputException;
-import me.phoenixra.atumvr.api.input.data.InputAnalogData;
-import me.phoenixra.atumvr.api.input.data.InputDigitalData;
-import me.phoenixra.atumvr.api.input.data.InputOriginDeviceInfo;
+import me.phoenixra.atumvr.api.input.data.*;
 import me.phoenixra.atumvr.api.utils.VRUtils;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.openvr.InputAnalogActionData;
@@ -28,10 +26,10 @@ public interface VRInputHandler {
 
     //queried every tick
     @NotNull
-    List<VRInputActionSet> getActiveActionSets();
+    List<VRInputActionSetData> getActiveActionSets();
 
     @NotNull
-    List<VRInputAction> getInputActions();
+    List<VRInputActionData> getInputActions();
 
     @NotNull File getActionManifest();
 

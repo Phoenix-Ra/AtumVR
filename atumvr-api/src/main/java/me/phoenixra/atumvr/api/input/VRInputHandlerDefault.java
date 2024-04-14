@@ -3,6 +3,8 @@ package me.phoenixra.atumvr.api.input;
 import lombok.Getter;
 import me.phoenixra.atumvr.api.VRCore;
 import me.phoenixra.atumvr.api.exceptions.VRInputException;
+import me.phoenixra.atumvr.api.input.data.VRInputActionData;
+import me.phoenixra.atumvr.api.input.data.VRInputActionSetData;
 import me.phoenixra.atumvr.api.utils.VRUtils;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.openvr.VRActiveActionSet;
@@ -38,7 +40,7 @@ public abstract class VRInputHandlerDefault implements VRInputHandler {
         //find and save action handles for input
         try (MemoryStack stack = MemoryStack.stackPush()) {
             LongBuffer result = stack.callocLong(1);
-            for (VRInputAction vrinputaction : getInputActions()) {
+            for (VRInputActionData vrinputaction : getInputActions()) {
                 int error = VRInput_GetActionHandle(vrinputaction.getName(), result);
 
                 if (error != 0) {
@@ -57,7 +59,7 @@ public abstract class VRInputHandlerDefault implements VRInputHandler {
         //find and save action handles for input
         try (MemoryStack stack = MemoryStack.stackPush()) {
             LongBuffer result = stack.callocLong(1);
-            for (VRInputAction vrinputaction : getInputActions()) {
+            for (VRInputActionData vrinputaction : getInputActions()) {
                 int error = VRInput_GetActionHandle(vrinputaction.getName(), result);
 
                 if (error != 0) {
@@ -68,7 +70,7 @@ public abstract class VRInputHandlerDefault implements VRInputHandler {
             }
         }
         //Update input states
-        List<VRInputActionSet> actionSets = getActiveActionSets();
+        List<VRInputActionSetData> actionSets = getActiveActionSets();
         if (!actionSets.isEmpty()) {
             try (MemoryStack stack = MemoryStack.stackPush()) {
                 VRActiveActionSet.Buffer buffer = VRActiveActionSet.malloc(actionSets.size(), stack);
