@@ -6,7 +6,7 @@ plugins {
 
 dependencies {
     api("com.github.Phoenix-Ra:AtumConfiguration:3.0.1")
-    api("io.github.classgraph:classgraph:4.8.170")
+    api("org.reflections:reflections:0.10.2")
 
     api("org.joml:joml:1.10.5")
 
