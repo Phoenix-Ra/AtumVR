@@ -40,7 +40,7 @@ public abstract class VRInputHandlerDefault implements VRInputHandler {
         //find and save action handles for input
         try (MemoryStack stack = MemoryStack.stackPush()) {
             LongBuffer result = stack.callocLong(1);
-            for (VRInputActionData vrinputaction : getInputActions()) {
+            for (VRInputActionData vrinputaction : getInputActionsData()) {
                 int error = VRInput_GetActionHandle(vrinputaction.getName(), result);
 
                 if (error != 0) {
@@ -59,7 +59,7 @@ public abstract class VRInputHandlerDefault implements VRInputHandler {
         //find and save action handles for input
         try (MemoryStack stack = MemoryStack.stackPush()) {
             LongBuffer result = stack.callocLong(1);
-            for (VRInputActionData vrinputaction : getInputActions()) {
+            for (VRInputActionData vrinputaction : getInputActionsData()) {
                 int error = VRInput_GetActionHandle(vrinputaction.getName(), result);
 
                 if (error != 0) {

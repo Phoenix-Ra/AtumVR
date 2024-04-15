@@ -29,7 +29,7 @@ public interface VRInputHandler {
     List<VRInputActionSetData> getActiveActionSets();
 
     @NotNull
-    List<VRInputActionData> getInputActions();
+    List<VRInputActionData> getInputActionsData();
 
     @NotNull File getActionManifest();
 
