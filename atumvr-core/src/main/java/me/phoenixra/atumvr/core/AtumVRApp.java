@@ -8,6 +8,7 @@ import me.phoenixra.atumvr.api.rendering.VRRenderer;
 import org.lwjgl.openvr.*;
 import org.lwjgl.system.MemoryStack;
 import java.nio.IntBuffer;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.lwjgl.openvr.VR.*;
@@ -17,15 +18,13 @@ import static org.lwjgl.openvr.VRSystem.VRSystem_ShouldApplicationPause;
 
 public abstract class AtumVRApp implements VRApp {
     @Getter
-    private VRCore vrCore;
-    @Getter
-    private String appKey = "empty";
+    private final VRCore vrCore;
 
     @Getter
-    private VRRenderer vrRenderer;
+    private final VRRenderer vrRenderer;
 
     @Getter
-    private List<VREvent> vrEventsTick;
+    private final List<me.phoenixra.atumvr.api.events.VREvent> vrEventsTick = new ArrayList<>();
 
 
     @Getter @Setter
@@ -104,7 +103,11 @@ public abstract class AtumVRApp implements VRApp {
             for (VREvent vrevent = VREvent.malloc(stack);
                  VRSystem_PollNextEvent(vrevent, VREvent.SIZEOF);
                  vrevent = VREvent.malloc(stack)) {
-                this.vrEventsTick.add(vrevent);
+                this.vrEventsTick.add(
+                        me.phoenixra.atumvr.api.events.VREvent.fromId(
+                                vrevent.eventType()
+                        )
+                );
             }
         }
     }

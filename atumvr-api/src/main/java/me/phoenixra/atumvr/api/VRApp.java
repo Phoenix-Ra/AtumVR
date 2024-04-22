@@ -35,8 +35,6 @@ public interface VRApp {
     void setPaused(boolean value);
 
 
-    @NotNull
-    String getAppKey();
 
     @NotNull
     VRRenderer getVrRenderer();

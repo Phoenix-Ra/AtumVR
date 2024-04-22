@@ -3,6 +3,8 @@ package me.phoenixra.atumvr.api.events;
 import lombok.Getter;
 import org.lwjgl.openvr.VR;
 
+import java.util.HashMap;
+
 public enum VREvent {
     TRACKED_DEVICE_ACTIVATED(VR.EVREventType_VREvent_TrackedDeviceActivated),
     TRACKED_DEVICE_DEACTIVATED(VR.EVREventType_VREvent_TrackedDeviceDeactivated),
@@ -179,8 +181,21 @@ public enum VREvent {
 
     @Getter
     private final int id;
+
+    //faster get with hashmap. (too mane enums, affects on perfomance if use stream())
+    private static HashMap<Integer, VREvent> events = new HashMap<>();
+
+    static {
+        for(VREvent event : values()){
+            events.put(event.id,event);
+        }
+    }
     VREvent(int id){
         this.id = id;
+    }
+
+    public static VREvent fromId(int id){
+        return events.get(id);
     }
 
 }
