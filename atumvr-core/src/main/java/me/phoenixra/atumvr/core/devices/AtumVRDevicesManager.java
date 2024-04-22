@@ -309,6 +309,16 @@ public class AtumVRDevicesManager implements VRDevicesManager {
     }
 
     @Override
+    public @Nullable VRDevice getDeviceByIndex(int index) {
+        for(VRDevice device : devices.values()){
+            if(device.getDeviceIndex() == index) {
+                return device;
+            }
+        }
+        return null;
+    }
+
+    @Override
     public @Nullable VRDevice getHMD() {
         return devices.values().stream().filter(it->it.getType() == VRDeviceType.HMD)
                 .findAny().orElse(null);

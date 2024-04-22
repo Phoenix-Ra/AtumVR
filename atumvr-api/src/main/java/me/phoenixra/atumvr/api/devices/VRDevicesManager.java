@@ -33,6 +33,8 @@ public interface VRDevicesManager {
     List<VRDevice> getDevicesByType(@NotNull VRDeviceType type);
     @Nullable
     VRDevice getDeviceBySerial(@NotNull String serial);
+    @Nullable
+    VRDevice getDeviceByIndex(int index);
 
     @Nullable
     VRDevice getHMD();

@@ -1,7 +1,10 @@
 package me.phoenixra.atumvr.api;
 
+import me.phoenixra.atumvr.api.events.VREvent;
 import me.phoenixra.atumvr.api.rendering.VRRenderer;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.List;
 
 public interface VRApp {
 
@@ -13,6 +16,15 @@ public interface VRApp {
     void preTick();
     void tick();
     void postTick();
+
+    /**
+     * Get VR Events for current tick
+     *
+     * @return list of VR Events
+     */
+    @NotNull
+    List<VREvent> getVrEventsTick();
+
 
     void destroy();
 

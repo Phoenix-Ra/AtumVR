@@ -8,9 +8,11 @@ import me.phoenixra.atumvr.api.rendering.VRRenderer;
 import org.lwjgl.openvr.*;
 import org.lwjgl.system.MemoryStack;
 import java.nio.IntBuffer;
+import java.util.List;
 
 import static org.lwjgl.openvr.VR.*;
 import static org.lwjgl.openvr.VRCompositor.VRCompositor_SetTrackingSpace;
+import static org.lwjgl.openvr.VRSystem.VRSystem_PollNextEvent;
 import static org.lwjgl.openvr.VRSystem.VRSystem_ShouldApplicationPause;
 
 public abstract class AtumVRApp implements VRApp {
@@ -22,6 +24,8 @@ public abstract class AtumVRApp implements VRApp {
     @Getter
     private VRRenderer vrRenderer;
 
+    @Getter
+    private List<VREvent> vrEventsTick;
 
 
     @Getter @Setter
@@ -81,6 +85,7 @@ public abstract class AtumVRApp implements VRApp {
         if(!initialized) return;
         setPaused(VRSystem_ShouldApplicationPause());
         getVrCore().getDevicesManager().update();
+        updateEvents();
     }
 
     @Override
@@ -93,7 +98,16 @@ public abstract class AtumVRApp implements VRApp {
     public void postTick() {
         getVrCore().getOverlaysManager().update();
     }
-
+    private void updateEvents() {
+        vrEventsTick.clear();
+        try(MemoryStack stack = MemoryStack.stackPush()) {
+            for (VREvent vrevent = VREvent.malloc(stack);
+                 VRSystem_PollNextEvent(vrevent, VREvent.SIZEOF);
+                 vrevent = VREvent.malloc(stack)) {
+                this.vrEventsTick.add(vrevent);
+            }
+        }
+    }
 
     @Override
     public void destroy() {
