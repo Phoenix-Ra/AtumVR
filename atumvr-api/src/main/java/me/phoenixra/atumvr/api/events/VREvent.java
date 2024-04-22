@@ -185,16 +185,17 @@ public enum VREvent {
     //faster get with hashmap. (too mane enums, affects on perfomance if use stream())
     private static HashMap<Integer, VREvent> events = new HashMap<>();
 
-    static {
-        for(VREvent event : values()){
-            events.put(event.id,event);
-        }
-    }
+
     VREvent(int id){
         this.id = id;
     }
 
     public static VREvent fromId(int id){
+        if(events.isEmpty()){
+            for(VREvent event : values()){
+                events.put(event.id,event);
+            }
+        }
         return events.get(id);
     }
 

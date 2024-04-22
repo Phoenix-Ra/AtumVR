@@ -103,10 +103,13 @@ public abstract class AtumVRApp implements VRApp {
             for (VREvent vrevent = VREvent.malloc(stack);
                  VRSystem_PollNextEvent(vrevent, VREvent.SIZEOF);
                  vrevent = VREvent.malloc(stack)) {
-                this.vrEventsTick.add(
+                me.phoenixra.atumvr.api.events.VREvent event =
                         me.phoenixra.atumvr.api.events.VREvent.fromId(
                                 vrevent.eventType()
-                        )
+                        );
+                if(event==null) continue;
+                this.vrEventsTick.add(
+                        event
                 );
             }
         }
