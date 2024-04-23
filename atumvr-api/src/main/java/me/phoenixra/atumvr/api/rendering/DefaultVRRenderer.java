@@ -3,8 +3,8 @@ package me.phoenixra.atumvr.api.rendering;
 import lombok.Getter;
 import me.phoenixra.atumvr.api.VRApp;
 import me.phoenixra.atumvr.api.devices.hmd.EyeType;
-import me.phoenixra.atumvr.api.rendering.texture.VRFrameBuffer;
 import me.phoenixra.atumvr.api.rendering.texture.VRTexture;
+import me.phoenixra.atumvr.api.rendering.texture.impl.AtumVRTexture;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL30;
@@ -36,9 +36,9 @@ public abstract class DefaultVRRenderer implements VRRenderer{
 
 
     @Getter
-    protected VRFrameBuffer frameBufferRightEye;
+    protected VRTexture textureLeftEye;
     @Getter
-    protected VRFrameBuffer frameBufferLeftEye;
+    protected VRTexture textureRightEye;
 
 
     private final HashMap<EyeType, float[]> hiddenArea = new HashMap<>();
@@ -70,13 +70,13 @@ public abstract class DefaultVRRenderer implements VRRenderer{
         getCurrentScene().prepareFrame();
 
         VRCompositor_Submit(EVREye_Eye_Left,
-                frameBufferLeftEye.getVrTexture().getTexture(),
+                textureLeftEye.getOpenVrTexture(),
                 null,
                 0
         );
 
         VRCompositor_Submit(EVREye_Eye_Right,
-                frameBufferRightEye.getVrTexture().getTexture(),
+                textureRightEye.getOpenVrTexture(),
                 null,
                 0
         );
@@ -136,19 +136,17 @@ public abstract class DefaultVRRenderer implements VRRenderer{
     }
 
     protected void setupEyes() {
-        VRTexture textureLeft = new VRTexture(
+        textureLeftEye = new AtumVRTexture(
                 resolutionWidth,
                 resolutionHeight,
                 false
         );
-        frameBufferLeftEye = new VRFrameBuffer(textureLeft);
 
-        VRTexture textureRight = new VRTexture(
+        textureRightEye = new AtumVRTexture(
                 resolutionWidth,
                 resolutionHeight,
                 false
         );
-        frameBufferRightEye = new VRFrameBuffer(textureRight);
 
     }
 

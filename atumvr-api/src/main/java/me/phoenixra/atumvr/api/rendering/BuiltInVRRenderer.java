@@ -1,10 +1,11 @@
 package me.phoenixra.atumvr.api.rendering;
 
 import lombok.Getter;
+import me.phoenixra.atumconfig.api.tuples.PairRecord;
 import me.phoenixra.atumvr.api.VRApp;
 import me.phoenixra.atumvr.api.devices.hmd.EyeType;
-import me.phoenixra.atumvr.api.rendering.texture.VRFrameBuffer;
 import me.phoenixra.atumvr.api.rendering.texture.VRTexture;
+import me.phoenixra.atumvr.api.rendering.texture.impl.AtumVRTexture;
 import org.lwjgl.opengl.GL30;
 
 import org.lwjgl.openvr.HiddenAreaMesh;
@@ -34,9 +35,9 @@ public abstract class BuiltInVRRenderer implements VRRenderer {
 
 
     @Getter
-    protected VRFrameBuffer frameBufferRightEye;
+    private VRTexture textureLeftEye;
     @Getter
-    protected VRFrameBuffer frameBufferLeftEye;
+    private VRTexture textureRightEye;
 
     private final HashMap<EyeType, float[]> hiddenArea = new HashMap<>();
 
@@ -53,7 +54,9 @@ public abstract class BuiltInVRRenderer implements VRRenderer {
         try (MemoryStack stack = MemoryStack.stackPush()) {
             setupResolution(stack);
             setupHiddenArea();
-            setupEyes();
+            PairRecord<VRTexture,VRTexture> eyes = setupEyes();
+            textureLeftEye = eyes.getFirst();
+            textureRightEye = eyes.getSecond();
             onInit();
         }
     }
@@ -63,13 +66,13 @@ public abstract class BuiltInVRRenderer implements VRRenderer {
         getCurrentScene().prepareFrame();
 
         VRCompositor_Submit(EVREye_Eye_Left,
-                frameBufferLeftEye.getVrTexture().getTexture(),
+                textureLeftEye.getOpenVrTexture(),
                 null,
                 0
         );
 
         VRCompositor_Submit(EVREye_Eye_Right,
-                frameBufferRightEye.getVrTexture().getTexture(),
+                textureRightEye.getOpenVrTexture(),
                 null,
                 0
         );
@@ -83,8 +86,8 @@ public abstract class BuiltInVRRenderer implements VRRenderer {
     @Override
     public void destroy() {
         getCurrentScene().destroy();
-        frameBufferLeftEye.destroy();
-        frameBufferRightEye.destroy();
+        textureLeftEye.destroy();
+        textureRightEye.destroy();
     }
 
     protected void setupResolution(MemoryStack stack) {
@@ -96,20 +99,19 @@ public abstract class BuiltInVRRenderer implements VRRenderer {
         resolutionHeight = heightBuffer.get(0);
     }
 
-    protected void setupEyes() {
-        VRTexture textureLeft = new VRTexture(
-                resolutionWidth,
-                resolutionHeight,
+    protected PairRecord<VRTexture,VRTexture> setupEyes() {
+        VRTexture textureLeft = new AtumVRTexture(
+                getResolutionWidth(),
+                getResolutionHeight(),
                 false
         );
-        frameBufferLeftEye = new VRFrameBuffer(textureLeft);
 
-        VRTexture textureRight = new VRTexture(
-                resolutionWidth,
-                resolutionHeight,
+        VRTexture textureRight = new AtumVRTexture(
+                getResolutionWidth(),
+                getResolutionHeight(),
                 false
         );
-        frameBufferRightEye = new VRFrameBuffer(textureRight);
+        return new PairRecord<>(textureLeft,textureRight);
 
     }
 

@@ -47,12 +47,12 @@ public abstract class SimpleVRScene implements VRScene {
             //update mvp variable
             setupMvp(stack);
 
-            GL30.glBindFramebuffer(GL30.GL_FRAMEBUFFER, getVrRenderer().getFrameBufferLeftEye().getFrameBufferId());
+            GL30.glBindFramebuffer(GL30.GL_FRAMEBUFFER, getVrRenderer().getTextureLeftEye().getFrameBufferId());
             GL30.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
             GL30.glClear(GL30.GL_COLOR_BUFFER_BIT | GL30.GL_DEPTH_BUFFER_BIT);
             updateEyeTexture(EyeType.LEFT);
 
-            GL30.glBindFramebuffer(GL30.GL_FRAMEBUFFER, getVrRenderer().getFrameBufferRightEye().getFrameBufferId());
+            GL30.glBindFramebuffer(GL30.GL_FRAMEBUFFER, getVrRenderer().getTextureRightEye().getFrameBufferId());
             GL30.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
             GL30.glClear(GL30.GL_COLOR_BUFFER_BIT | GL30.GL_DEPTH_BUFFER_BIT);
             updateEyeTexture(EyeType.RIGHT);
