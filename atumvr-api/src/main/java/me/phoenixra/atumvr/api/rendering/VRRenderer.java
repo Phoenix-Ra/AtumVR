@@ -8,7 +8,7 @@ import org.jetbrains.annotations.NotNull;
 
 public interface VRRenderer {
 
-    void init();
+    void init() throws Throwable;
 
     void updateFrame();
 

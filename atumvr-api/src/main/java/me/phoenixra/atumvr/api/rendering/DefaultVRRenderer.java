@@ -50,10 +50,10 @@ public abstract class DefaultVRRenderer implements VRRenderer{
 
     }
 
-    public abstract void onInit();
+    public abstract void onInit() throws Throwable;
 
     @Override
-    public void init() {
+    public void init() throws Throwable{
         try (MemoryStack stack = MemoryStack.stackPush()) {
             setupGLContext();
             setupResolution(stack);

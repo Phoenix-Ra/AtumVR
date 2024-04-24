@@ -76,6 +76,10 @@ public abstract class AtumVRApp implements VRApp {
 
             initialized = true;
 
+        }catch (Throwable exception){
+            throw new RuntimeException(
+                    "Exception while VR App initialization",exception
+            );
         }
     }
 
