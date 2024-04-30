@@ -1,10 +1,10 @@
 package me.phoenixra.atumvr.api.devices.controller;
 
-import lombok.Getter;
+
 
 public enum ControllerHand {
-    LEFT,
-    RIGHT;
+    RIGHT,
+    LEFT;
 
 
     public ControllerHand reversed(){
@@ -13,7 +13,7 @@ public enum ControllerHand {
     }
 
     public static ControllerHand fromInt(int id){
-        if(id == 0) return LEFT;
-        return RIGHT;
+        if(id == 0) return RIGHT;
+        return LEFT;
     }
 }
