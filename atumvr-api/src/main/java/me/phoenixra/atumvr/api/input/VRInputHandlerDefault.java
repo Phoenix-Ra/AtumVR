@@ -108,6 +108,5 @@ public abstract class VRInputHandlerDefault implements VRInputHandler {
             );
         }
         getVrCore().logInfo("[SUCCESS] Action manifest");
-
     }
 }

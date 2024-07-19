@@ -3,17 +3,17 @@ package me.phoenixra.atumvr.api.devices.controller;
 
 
 public enum ControllerHand {
-    RIGHT,
-    LEFT;
+    MAIN,
+    SECONDARY;
 
 
     public ControllerHand reversed(){
-        if(this == LEFT) return RIGHT;
-        else return LEFT;
+        if(this == SECONDARY) return MAIN;
+        else return SECONDARY;
     }
 
     public static ControllerHand fromInt(int id){
-        if(id == 0) return RIGHT;
-        return LEFT;
+        if(id == 0) return MAIN;
+        return SECONDARY;
     }
 }
