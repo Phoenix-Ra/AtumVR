@@ -126,13 +126,14 @@ public class ExampleCube {
         GL30.glBindVertexArray(0);
     }
 
-    protected void draw() {
+    protected void render() {
         GL30.glBindTexture(GL30.GL_TEXTURE_2D, texture.getTextureId());
         GL30.glBindVertexArray(vao);
-        GL30.glDrawElements(GL30.GL_TRIANGLES, 36, GL30.GL_UNSIGNED_INT, 0);
+        GL30.glDrawElements(GL30.GL_TRIANGLES,
+                36, GL30.GL_UNSIGNED_INT, 0
+        );
         GL30.glBindVertexArray(0);
         GL30.glBindTexture(GL30.GL_TEXTURE_2D, 0);
-
     }
 
     protected Matrix4f getModelMatrix(){
@@ -156,7 +157,10 @@ public class ExampleCube {
                 0, 0, 0, 1
         );
 
-        return rotationMatrix.mul(translationMatrix).mul(scalingMatrix);
+        return rotationMatrix
+                .mul(translationMatrix)
+                .mul(scalingMatrix)
+                .transpose();
     }
 
     public static Matrix4f createRotationMatrix(float rotationX, float rotationY, float rotationZ) {

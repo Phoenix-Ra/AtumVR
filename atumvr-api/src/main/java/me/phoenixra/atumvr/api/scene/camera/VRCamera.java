@@ -62,8 +62,9 @@ public class VRCamera {
 
 
         viewMatrix = eyeToHead.mul(
-                vrCore.getDevicesManager().getHMD().getPose().getLocationMatrix()
-        ).invert();
+                vrCore.getDevicesManager().getHMD()
+                        .getPose().getLocationMatrix()
+        ).invert().transpose();
 
     }
 
@@ -78,17 +79,25 @@ public class VRCamera {
                 hmdMatrix44
         );
         projectionMatrix = new Matrix4f(
-                hmdMatrix44.m(0), hmdMatrix44.m(1),
-                hmdMatrix44.m(2), hmdMatrix44.m(3),
+                hmdMatrix44.m(0), //1st column
+                hmdMatrix44.m(4),
+                hmdMatrix44.m(8),
+                hmdMatrix44.m(12),
 
-                hmdMatrix44.m(4), hmdMatrix44.m(5),
-                hmdMatrix44.m(6), hmdMatrix44.m(7),
+                hmdMatrix44.m(1), //2nd column
+                hmdMatrix44.m(5),
+                hmdMatrix44.m(9),
+                hmdMatrix44.m(13),
 
-                hmdMatrix44.m(8), hmdMatrix44.m(9),
-                hmdMatrix44.m(10), hmdMatrix44.m(11),
+                hmdMatrix44.m(2), //3d column
+                hmdMatrix44.m(6),
+                hmdMatrix44.m(10),
+                hmdMatrix44.m(14),
 
-                hmdMatrix44.m(12), hmdMatrix44.m(13),
-                hmdMatrix44.m(14), hmdMatrix44.m(15)
+                hmdMatrix44.m(3), //4th column
+                hmdMatrix44.m(7),
+                hmdMatrix44.m(11),
+                hmdMatrix44.m(15)
         );
     }
 

@@ -5,10 +5,14 @@ import me.phoenixra.atumvr.api.VRApp;
 import me.phoenixra.atumvr.api.devices.hmd.EyeType;
 import me.phoenixra.atumvr.api.rendering.texture.VRTexture;
 import me.phoenixra.atumvr.api.rendering.texture.impl.AtumVRTexture;
+import me.phoenixra.atumvr.api.rendering.texture.impl.MultiViewVRTexture;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.opengl.GL;
+import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.openvr.HiddenAreaMesh;
+import org.lwjgl.openvr.VR;
+import org.lwjgl.openvr.VRCompositor;
 import org.lwjgl.openvr.VRSystem;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
@@ -18,10 +22,10 @@ import java.util.HashMap;
 
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
+import static org.lwjgl.openvr.OpenVR.VRCompositor;
 import static org.lwjgl.openvr.VR.EVREye_Eye_Left;
 import static org.lwjgl.openvr.VR.EVREye_Eye_Right;
-import static org.lwjgl.openvr.VRCompositor.VRCompositor_PostPresentHandoff;
-import static org.lwjgl.openvr.VRCompositor.VRCompositor_Submit;
+import static org.lwjgl.openvr.VRCompositor.*;
 import static org.lwjgl.openvr.VRSystem.VRSystem_GetHiddenAreaMesh;
 
 public abstract class DefaultVRRenderer implements VRRenderer{
@@ -42,6 +46,7 @@ public abstract class DefaultVRRenderer implements VRRenderer{
 
 
     private final HashMap<EyeType, float[]> hiddenArea = new HashMap<>();
+
 
     protected long windowId;
 
@@ -69,20 +74,41 @@ public abstract class DefaultVRRenderer implements VRRenderer{
         GL30.glEnable(GL30.GL_DEPTH_TEST);
         getCurrentScene().prepareFrame();
 
-        VRCompositor_Submit(EVREye_Eye_Left,
-                textureLeftEye.getOpenVrTexture(),
-                null,
-                0
-        );
-
-        VRCompositor_Submit(EVREye_Eye_Right,
-                textureRightEye.getOpenVrTexture(),
-                null,
-                0
-        );
+        if(isMultiView()){
+            int result = VRCompositor_SubmitWithArrayIndex(EVREye_Eye_Left,
+                    textureLeftEye.getOpenVrTexture(),
+                    0,
+                    null,
+                    VR.EVRSubmitFlags_Submit_GlArrayTexture
+            );
+            if(result != 0){
+                getVrApp().getVrCore().logInfo("Failed to submit left eye: " + result);
+            }
+            result = VRCompositor_SubmitWithArrayIndex(EVREye_Eye_Right,
+                    textureRightEye.getOpenVrTexture(),
+                    1,
+                    null,
+                    VR.EVRSubmitFlags_Submit_GlArrayTexture
+            );
+            if(result != 0){
+                getVrApp().getVrCore().logInfo("Failed to submit right eye: " + result);
+            }
+        }else {
+            VRCompositor_Submit(EVREye_Eye_Left,
+                    textureLeftEye.getOpenVrTexture(),
+                    null,
+                    0
+            );
+            VRCompositor_Submit(EVREye_Eye_Right,
+                    textureRightEye.getOpenVrTexture(),
+                    null,
+                    0
+            );
+        }
         GL30.glFlush();
         GL30.glFinish();
         VRCompositor_PostPresentHandoff();
+
 
     }
 
@@ -136,6 +162,16 @@ public abstract class DefaultVRRenderer implements VRRenderer{
     }
 
     protected void setupEyes() {
+        if(isMultiView()){
+            textureLeftEye = new MultiViewVRTexture(
+                    resolutionWidth,
+                    resolutionHeight,
+                    false,
+                    2
+            );
+            textureRightEye = textureLeftEye;
+            return;
+        }
         textureLeftEye = new AtumVRTexture(
                 resolutionWidth,
                 resolutionHeight,

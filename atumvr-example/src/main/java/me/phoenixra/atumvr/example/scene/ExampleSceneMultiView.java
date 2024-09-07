@@ -1,21 +1,20 @@
 package me.phoenixra.atumvr.example.scene;
 
-import me.phoenixra.atumvr.api.devices.hmd.EyeType;
+
 import me.phoenixra.atumvr.api.rendering.VRRenderer;
 import me.phoenixra.atumvr.api.rendering.texture.VRShaderProgram;
-import me.phoenixra.atumvr.api.scene.SimpleVRScene;
-import me.phoenixra.atumvr.api.utils.MathUtils;
+import me.phoenixra.atumvr.api.scene.MultiViewVRScene;
 import me.phoenixra.atumvr.example.texture.StbTexture;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.lwjgl.opengl.GL30;
-import org.lwjgl.system.MemoryStack;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ExampleScene extends SimpleVRScene {
+
+public class ExampleSceneMultiView extends MultiViewVRScene {
 
     private VRShaderProgram shaderProgram;
 
@@ -23,7 +22,7 @@ public class ExampleScene extends SimpleVRScene {
     private ExampleCube floorCube;
 
     private float timer;
-    public ExampleScene(@NotNull VRRenderer vrRenderer) {
+    public ExampleSceneMultiView(@NotNull VRRenderer vrRenderer) {
         super(vrRenderer);
     }
 
@@ -81,7 +80,7 @@ public class ExampleScene extends SimpleVRScene {
     }
 
     @Override
-    public void updateEyeTexture(@NotNull EyeType eyeType) {
+    public void render() {
         timer+=0.0005f;
         shaderProgram.useShader();
 
@@ -89,7 +88,9 @@ public class ExampleScene extends SimpleVRScene {
                 shaderProgram.getShaderVariableLocation("uNegative"),
                 0
         );
-        updateShaderVariables(eyeType, floorCube.getModelMatrix());
+
+
+        updateShaderVariables(floorCube.getModelMatrix());
         floorCube.render();
 
         GL30.glUniform1i(
@@ -97,13 +98,13 @@ public class ExampleScene extends SimpleVRScene {
                 1
         );
         for(ExampleCube exampleCube : exampleCubes) {
-            updateShaderVariables(eyeType, exampleCube.getModelMatrix());
+            updateShaderVariables(exampleCube.getModelMatrix());
 
             exampleCube.render();
         }
         GL30.glUseProgram(0);
     }
-    private void updateShaderVariables(EyeType eyeType, Matrix4f modelMatrix){
+    private void updateShaderVariables(Matrix4f modelMatrix){
         int timerLocation = shaderProgram.getShaderVariableLocation("iTimer");
         int mvpLocation = shaderProgram.getShaderVariableLocation("uMVP");
         float timer = GL30.glGetUniformf(
@@ -114,18 +115,26 @@ public class ExampleScene extends SimpleVRScene {
                 timerLocation,
                 timer
         );
-        Matrix4f projection = eyeType==EyeType.LEFT ?
-                getVrCameraLeftEye().getProjectionMatrix() :
-                getVrCameraRightEye().getProjectionMatrix();
-        Matrix4f view = eyeType==EyeType.LEFT ?
-                getVrCameraLeftEye().getViewMatrix() :
-                getVrCameraRightEye().getViewMatrix();
+        Matrix4f[] projection = new Matrix4f[2];
+        projection[0] = getVrCameraLeftEye().getProjectionMatrix();
+        projection[1] = getVrCameraRightEye().getProjectionMatrix();
+        Matrix4f[] view = new Matrix4f[2];
+        view[0] = getVrCameraLeftEye().getViewMatrix();
+        view[1] = getVrCameraRightEye().getViewMatrix();
+
+        Matrix4f[] mvpMatrices = new Matrix4f[2];
+        mvpMatrices[0] = projection[0]
+                .mul(view[0],new Matrix4f())
+                .mul(modelMatrix);
+        mvpMatrices[1] = projection[1]
+                .mul(view[1],new Matrix4f())
+                .mul(modelMatrix);
+        float[] mvpData = new float[32]; // Two 4x4 matrices, so 16 floats * 2 = 32
+        mvpMatrices[0].get(mvpData, 0);  // Left eye MVP starts at index 0
+        mvpMatrices[1].get(mvpData, 16);
         GL30.glUniformMatrix4fv(mvpLocation,
                 false,
-                MemoryStack.stackFloats(
-                        projection.mul(view,new Matrix4f()).mul(modelMatrix)
-                                .get(new float[16])
-                )
+                mvpData
         );
     }
     private void initShaders(){
@@ -142,8 +151,8 @@ public class ExampleScene extends SimpleVRScene {
         shaderProgram.useShader();
         GL30.glUniformMatrix4fv(
                 shaderProgram.getShaderVariableLocation("uMVP"),
-                true,
-                new float[16]
+                false,
+                new float[32]
         );
         GL30.glUniform1f(
                 shaderProgram.getShaderVariableLocation("iTimer"),

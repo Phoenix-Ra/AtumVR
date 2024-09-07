@@ -16,6 +16,8 @@ public interface VRRenderer {
 
     VRScene getCurrentScene();
 
+    boolean isMultiView();
+
     VRTexture getTextureRightEye();
 
     VRTexture getTextureLeftEye();
