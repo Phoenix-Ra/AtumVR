@@ -27,8 +27,6 @@ public class AtumVRTexture implements VRTexture {
     protected void init(boolean depth){
         //TEXTURE
         GL30.glBindTexture(GL30.GL_TEXTURE_2D, glTextureId);
-        GL30.glTexParameteri(GL30.GL_TEXTURE_2D, GL30.GL_TEXTURE_MIN_FILTER, GL30.GL_LINEAR);
-        GL30.glTexParameteri(GL30.GL_TEXTURE_2D, GL30.GL_TEXTURE_MAG_FILTER, GL30.GL_LINEAR);
         GL30.glTexImage2D(
                 GL30.GL_TEXTURE_2D,
                 0,
@@ -40,6 +38,9 @@ public class AtumVRTexture implements VRTexture {
                 GL30.GL_INT,
                 (ByteBuffer) null
         );
+        GL30.glTexParameteri(GL30.GL_TEXTURE_2D_ARRAY, GL30.GL_TEXTURE_MIN_FILTER, GL30.GL_LINEAR_MIPMAP_LINEAR);
+        GL30.glGenerateMipmap(GL30.GL_TEXTURE_2D_ARRAY);  // Generate mipmaps for the texture array
+
 
         openVrTexture.eColorSpace(VR.EColorSpace_ColorSpace_Gamma);
         openVrTexture.eType(VR.ETextureType_TextureType_OpenGL);

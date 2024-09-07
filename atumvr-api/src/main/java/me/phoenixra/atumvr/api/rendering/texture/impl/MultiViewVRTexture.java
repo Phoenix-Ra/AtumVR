@@ -42,10 +42,8 @@ public class MultiViewVRTexture implements VRTexture {
                 GL30.GL_UNSIGNED_BYTE,
                 (ByteBuffer) null
         );
-        GL30.glTexParameteri(GL30.GL_TEXTURE_2D_ARRAY, GL30.GL_TEXTURE_MIN_FILTER, GL30.GL_LINEAR);
-        GL30.glTexParameteri(GL30.GL_TEXTURE_2D_ARRAY, GL30.GL_TEXTURE_MAG_FILTER, GL30.GL_LINEAR);
-        GL30.glTexParameteri(GL30.GL_TEXTURE_2D_ARRAY, GL30.GL_TEXTURE_WRAP_S, GL30.GL_CLAMP_TO_EDGE);
-        GL30.glTexParameteri(GL30.GL_TEXTURE_2D_ARRAY, GL30.GL_TEXTURE_WRAP_T, GL30.GL_CLAMP_TO_EDGE);
+        GL30.glTexParameteri(GL30.GL_TEXTURE_2D_ARRAY, GL30.GL_TEXTURE_MIN_FILTER, GL30.GL_LINEAR_MIPMAP_LINEAR);
+        GL30.glGenerateMipmap(GL30.GL_TEXTURE_2D_ARRAY);  // Generate mipmaps for the texture array
 
 
         openVrTexture.eColorSpace(VR.EColorSpace_ColorSpace_Gamma);
