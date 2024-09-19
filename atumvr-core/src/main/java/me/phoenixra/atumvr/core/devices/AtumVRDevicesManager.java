@@ -1,6 +1,7 @@
 package me.phoenixra.atumvr.core.devices;
 
 import lombok.Getter;
+import lombok.Setter;
 import me.phoenixra.atumvr.api.VRCore;
 import me.phoenixra.atumvr.api.devices.VRDevice;
 import me.phoenixra.atumvr.api.devices.VRDeviceRole;
@@ -31,6 +32,8 @@ public class AtumVRDevicesManager implements VRDevicesManager {
     private final Map<String, List<Consumer<VRDevice>>> onConnected = new ConcurrentHashMap<>();
 
 
+    @Getter @Setter
+    private boolean waitPoses = true;
     public AtumVRDevicesManager(@NotNull VRCore dreamMod){
         this.vrCore = dreamMod;
     }
@@ -40,10 +43,12 @@ public class AtumVRDevicesManager implements VRDevicesManager {
         HashMap<String,VRDevice> devicesUpdate = new HashMap<>();
         try (MemoryStack stack = MemoryStack.stackPush()) {
             //update the poses
-            VRCompositor.VRCompositor_WaitGetPoses(
-                    TrackedDevicePose.malloc(VR.k_unMaxTrackedDeviceCount),
-                    null
-            );
+            if(waitPoses) {
+                VRCompositor.VRCompositor_WaitGetPoses(
+                        TrackedDevicePose.malloc(VR.k_unMaxTrackedDeviceCount),
+                        null
+                );
+            }
 
             for (int deviceIndex = 0; deviceIndex < VR.k_unMaxTrackedDeviceCount; deviceIndex++) {
                 boolean isConnected = VRSystem.VRSystem_IsTrackedDeviceConnected(deviceIndex);

@@ -14,6 +14,24 @@ public interface VRDevicesManager {
     void update();
 
 
+    /**
+     * If true calls VRCompositor.VRCompositor_WaitGetPoses
+     * on update call.
+     *
+     * @return true/false
+     */
+    boolean isWaitPoses();
+
+    /**
+     * Set if update method should call VRCompositor.VRCompositor_WaitGetPoses
+     * before updating devices state.
+     * <br><br>
+     * Use it if your app do not call
+     * VRCompositor_WaitGetPoses method somewhere else,
+     * because it can limit FPS when called more than once per frame
+     *
+     */
+    void setWaitPoses(boolean flag);
 
 
     void addObserverOnDeviceDisconnected(String serialNum, Consumer<VRDevice> deviceConsumer);
