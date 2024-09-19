@@ -101,7 +101,7 @@ public abstract class AtumVRApp implements VRApp {
     public void postTick() {
         getVrCore().getOverlaysManager().update();
     }
-    private void updateEvents() {
+    protected void updateEvents() {
         vrEventsTick.clear();
         try(MemoryStack stack = MemoryStack.stackPush()) {
             for (VREvent vrevent = VREvent.malloc(stack);
