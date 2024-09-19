@@ -139,7 +139,7 @@ public class ExampleSceneMultiView extends MultiViewVRScene {
     }
     private void initShaders(){
         shaderProgram = new VRShaderProgram(getVrRenderer().getVrApp());
-        shaderProgram.bindVertexShader("vertex.fsh");
+        shaderProgram.bindVertexShader("vertex.vsh");
         shaderProgram.bindFragmentShader("fragment.fsh");
         shaderProgram.finishShader();
 
