@@ -10,6 +10,7 @@ import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.lwjgl.opengl.GL30;
+import org.lwjgl.opengl.OVRMultiview;
 import org.lwjgl.system.MemoryStack;
 
 import java.util.ArrayList;
@@ -130,7 +131,7 @@ public class ExampleScene extends SimpleVRScene {
     }
     private void initShaders(){
         shaderProgram = new VRShaderProgram(getVrRenderer().getVrApp());
-        shaderProgram.bindVertexShader("vertex.fsh");
+        shaderProgram.bindVertexShader("vertex.vsh");
         shaderProgram.bindFragmentShader("fragment.fsh");
         shaderProgram.finishShader();
 
