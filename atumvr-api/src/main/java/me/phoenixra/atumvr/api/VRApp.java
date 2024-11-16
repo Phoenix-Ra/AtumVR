@@ -13,9 +13,9 @@ public interface VRApp {
     @NotNull
     VRRenderer createVRRenderer(@NotNull VRApp vrApp);
 
-    void preRender();
-    void render();
-    void postRender();
+    void preRender(float partialTick);
+    void render(float partialTick);
+    void postRender(float partialTick);
 
     /**
      * Get VR Events for current tick

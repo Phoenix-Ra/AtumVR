@@ -84,7 +84,7 @@ public abstract class AtumVRApp implements VRApp {
     }
 
     @Override
-    public void preRender() {
+    public void preRender(float partialTick) {
         if(!initialized) return;
         setPaused(VRSystem_ShouldApplicationPause());
         getVrCore().getDevicesManager().update();
@@ -92,13 +92,13 @@ public abstract class AtumVRApp implements VRApp {
     }
 
     @Override
-    public void render() {
+    public void render(float partialTick) {
         if(!initialized) return;
         vrRenderer.renderFrame();
     }
 
     @Override
-    public void postRender() {
+    public void postRender(float partialTick) {
         if(!initialized) return;
         getVrCore().getOverlaysManager().update();
     }
