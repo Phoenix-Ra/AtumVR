@@ -61,9 +61,9 @@ public class ExampleVRCore extends AtumVRCore {
                     instance.clear();
                     break;
                 }
-                instance.getVrApp().preTick();
-                instance.getVrApp().tick();
-                instance.getVrApp().postTick();
+                instance.getVrApp().preRender();
+                instance.getVrApp().render();
+                instance.getVrApp().postRender();
 
             } while (true);
         });

@@ -69,7 +69,7 @@ public abstract class DefaultVRRenderer implements VRRenderer{
     }
 
     @Override
-    public void updateFrame() {
+    public void renderFrame() {
         GL30.glViewport(0, 0, resolutionWidth, resolutionHeight);
         GL30.glEnable(GL30.GL_DEPTH_TEST);
         getCurrentScene().prepareFrame();

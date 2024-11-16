@@ -10,7 +10,7 @@ public interface VRRenderer {
 
     void init() throws Throwable;
 
-    void updateFrame();
+    void renderFrame();
 
     void destroy();
 

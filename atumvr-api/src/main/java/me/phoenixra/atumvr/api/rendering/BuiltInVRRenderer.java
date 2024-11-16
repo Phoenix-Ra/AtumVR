@@ -62,7 +62,7 @@ public abstract class BuiltInVRRenderer implements VRRenderer {
     }
 
     @Override
-    public void updateFrame() {
+    public void renderFrame() {
         getCurrentScene().prepareFrame();
 
         VRCompositor_Submit(EVREye_Eye_Left,

@@ -24,7 +24,7 @@ public abstract class AtumVRApp implements VRApp {
     private final VRRenderer vrRenderer;
 
     @Getter
-    private final List<me.phoenixra.atumvr.api.events.VREvent> vrEventsTick = new ArrayList<>();
+    private final List<me.phoenixra.atumvr.api.events.VREvent> vrEventsReceived = new ArrayList<>();
 
 
     @Getter @Setter
@@ -84,25 +84,26 @@ public abstract class AtumVRApp implements VRApp {
     }
 
     @Override
-    public void preTick() {
+    public void preRender() {
         if(!initialized) return;
         setPaused(VRSystem_ShouldApplicationPause());
         getVrCore().getDevicesManager().update();
-        updateEvents();
+        consumeVREvents();
     }
 
     @Override
-    public void tick() {
+    public void render() {
         if(!initialized) return;
-        vrRenderer.updateFrame();
+        vrRenderer.renderFrame();
     }
 
     @Override
-    public void postTick() {
+    public void postRender() {
+        if(!initialized) return;
         getVrCore().getOverlaysManager().update();
     }
-    protected void updateEvents() {
-        vrEventsTick.clear();
+    protected void consumeVREvents() {
+        vrEventsReceived.clear();
         try(MemoryStack stack = MemoryStack.stackPush()) {
             for (VREvent vrevent = VREvent.malloc(stack);
                  VRSystem_PollNextEvent(vrevent, VREvent.SIZEOF);
@@ -112,7 +113,7 @@ public abstract class AtumVRApp implements VRApp {
                                 vrevent.eventType()
                         );
                 if(event==null) continue;
-                this.vrEventsTick.add(
+                this.vrEventsReceived.add(
                         event
                 );
             }

@@ -13,9 +13,9 @@ public interface VRApp {
     @NotNull
     VRRenderer createVRRenderer(@NotNull VRApp vrApp);
 
-    void preTick();
-    void tick();
-    void postTick();
+    void preRender();
+    void render();
+    void postRender();
 
     /**
      * Get VR Events for current tick
@@ -23,7 +23,7 @@ public interface VRApp {
      * @return list of VR Events
      */
     @NotNull
-    List<VREvent> getVrEventsTick();
+    List<VREvent> getVrEventsReceived();
 
 
     void destroy();
