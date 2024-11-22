@@ -32,7 +32,7 @@ public abstract class VRInputHandlerDefault implements VRInputHandler {
 
     protected abstract void onInit();
 
-    protected abstract void onTick();
+    protected abstract void onUpdateInputData();
 
     @Override
     public void init() {
@@ -55,7 +55,7 @@ public abstract class VRInputHandlerDefault implements VRInputHandler {
     }
 
     @Override
-    public void tick() {
+    public void updateInputData() {
         //find and save action handles for input
         try (MemoryStack stack = MemoryStack.stackPush()) {
             LongBuffer result = stack.callocLong(1);
@@ -90,7 +90,7 @@ public abstract class VRInputHandlerDefault implements VRInputHandler {
         }
 
 
-        onTick();
+        onUpdateInputData();
     }
 
 

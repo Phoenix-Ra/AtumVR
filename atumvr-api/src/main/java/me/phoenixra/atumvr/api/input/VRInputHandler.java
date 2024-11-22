@@ -22,7 +22,7 @@ import static org.lwjgl.openvr.VRInput.VRInput_GetOriginTrackedDeviceInfo;
 public interface VRInputHandler {
 
     void init();
-    void tick();
+    void updateInputData();
 
     //queried every tick
     @NotNull
