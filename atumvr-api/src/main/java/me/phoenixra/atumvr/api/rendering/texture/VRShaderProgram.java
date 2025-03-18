@@ -1,7 +1,6 @@
 package me.phoenixra.atumvr.api.rendering.texture;
 
 import lombok.Getter;
-import me.phoenixra.atumconfig.api.tuples.PairRecord;
 import me.phoenixra.atumvr.api.VRApp;
 import org.lwjgl.opengl.GL30;
 

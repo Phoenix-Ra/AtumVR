@@ -14,7 +14,10 @@ import me.phoenixra.atumvr.api.misc.VRLocation;
 import me.phoenixra.atumvr.api.utils.VRUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.lwjgl.openvr.*;
+import org.lwjgl.openvr.TrackedDevicePose;
+import org.lwjgl.openvr.VR;
+import org.lwjgl.openvr.VRCompositor;
+import org.lwjgl.openvr.VRSystem;
 import org.lwjgl.system.MemoryStack;
 
 import java.util.*;
@@ -34,8 +37,8 @@ public class AtumVRDevicesManager implements VRDevicesManager {
 
     @Getter @Setter
     private boolean waitPoses = true;
-    public AtumVRDevicesManager(@NotNull VRCore dreamMod){
-        this.vrCore = dreamMod;
+    public AtumVRDevicesManager(@NotNull VRCore core){
+        this.vrCore = core;
     }
     @Override
     public void update() {
@@ -113,61 +116,6 @@ public class AtumVRDevicesManager implements VRDevicesManager {
                     //@TODO remake the input
                     //CONTROLLER BONES
                     ControllerBones controllerBones = null;
-                    /*if(SpiderManAddon.instance.getVrInputHandler().isInit()) {
-                        long gestureHandle = SpiderManAddon.instance.getVrInputHandler().getGestureActionHandle(
-                                role == DeviceRole.RIGHT_HAND
-                        );
-                        if(role != DeviceRole.RIGHT_HAND && role != DeviceRole.LEFT_HAND) {
-                            gestureHandle = -1;
-                        }
-                        if (gestureHandle != -1) {
-                            IntBuffer bones = stack.mallocInt(2);
-                            int error = VRInput.VRInput_GetBoneCount(gestureHandle, bones);
-                            if (error != VR.EVRInputError_VRInputError_None) {
-                                getDreamMod().getLogger().info("Failed to find finger bones: "
-                                        +" Cause: "+
-                                        error
-                                );
-                                return;
-                            }else{
-                                getDreamMod().getLogger().info("Bones amount: "+ bones.get(0));
-                            }
-                            int BoneCount = bones.get(0);
-                            IntBuffer trackingLevel = stack.mallocInt(1);
-                            error = VRInput.VRInput_GetSkeletalTrackingLevel(gestureHandle,trackingLevel );
-                            if(error != VR.EVRInputError_VRInputError_IPCError){
-                                getDreamMod().getLogger().info("ERROR Trying to get tracking level: " +
-                                        error);
-                            }else{
-                                getDreamMod().getLogger().info("TrackingLVL: "+trackingLevel.get(0));
-                            }
-                            VRBoneTransform.Buffer BoneTransDat = VRBoneTransform.malloc(BoneCount,stack);
-                            error = VRInput_GetSkeletalBoneData(gestureHandle, EVRSkeletalTransformSpace_VRSkeletalTransformSpace_Model, EVRSkeletalMotionRange_VRSkeletalMotionRange_WithController, BoneTransDat);
-
-                            if(error != VR.EVRInputError_VRInputError_None){
-                                getDreamMod().getLogger().info("ERROR Trying to get skeletal bone data: " +
-                                        error);
-                            }else{
-                                getDreamMod().getLogger().info("bone data: "+BoneTransDat);
-                            }
-                            VRSkeletalSummaryData pSkeletalSummaryData = VRSkeletalSummaryData.malloc(stack);
-                            error = VRInput.VRInput_GetSkeletalSummaryData(
-                                    gestureHandle,
-                                    VR.EVRSummaryType_VRSummaryType_FromDevice, pSkeletalSummaryData);
-                            if (error == VR.EVRInputError_VRInputError_None) {
-                                controllerBones = new ControllerBones(
-                                        pSkeletalSummaryData.flFingerCurl(VR.EVRFinger_VRFinger_Thumb),
-                                        pSkeletalSummaryData.flFingerCurl(VR.EVRFinger_VRFinger_Index),
-                                        pSkeletalSummaryData.flFingerCurl(VR.EVRFinger_VRFinger_Middle),
-                                        pSkeletalSummaryData.flFingerCurl(VR.EVRFinger_VRFinger_Ring),
-                                        pSkeletalSummaryData.flFingerCurl(VR.EVRFinger_VRFinger_Pinky)
-                                );
-                            } else {
-                                getDreamMod().getLogger().info("ERROR Trying to get bones sumary: " +
-                                        error);
-                            }
-                        }
-                    }*/
                     //--READY
                     VRDevice device = new VRDevice(
                             deviceIndex,

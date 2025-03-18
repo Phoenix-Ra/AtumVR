@@ -7,12 +7,10 @@ import me.phoenixra.atumvr.api.devices.hmd.EyeType;
 import me.phoenixra.atumvr.api.rendering.texture.VRTexture;
 import me.phoenixra.atumvr.api.rendering.texture.impl.AtumVRTexture;
 import org.lwjgl.opengl.GL30;
-
 import org.lwjgl.openvr.HiddenAreaMesh;
 import org.lwjgl.openvr.VRSystem;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
-
 
 import java.nio.IntBuffer;
 import java.util.HashMap;

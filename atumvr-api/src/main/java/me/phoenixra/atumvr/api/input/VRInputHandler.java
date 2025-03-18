@@ -17,7 +17,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.lwjgl.openvr.VRInput.*;
-import static org.lwjgl.openvr.VRInput.VRInput_GetOriginTrackedDeviceInfo;
 
 public interface VRInputHandler {
 

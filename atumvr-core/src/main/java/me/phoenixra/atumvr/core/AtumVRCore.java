@@ -27,13 +27,13 @@ public abstract class AtumVRCore implements VRCore {
 
 
     public AtumVRCore(){
-        configManager = new AtumConfigManager(this);
+        configManager = createConfigManager();
 
         vrApp = createVRApp();
         inputHandler = createVRInputHandler();
 
-        devicesManager = new AtumVRDevicesManager(this);
-        overlaysManager = new AtumVROverlaysManager(this);
+        devicesManager = createDevicesManager();
+        overlaysManager = createOverlaysManager();
 
     }
 
@@ -47,5 +47,20 @@ public abstract class AtumVRCore implements VRCore {
     @Override
     public void clear() {
         vrApp.destroy();
+    }
+
+    @Override
+    public ConfigManager createConfigManager() {
+        return new AtumConfigManager(this);
+    }
+
+    @Override
+    public VRDevicesManager createDevicesManager() {
+        return new AtumVRDevicesManager(this);
+    }
+
+    @Override
+    public VROverlaysManager createOverlaysManager() {
+        return new AtumVROverlaysManager(this);
     }
 }

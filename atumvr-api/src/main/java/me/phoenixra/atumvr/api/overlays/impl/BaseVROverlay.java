@@ -112,7 +112,7 @@ public abstract class BaseVROverlay implements VROverlay {
 
             //CREATE OVERLAY
             LongBuffer pOverlayHandle = stack.mallocLong(1);
-            int error = VROverlay_CreateOverlay(getOverlayKey(), "DreamOverlay_"+getOverlayKey(), pOverlayHandle);
+            int error = VROverlay_CreateOverlay(getOverlayKey(), "Overlay_"+getOverlayKey(), pOverlayHandle);
             if (error != EVROverlayError_VROverlayError_None) {
                 vrCore.logError("Failed to create overlay: " + getOverlayKey()
                                 +" Cause: "+

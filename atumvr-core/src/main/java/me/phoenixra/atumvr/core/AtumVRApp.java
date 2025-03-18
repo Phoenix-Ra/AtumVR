@@ -5,8 +5,11 @@ import lombok.Setter;
 import me.phoenixra.atumvr.api.VRApp;
 import me.phoenixra.atumvr.api.VRCore;
 import me.phoenixra.atumvr.api.rendering.VRRenderer;
-import org.lwjgl.openvr.*;
+import org.lwjgl.openvr.OpenVR;
+import org.lwjgl.openvr.VR;
+import org.lwjgl.openvr.VREvent;
 import org.lwjgl.system.MemoryStack;
+
 import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.List;

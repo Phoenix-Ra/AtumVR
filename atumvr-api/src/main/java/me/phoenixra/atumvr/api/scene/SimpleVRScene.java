@@ -1,8 +1,8 @@
 package me.phoenixra.atumvr.api.scene;
 
 import lombok.Getter;
-import me.phoenixra.atumvr.api.rendering.VRRenderer;
 import me.phoenixra.atumvr.api.devices.hmd.EyeType;
+import me.phoenixra.atumvr.api.rendering.VRRenderer;
 import me.phoenixra.atumvr.api.scene.camera.VRCamera;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Quaternionf;
