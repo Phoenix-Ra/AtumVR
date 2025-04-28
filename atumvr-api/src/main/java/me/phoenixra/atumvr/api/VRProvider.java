@@ -4,11 +4,9 @@ package me.phoenixra.atumvr.api;
 
 import me.phoenixra.atumconfig.api.ConfigOwner;
 import me.phoenixra.atumconfig.api.config.ConfigManager;
-import me.phoenixra.atumconfig.api.tuples.Pair;
-import me.phoenixra.atumvr.api.provider.VRProviderType;
-import me.phoenixra.atumvr.api.provider.openvr.devices.VRDevicesManager;
-import me.phoenixra.atumvr.api.provider.openvr.input.VRInputHandler;
-import me.phoenixra.atumvr.api.provider.openvr.rendering.VRRenderer;
+import me.phoenixra.atumvr.api.devices.VRDevicesManager;
+import me.phoenixra.atumvr.api.input.VRInputHandler;
+import me.phoenixra.atumvr.api.rendering.VRRenderer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -27,6 +25,8 @@ public interface VRProvider extends ConfigOwner {
 
     void destroy();
 
+    int getEyeTextureWidth();
+    int getEyeTextureHeight();
 
 
     ConfigManager createConfigManager();
@@ -39,7 +39,6 @@ public interface VRProvider extends ConfigOwner {
     boolean isPaused();
     boolean isInitialized();
 
-    Pair<Integer, Integer> getEyeResolution();
 
     @NotNull
     VRApp getAttachedApp();

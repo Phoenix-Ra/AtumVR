@@ -1,9 +1,8 @@
 package me.phoenixra.atumvr.example.rendering;
 
 import me.phoenixra.atumvr.api.VRApp;
-import me.phoenixra.atumvr.api.provider.openvr.rendering.OpenVRRenderer;
-import me.phoenixra.atumvr.api.provider.openvr.scene.VRScene;
-import me.phoenixra.atumvr.core.openxr.OpenXRRenderer;
+import me.phoenixra.atumvr.api.rendering.VRScene;
+import me.phoenixra.atumvr.core.openxr.rendering.OpenXRRenderer;
 import me.phoenixra.atumvr.example.scene.ExampleScene;
 
 public class ExampleVRRenderer extends OpenXRRenderer {

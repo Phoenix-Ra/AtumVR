@@ -2,17 +2,16 @@ package me.phoenixra.atumvr.core.openxr;
 
 import lombok.Getter;
 import me.phoenixra.atumconfig.api.config.ConfigManager;
-import me.phoenixra.atumconfig.api.tuples.Pair;
 import me.phoenixra.atumconfig.core.config.AtumConfigManager;
 import me.phoenixra.atumvr.api.VRApp;
 import me.phoenixra.atumvr.api.VRProvider;
-import me.phoenixra.atumvr.api.provider.VRProviderType;
-import me.phoenixra.atumvr.api.provider.openvr.devices.VRDevicesManager;
-import me.phoenixra.atumvr.api.provider.openvr.events.OpenVREvent;
-import me.phoenixra.atumvr.api.provider.openvr.exceptions.VRException;
-import me.phoenixra.atumvr.api.provider.openvr.input.VRInputHandler;
-import me.phoenixra.atumvr.api.provider.openvr.rendering.VRRenderer;
-import me.phoenixra.atumvr.api.provider.openxr.oscompat.OSCompatibility;
+import me.phoenixra.atumvr.api.VRProviderType;
+import me.phoenixra.atumvr.api.devices.VRDevicesManager;
+import me.phoenixra.atumvr.api.devices.hmd.EyeType;
+import me.phoenixra.atumvr.api.exceptions.VRException;
+import me.phoenixra.atumvr.api.input.VRInputHandler;
+import me.phoenixra.atumvr.core.openxr.oscompat.OSCompatibility;
+import me.phoenixra.atumvr.core.openxr.rendering.OpenXRRenderer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.PointerBuffer;
@@ -36,14 +35,9 @@ import static org.lwjgl.system.MemoryUtil.NULL;
 
 public abstract class OpenXRProvider implements VRProvider {
 
-    @Getter
-    private final VRProviderType type;
 
     @Getter
     private VRApp attachedApp;
-
-    @Getter
-    private final List<OpenVREvent> vrEventsReceived = new ArrayList<>();
 
     @Getter
     private ConfigManager configManager;
@@ -64,30 +58,29 @@ public abstract class OpenXRProvider implements VRProvider {
     private boolean active = false;
     public long time;
 
-
+    @Getter
+    private final List<OpenXREvent> vrEventsReceived = new ArrayList<>();
 
     @Getter
     private OSCompatibility osCompatibility;
 
-    public XrInstance instance;
-    public XrSession session;
+    private XrInstance xrInstance;
+    public XrSession xrSession;
     public XrSpace xrAppSpace;
     public XrSpace xrViewSpace;
-    public XrSwapchain swapchain;
-    public final XrEventDataBuffer eventDataBuffer = XrEventDataBuffer.calloc();
+    public XrSwapchain xrSwapchain;
+    private final XrEventDataBuffer eventDataBuffer = XrEventDataBuffer.calloc();
 
     private long systemId;
-    public String systemName;
+    private String systemName;
 
-    public XrView.Buffer viewBuffer;
+    private XrView.Buffer viewBuffer;
+
     @Getter
-    private Pair<Integer, Integer> eyeResolution;
+    private int eyeTextureWidth;
+    @Getter
+    private int eyeTextureHeight;
 
-
-
-    public OpenXRProvider(){
-        this.type = VRProviderType.OPEN_VR;
-    }
 
     @Override
     public void initializeVR(@NotNull VRApp vrApp) {
@@ -199,7 +192,7 @@ public abstract class OpenXRProvider implements VRProvider {
             } else if (xrResult < 0) {
                 throw new VRException("XR method returned " + xrResult);
             }
-            this.instance = new XrInstance(instancePtr.get(0), createInfo);
+            this.xrInstance = new XrInstance(instancePtr.get(0), createInfo);
 
         }
     }
@@ -213,7 +206,7 @@ public abstract class OpenXRProvider implements VRProvider {
             system.formFactor(XR10.XR_FORM_FACTOR_HEAD_MOUNTED_DISPLAY);
 
             LongBuffer longBuffer = stack.callocLong(1);
-            int error = XR10.xrGetSystem(this.instance, system, longBuffer);
+            int error = XR10.xrGetSystem(this.xrInstance, system, longBuffer);
             logError(error, "xrGetSystem", "");
             this.systemId = longBuffer.get(0);
 
@@ -222,7 +215,7 @@ public abstract class OpenXRProvider implements VRProvider {
             }
 
             XrSystemProperties systemProperties = XrSystemProperties.calloc(stack).type(XR10.XR_TYPE_SYSTEM_PROPERTIES);
-            error = XR10.xrGetSystemProperties(this.instance, this.systemId, systemProperties);
+            error = XR10.xrGetSystemProperties(this.xrInstance, this.systemId, systemProperties);
             logError(error, "xrGetSystemProperties", "");
             XrSystemTrackingProperties trackingProperties = systemProperties.trackingProperties();
             XrSystemGraphicsProperties graphicsProperties = systemProperties.graphicsProperties();
@@ -245,15 +238,15 @@ public abstract class OpenXRProvider implements VRProvider {
             // Create session
             XrSessionCreateInfo info = XrSessionCreateInfo.calloc(stack);
             info.type(XR10.XR_TYPE_SESSION_CREATE_INFO);
-            info.next(osCompatibility.checkGraphics(stack, this.instance, this.systemId, vrRenderer.getWindowHandle()).address());
+            info.next(osCompatibility.checkGraphics(stack, this.xrInstance, this.systemId, vrRenderer.getWindowHandle()).address());
             info.createFlags(0);
             info.systemId(this.systemId);
 
             PointerBuffer sessionPtr = stack.callocPointer(1);
-            error = XR10.xrCreateSession(this.instance, info, sessionPtr);
+            error = XR10.xrCreateSession(this.xrInstance, info, sessionPtr);
             logError(error, "xrCreateSession", "");
 
-            this.session = new XrSession(sessionPtr.get(0), this.instance);
+            this.xrSession = new XrSession(sessionPtr.get(0), this.xrInstance);
 
             while (!active) {
                 logInfo("Vivecraft: waiting for OpenXR session to start");
@@ -277,14 +270,14 @@ public abstract class OpenXRProvider implements VRProvider {
             referenceSpaceCreateInfo.poseInReferenceSpace(identityPose);
 
             PointerBuffer pp = stack.callocPointer(1);
-            int error = XR10.xrCreateReferenceSpace(this.session, referenceSpaceCreateInfo, pp);
-            this.xrAppSpace = new XrSpace(pp.get(0), this.session);
+            int error = XR10.xrCreateReferenceSpace(this.xrSession, referenceSpaceCreateInfo, pp);
+            this.xrAppSpace = new XrSpace(pp.get(0), this.xrSession);
             logError(error, "xrCreateReferenceSpace", "XR_REFERENCE_SPACE_TYPE_STAGE");
 
             referenceSpaceCreateInfo.referenceSpaceType(XR10.XR_REFERENCE_SPACE_TYPE_VIEW);
-            error = XR10.xrCreateReferenceSpace(this.session, referenceSpaceCreateInfo, pp);
+            error = XR10.xrCreateReferenceSpace(this.xrSession, referenceSpaceCreateInfo, pp);
             logError(error, "xrCreateReferenceSpace", "XR_REFERENCE_SPACE_TYPE_VIEW");
-            this.xrViewSpace = new XrSpace(pp.get(0), this.session);
+            this.xrViewSpace = new XrSpace(pp.get(0), this.xrSession);
         }
     }
 
@@ -292,7 +285,7 @@ public abstract class OpenXRProvider implements VRProvider {
         try (MemoryStack stack = stackPush()) {
             // Check amount of views
             IntBuffer intBuf = stack.callocInt(1);
-            int error = XR10.xrEnumerateViewConfigurationViews(this.instance, this.systemId,
+            int error = XR10.xrEnumerateViewConfigurationViews(this.xrInstance, this.systemId,
                     XR10.XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO, intBuf, null);
             logError(error, "xrEnumerateViewConfigurationViews", "get count");
 
@@ -300,7 +293,7 @@ public abstract class OpenXRProvider implements VRProvider {
             ByteBuffer viewConfBuffer = bufferStack(intBuf.get(0), XrViewConfigurationView.SIZEOF,
                     XR10.XR_TYPE_VIEW_CONFIGURATION_VIEW);
             XrViewConfigurationView.Buffer views = new XrViewConfigurationView.Buffer(viewConfBuffer);
-            error = XR10.xrEnumerateViewConfigurationViews(this.instance, this.systemId,
+            error = XR10.xrEnumerateViewConfigurationViews(this.xrInstance, this.systemId,
                     XR10.XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO, intBuf, views);
             logError(error, "xrEnumerateViewConfigurationViews", "get views");
             int viewCountNumber = intBuf.get(0);
@@ -309,12 +302,12 @@ public abstract class OpenXRProvider implements VRProvider {
                     bufferHeap(viewCountNumber, XrView.SIZEOF, XR10.XR_TYPE_VIEW)
             );
             // Check swapchain formats
-            error = XR10.xrEnumerateSwapchainFormats(this.session, intBuf, null);
+            error = XR10.xrEnumerateSwapchainFormats(this.xrSession, intBuf, null);
             logError(error, "xrEnumerateSwapchainFormats", "get count");
 
             // Get swapchain formats
             LongBuffer swapchainFormats = stack.callocLong(intBuf.get(0));
-            error = XR10.xrEnumerateSwapchainFormats(this.session, intBuf, swapchainFormats);
+            error = XR10.xrEnumerateSwapchainFormats(this.xrSession, intBuf, swapchainFormats);
             logError(error, "xrEnumerateSwapchainFormats", "get formats");
 
             long[] desiredSwapchainFormats = {
@@ -372,10 +365,11 @@ public abstract class OpenXRProvider implements VRProvider {
             swapchainCreateInfo.mipCount(1);
 
             PointerBuffer handlePointer = stack.callocPointer(1);
-            error = XR10.xrCreateSwapchain(this.session, swapchainCreateInfo, handlePointer);
+            error = XR10.xrCreateSwapchain(this.xrSession, swapchainCreateInfo, handlePointer);
             logError(error, "xrCreateSwapchain", "format: " + chosenFormat);
-            this.swapchain = new XrSwapchain(handlePointer.get(0), this.session);
-            eyeResolution = new Pair<>(swapchainCreateInfo.width(), swapchainCreateInfo.height());
+            this.xrSwapchain = new XrSwapchain(handlePointer.get(0), this.xrSession);
+            eyeTextureWidth = swapchainCreateInfo.width();
+            eyeTextureHeight = swapchainCreateInfo.height();
         }
     }
     private void initInputAndApplication() {
@@ -384,79 +378,73 @@ public abstract class OpenXRProvider implements VRProvider {
         this.initDisplayRefreshRate();
     }
     private void initDisplayRefreshRate() {
-        if (this.session.getCapabilities().XR_FB_display_refresh_rate) {
+        if (this.xrSession.getCapabilities().XR_FB_display_refresh_rate) {
             try (MemoryStack stack = MemoryStack.stackPush()) {
                 IntBuffer refreshRateCount = stack.callocInt(1);
-                FBDisplayRefreshRate.xrEnumerateDisplayRefreshRatesFB(this.session, refreshRateCount, null);
+                FBDisplayRefreshRate.xrEnumerateDisplayRefreshRatesFB(this.xrSession, refreshRateCount, null);
                 FloatBuffer refreshRateBuffer = stack.callocFloat(refreshRateCount.get(0));
-                FBDisplayRefreshRate.xrEnumerateDisplayRefreshRatesFB(this.session, refreshRateCount, refreshRateBuffer);
+                FBDisplayRefreshRate.xrEnumerateDisplayRefreshRatesFB(this.xrSession, refreshRateCount, refreshRateBuffer);
                 refreshRateBuffer.rewind();
-                FBDisplayRefreshRate.xrRequestDisplayRefreshRateFB(this.session, refreshRateBuffer.get(refreshRateCount.get(0) -1));
+                FBDisplayRefreshRate.xrRequestDisplayRefreshRateFB(this.xrSession, refreshRateBuffer.get(refreshRateCount.get(0) -1));
             }
         }
     }
 
     private void pollVREvents() {
+        vrEventsReceived.clear();
         while (true) {
             this.eventDataBuffer.clear();
             this.eventDataBuffer.type(XR10.XR_TYPE_EVENT_DATA_BUFFER);
-            int error = XR10.xrPollEvent(this.instance, this.eventDataBuffer);
+            int error = XR10.xrPollEvent(this.xrInstance, this.eventDataBuffer);
             logError(error, "xrPollEvent", "");
             if (error != XR10.XR_SUCCESS) {
                 break;
             }
-            XrEventDataBaseHeader event = XrEventDataBaseHeader.create(this.eventDataBuffer.address());
+            try (var event = XrEventDataBaseHeader.create(this.eventDataBuffer.address())) {
 
-            switch (event.type()) {
-                case XR10.XR_TYPE_EVENT_DATA_INSTANCE_LOSS_PENDING -> {
-                    XrEventDataInstanceLossPending instanceLossPending = XrEventDataInstanceLossPending.create(
-                            event.address());
-                }
-                case XR10.XR_TYPE_EVENT_DATA_SESSION_STATE_CHANGED -> {
-                    this.sessionChanged(XrEventDataSessionStateChanged.create(event.address()));
-                }
-                case XR10.XR_TYPE_EVENT_DATA_INTERACTION_PROFILE_CHANGED -> {
-                }
-                case XR10.XR_TYPE_EVENT_DATA_REFERENCE_SPACE_CHANGE_PENDING -> {
-                }
-                default -> {
+                var vrEvent = OpenXREvent.fromId(event.type());
+                if (vrEvent == OpenXREvent.SESSION_STATE_CHANGED) {
+                    this.sessionChanged(
+                            XrEventDataSessionStateChanged.create(event.address())
+                    );
+                } else {
+                    vrEventsReceived.add(vrEvent);
                 }
             }
         }
     }
-    private void sessionChanged(XrEventDataSessionStateChanged xrEventDataSessionStateChanged) {
-        int state = xrEventDataSessionStateChanged.state();
-
-        switch (state) {
-            case XR10.XR_SESSION_STATE_READY: {
+    private void sessionChanged(XrEventDataSessionStateChanged event) {
+        var stateChange = XRSessionStateChange.fromId(event.state());
+        switch (stateChange) {
+            case READY: {
                 try (MemoryStack stack = MemoryStack.stackPush()) {
                     XrSessionBeginInfo sessionBeginInfo = XrSessionBeginInfo.calloc(stack);
                     sessionBeginInfo.type(XR10.XR_TYPE_SESSION_BEGIN_INFO);
                     sessionBeginInfo.next(NULL);
                     sessionBeginInfo.primaryViewConfigurationType(XR10.XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO);
 
-                    int error = XR10.xrBeginSession(this.session, sessionBeginInfo);
-                    logError(error, "xrBeginSession", "XR_SESSION_STATE_READY");
+                    int error = XR10.xrBeginSession(this.xrSession, sessionBeginInfo);
+                    logError(error, "xrBeginSession", "XRStateChangeREADY");
                 }
                 this.active = true;
                 break;
             }
-            case XR10.XR_SESSION_STATE_STOPPING: {
+            case STOPPING: {
 
-                int error = XR10.xrEndSession(this.session);
-                logError(error, "xrEndSession", "XR_SESSION_STATE_STOPPING");
+                int error = XR10.xrEndSession(this.xrSession);
+                logError(error, "xrEndSession", "XRStateChangeSTOPPING");
 
                 destroy();
             }
-            case XR10.XR_SESSION_STATE_VISIBLE, XR10.XR_SESSION_STATE_FOCUSED: {
+            case VISIBLE, FOCUSED: {
                 active = true;
                 break;
             }
-            case XR10.XR_SESSION_STATE_EXITING, XR10.XR_SESSION_STATE_IDLE, XR10.XR_SESSION_STATE_SYNCHRONIZED: {
+            case EXITING, IDLE, SYNCHRONIZED: {
                 active = false;
                 break;
             }
-            case XR10.XR_SESSION_STATE_LOSS_PENDING: {
+            case LOSS_PENDING: {
                 break;
             }
             default:
@@ -472,7 +460,7 @@ public abstract class OpenXRProvider implements VRProvider {
             XrFrameState frameState = XrFrameState.calloc(stack).type(XR10.XR_TYPE_FRAME_STATE);
 
             int error = XR10.xrWaitFrame(
-                    session,
+                    xrSession,
                     XrFrameWaitInfo.calloc(stack).type(XR10.XR_TYPE_FRAME_WAIT_INFO),
                     frameState);
             logError(error, "xrWaitFrame", "");
@@ -480,7 +468,7 @@ public abstract class OpenXRProvider implements VRProvider {
             time = frameState.predictedDisplayTime();
 
             error = XR10.xrBeginFrame(
-                    this.session,
+                    this.xrSession,
                     XrFrameBeginInfo.calloc(stack).type(XR10.XR_TYPE_FRAME_BEGIN_INFO));
             logError(error, "xrBeginFrame", "");
 
@@ -496,7 +484,7 @@ public abstract class OpenXRProvider implements VRProvider {
                     this.xrAppSpace
             );
 
-            error = XR10.xrLocateViews(this.session, viewLocateInfo, viewState, intBuf, this.viewBuffer);
+            error = XR10.xrLocateViews(this.xrSession, viewLocateInfo, viewState, intBuf, this.viewBuffer);
             logError(error, "xrLocateViews", "");
 
 
@@ -513,12 +501,16 @@ public abstract class OpenXRProvider implements VRProvider {
 
     }
 
+
+    public XrView getXrView(EyeType eyeType){
+        return viewBuffer.get(eyeType.getId());
+    }
     @Override
     public void destroy() {
         int error;
 
-        if (this.swapchain != null) {
-            error = XR10.xrDestroySwapchain(this.swapchain);
+        if (this.xrSwapchain != null) {
+            error = XR10.xrDestroySwapchain(this.xrSwapchain);
             logError(error, "xrDestroySwapchain", "");
         }
         if (this.viewBuffer != null) {
@@ -532,91 +524,38 @@ public abstract class OpenXRProvider implements VRProvider {
             error = XR10.xrDestroySpace(this.xrViewSpace);
             logError(error, "xrDestroySpace", "xrViewSpace");
         }
-        if (this.session != null) {
-            error = XR10.xrDestroySession(this.session);
+        if (this.xrSession != null) {
+            error = XR10.xrDestroySession(this.xrSession);
             logError(error, "xrDestroySession", "");
         }
-        if (this.instance != null) {
-            error = XR10.xrDestroyInstance(this.instance);
+        if (this.xrInstance != null) {
+            error = XR10.xrDestroyInstance(this.xrInstance);
             logError(error, "xrDestroyInstance", "");
         }
         this.eventDataBuffer.close();
     }
 
-    void logError(int xrResult, String caller, String... args) {
+    public void logError(int xrResult, String caller, String... args) {
         if (xrResult < 0) {
             logError(String.format(
-                    "%s for %s errored: %s", caller, String.join(" ", args), getResultName(xrResult)
+                    "%s for %s error: %s", caller, String.join(" ", args), getActionResult(xrResult)
             ));
         }
     }
-    private String getResultName(int xrResult) {
-        String resultString = switch (xrResult) {
-            case 1 -> "XR_TIMEOUT_EXPIRED";
-            case 3 -> "XR_SESSION_LOSS_PENDING";
-            case 4 -> "XR_EVENT_UNAVAILABLE";
-            case 7 -> "XR_SPACE_BOUNDS_UNAVAILABLE";
-            case 8 -> "XR_SESSION_NOT_FOCUSED";
-            case 9 -> "XR_FRAME_DISCARDED";
-            case -1 -> "XR_ERROR_VALIDATION_FAILURE";
-            case -2 -> "XR_ERROR_RUNTIME_FAILURE";
-            case -3 -> "XR_ERROR_OUT_OF_MEMORY";
-            case -4 -> "XR_ERROR_API_VERSION_UNSUPPORTED";
-            case -6 -> "XR_ERROR_INITIALIZATION_FAILED";
-            case -7 -> "XR_ERROR_FUNCTION_UNSUPPORTED";
-            case -8 -> "XR_ERROR_FEATURE_UNSUPPORTED";
-            case -9 -> "XR_ERROR_EXTENSION_NOT_PRESENT";
-            case -10 -> "XR_ERROR_LIMIT_REACHED";
-            case -11 -> "XR_ERROR_SIZE_INSUFFICIENT";
-            case -12 -> "XR_ERROR_HANDLE_INVALID";
-            case -13 -> "XR_ERROR_INSTANCE_LOST";
-            case -14 -> "XR_ERROR_SESSION_RUNNING";
-            case -16 -> "XR_ERROR_SESSION_NOT_RUNNING";
-            case -17 -> "XR_ERROR_SESSION_LOST";
-            case -18 -> "XR_ERROR_SYSTEM_INVALID";
-            case -19 -> "XR_ERROR_PATH_INVALID";
-            case -20 -> "XR_ERROR_PATH_COUNT_EXCEEDED";
-            case -21 -> "XR_ERROR_PATH_FORMAT_INVALID";
-            case -22 -> "XR_ERROR_PATH_UNSUPPORTED";
-            case -23 -> "XR_ERROR_LAYER_INVALID";
-            case -24 -> "XR_ERROR_LAYER_LIMIT_EXCEEDED";
-            case -25 -> "XR_ERROR_SWAPCHAIN_RECT_INVALID";
-            case -26 -> "XR_ERROR_SWAPCHAIN_FORMAT_UNSUPPORTED";
-            case -27 -> "XR_ERROR_ACTION_TYPE_MISMATCH";
-            case -28 -> "XR_ERROR_SESSION_NOT_READY";
-            case -29 -> "XR_ERROR_SESSION_NOT_STOPPING";
-            case -30 -> "XR_ERROR_TIME_INVALID";
-            case -31 -> "XR_ERROR_REFERENCE_SPACE_UNSUPPORTED";
-            case -32 -> "XR_ERROR_FILE_ACCESS_ERROR";
-            case -33 -> "XR_ERROR_FILE_CONTENTS_INVALID";
-            case -34 -> "XR_ERROR_FORM_FACTOR_UNSUPPORTED";
-            case -35 -> "XR_ERROR_FORM_FACTOR_UNAVAILABLE";
-            case -36 -> "XR_ERROR_API_LAYER_NOT_PRESENT";
-            case -37 -> "XR_ERROR_CALL_ORDER_INVALID";
-            case -38 -> "XR_ERROR_GRAPHICS_DEVICE_INVALID";
-            case -39 -> "XR_ERROR_POSE_INVALID";
-            case -40 -> "XR_ERROR_INDEX_OUT_OF_RANGE";
-            case -41 -> "XR_ERROR_VIEW_CONFIGURATION_TYPE_UNSUPPORTED";
-            case -42 -> "XR_ERROR_ENVIRONMENT_BLEND_MODE_UNSUPPORTED";
-            case -44 -> "XR_ERROR_NAME_DUPLICATED";
-            case -45 -> "XR_ERROR_NAME_INVALID";
-            case -46 -> "XR_ERROR_ACTIONSET_NOT_ATTACHED";
-            case -47 -> "XR_ERROR_ACTIONSETS_ALREADY_ATTACHED";
-            case -48 -> "XR_ERROR_LOCALIZED_NAME_DUPLICATED";
-            case -49 -> "XR_ERROR_LOCALIZED_NAME_INVALID";
-            case -50 -> "XR_ERROR_GRAPHICS_REQUIREMENTS_CALL_MISSING";
-            case -51 -> "XR_ERROR_RUNTIME_UNAVAILABLE";
-            default -> null;
-        };
+    private String getActionResult(int resultId) {
+        var result = XRActionResult.fromId(resultId);
+        String resultString = result != null
+                ? result.toString()
+                : null;
         if (resultString == null) {
             // ask the runtime for the xrResult name
             try (MemoryStack stack = MemoryStack.stackPush()) {
                 ByteBuffer str = stack.calloc(XR10.XR_MAX_RESULT_STRING_SIZE);
 
-                if (XR10.xrResultToString(this.instance, xrResult, str) == XR10.XR_SUCCESS) {
+                if (XR10.xrResultToString(this.xrInstance, resultId, str) == XR10.XR_SUCCESS) {
                     resultString = (memUTF8(memAddress(str)));
                 } else {
-                    resultString = "Unknown Error: " + xrResult;
+                    resultString = "Unknown XR Action Result: " + resultId;
                 }
             }
         }
@@ -661,5 +600,10 @@ public abstract class OpenXRProvider implements VRProvider {
     @Override
     public @NotNull OpenXRRenderer createVRRenderer(@NotNull VRApp vrApp) {
         return null;
+    }
+
+    @Override
+    public @NotNull VRProviderType getType() {
+        return VRProviderType.OPEN_XR;
     }
 }

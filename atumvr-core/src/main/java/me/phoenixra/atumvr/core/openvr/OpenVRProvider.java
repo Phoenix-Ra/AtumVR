@@ -2,20 +2,19 @@ package me.phoenixra.atumvr.core.openvr;
 
 import lombok.Getter;
 import me.phoenixra.atumconfig.api.config.ConfigManager;
-import me.phoenixra.atumconfig.api.tuples.Pair;
 import me.phoenixra.atumconfig.core.config.AtumConfigManager;
 import me.phoenixra.atumvr.api.VRApp;
 import me.phoenixra.atumvr.api.VRProvider;
-import me.phoenixra.atumvr.api.provider.VRProviderType;
-import me.phoenixra.atumvr.api.provider.openvr.devices.VRDevicesManager;
-import me.phoenixra.atumvr.api.provider.openvr.events.OpenVREvent;
-import me.phoenixra.atumvr.api.provider.openvr.exceptions.VRException;
-import me.phoenixra.atumvr.api.provider.openvr.input.VRInputHandler;
-import me.phoenixra.atumvr.api.provider.openvr.rendering.VRRenderer;
+import me.phoenixra.atumvr.api.VRProviderType;
+import me.phoenixra.atumvr.api.devices.VRDevicesManager;
+import me.phoenixra.atumvr.api.exceptions.VRException;
+import me.phoenixra.atumvr.api.input.VRInputHandler;
+import me.phoenixra.atumvr.api.rendering.VRRenderer;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.openvr.OpenVR;
 import org.lwjgl.openvr.VR;
 import org.lwjgl.openvr.VREvent;
+import org.lwjgl.openvr.VRSystem;
 import org.lwjgl.system.MemoryStack;
 
 import java.nio.IntBuffer;
@@ -30,8 +29,7 @@ import static org.lwjgl.openvr.VRSystem.VRSystem_ShouldApplicationPause;
 
 
 public abstract class OpenVRProvider implements VRProvider {
-    @Getter
-    private final VRProviderType type;
+
 
     @Getter
     private VRApp attachedApp;
@@ -52,15 +50,17 @@ public abstract class OpenVRProvider implements VRProvider {
     private VRRenderer vrRenderer;
 
     @Getter
+    private int eyeTextureWidth;
+    @Getter
+    private int eyeTextureHeight;
+
+    @Getter
     private boolean initialized = false;
 
     @Getter
     private boolean paused;
 
-    public OpenVRProvider(){
-        this.type = VRProviderType.OPEN_VR;
 
-    }
 
 
     @Override
@@ -108,6 +108,12 @@ public abstract class OpenVRProvider implements VRProvider {
             logInfo("Successfully initialized VR Input handler...");
 
             getDevicesManager().update();
+
+            IntBuffer widthBuffer = stack.mallocInt(1);
+            IntBuffer heightBuffer = stack.mallocInt(1);
+            VRSystem.VRSystem_GetRecommendedRenderTargetSize(widthBuffer, heightBuffer);
+            eyeTextureWidth = widthBuffer.get(0);
+            eyeTextureHeight = heightBuffer.get(0);
 
             vrRenderer.init();
 
@@ -176,7 +182,7 @@ public abstract class OpenVRProvider implements VRProvider {
     }
 
     @Override
-    public Pair<Integer, Integer> getEyeResolution() {
-        return null;
+    public @NotNull VRProviderType getType() {
+        return VRProviderType.OPEN_VR;
     }
 }

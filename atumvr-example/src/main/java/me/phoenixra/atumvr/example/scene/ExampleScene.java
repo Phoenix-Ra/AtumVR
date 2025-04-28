@@ -1,10 +1,9 @@
 package me.phoenixra.atumvr.example.scene;
 
-import me.phoenixra.atumvr.api.provider.openvr.devices.hmd.EyeType;
-import me.phoenixra.atumvr.api.provider.openvr.rendering.VRRenderer;
+import me.phoenixra.atumvr.api.devices.hmd.EyeType;
+import me.phoenixra.atumvr.api.rendering.VRRenderer;
 import me.phoenixra.atumvr.api.texture.VRShaderProgram;
-import me.phoenixra.atumvr.api.provider.openvr.scene.OpenVRScene;
-import me.phoenixra.atumvr.core.openxr.OpenXRScene;
+import me.phoenixra.atumvr.core.openxr.rendering.OpenXRScene;
 import me.phoenixra.atumvr.example.texture.StbTexture;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4f;
@@ -115,11 +114,11 @@ public class ExampleScene extends OpenXRScene {
                 timer
         );
         Matrix4f projection = eyeType==EyeType.LEFT ?
-                getOpenVrCameraLeftEye().getProjectionMatrix() :
-                getOpenVrCameraRightEye().getProjectionMatrix();
+                getLeftEyeCamera().getProjectionMatrix() :
+                getRightEyeCamera().getProjectionMatrix();
         Matrix4f view = eyeType==EyeType.LEFT ?
-                getOpenVrCameraLeftEye().getViewMatrix() :
-                getOpenVrCameraRightEye().getViewMatrix();
+                getLeftEyeCamera().getViewMatrix() :
+                getRightEyeCamera().getViewMatrix();
         GL30.glUniformMatrix4fv(mvpLocation,
                 false,
                 MemoryStack.stackFloats(

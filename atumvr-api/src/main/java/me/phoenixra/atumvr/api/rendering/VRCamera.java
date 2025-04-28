@@ -1,5 +1,6 @@
 package me.phoenixra.atumvr.api.rendering;
 
+import me.phoenixra.atumvr.api.devices.hmd.EyeType;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
@@ -23,4 +24,9 @@ public interface VRCamera {
     void setRotation(Quaternionf value);
 
 
+    void updateViewMatrix(EyeType eyeType);
+
+    void updateProjectionMatrix(EyeType eyeType,
+                                float nearClip,
+                                float farClip);
 }

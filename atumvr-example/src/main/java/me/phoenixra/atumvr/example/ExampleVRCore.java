@@ -2,12 +2,10 @@ package me.phoenixra.atumvr.example;
 
 import lombok.Getter;
 import me.phoenixra.atumvr.api.VRApp;
-import me.phoenixra.atumvr.api.provider.openvr.input.VRInputHandler;
-import me.phoenixra.atumvr.api.provider.openvr.rendering.VRRenderer;
+import me.phoenixra.atumvr.api.input.VRInputHandler;
 import me.phoenixra.atumvr.core.AtumVRApp;
-import me.phoenixra.atumvr.core.openvr.OpenVRProvider;
 import me.phoenixra.atumvr.core.openxr.OpenXRProvider;
-import me.phoenixra.atumvr.core.openxr.OpenXRRenderer;
+import me.phoenixra.atumvr.core.openxr.rendering.OpenXRRenderer;
 import me.phoenixra.atumvr.example.rendering.ExampleVRRenderer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
