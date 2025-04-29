@@ -1,28 +1,34 @@
 package me.phoenixra.atumvr.example;
 
 import lombok.Getter;
-import me.phoenixra.atumvr.api.VRApp;
-import me.phoenixra.atumvr.api.input.VRInputHandler;
+import me.phoenixra.atumconfig.api.config.ConfigManager;
+import me.phoenixra.atumconfig.core.config.AtumConfigManager;
+import me.phoenixra.atumvr.api.VRProvider;
 import me.phoenixra.atumvr.core.AtumVRApp;
-import me.phoenixra.atumvr.core.openxr.OpenXRProvider;
-import me.phoenixra.atumvr.core.openxr.rendering.OpenXRRenderer;
-import me.phoenixra.atumvr.example.rendering.ExampleVRRenderer;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.util.Scanner;
 import java.util.logging.Logger;
 
-public class ExampleVRCore extends OpenXRProvider {
-    public static ExampleVRCore instance;
+public class ExampleVRCore extends AtumVRApp {
+    public static ExampleVRProvider provider;
     private final Logger logger;
     @Getter
     private final File dataFolder;
-    public ExampleVRCore(){
+
+    public ExampleVRCore(VRProvider vrProvider) {
+        super(vrProvider);
         logger = Logger.getLogger("ExampleVRApp");
         dataFolder = new File("data");
     }
+
+
+    @Override
+    protected ConfigManager createConfigManager() {
+        return new AtumConfigManager(this);
+    }
+
 
     public static void main(String[] args) {
         Thread updateThread = getThread();
@@ -50,9 +56,9 @@ public class ExampleVRCore extends OpenXRProvider {
             do {
                 if(!init){
                     try {
-                        instance = new ExampleVRCore();
+                        provider = new ExampleVRProvider();
 
-                        new AtumVRApp(instance)
+                        new ExampleVRCore(provider)
                                 .init();
                     }catch (Throwable throwable){
                         throwable.printStackTrace();
@@ -63,21 +69,17 @@ public class ExampleVRCore extends OpenXRProvider {
                     continue;
                 }
                 if(Thread.interrupted()){
-                    instance.destroy();
+                    provider.destroy();
                     break;
                 }
-                instance.getAttachedApp().preRender(1);
-                instance.getAttachedApp().render(1);
-                instance.getAttachedApp().postRender(1);
+                provider.getAttachedApp().preRender(1);
+                provider.getAttachedApp().render(1);
+                provider.getAttachedApp().postRender(1);
 
             } while (true);
         });
     }
 
-    @Override
-    public @NotNull OpenXRRenderer createVRRenderer(@NotNull VRApp vrApp) {
-        return new ExampleVRRenderer(vrApp);
-    }
 
     @Override
     public @NotNull String getName() {
@@ -104,9 +106,4 @@ public class ExampleVRCore extends OpenXRProvider {
         logger.severe(message);
     }
 
-
-    @Override
-    public @Nullable VRInputHandler createVRInputHandler() {
-        return null;
-    }
 }

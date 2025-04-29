@@ -30,8 +30,6 @@ public abstract class OpenXRProvider implements VRProvider {
     @Getter
     private VRApp attachedApp;
 
-    @Getter
-    private ConfigManager configManager;
 
     @Getter
     private VRDevicesManager devicesManager;
@@ -71,7 +69,6 @@ public abstract class OpenXRProvider implements VRProvider {
         }
         this.xrInitializer = new XRInitializer(this);
         this.attachedApp = vrApp;
-        this.configManager = createConfigManager();
         this.inputHandler = createVRInputHandler();
         this.devicesManager = createDevicesManager();
         this.vrRenderer = createVRRenderer(vrApp);
@@ -227,7 +224,7 @@ public abstract class OpenXRProvider implements VRProvider {
 
     public void checkXRError(int xrResult, String caller, String... args) {
         if (xrResult < 0) {
-            logError(String.format(
+            attachedApp.logError(String.format(
                     "%s for %s error: %s", caller, String.join(" ", args), getXRActionResult(xrResult)
             ));
         }
@@ -253,11 +250,6 @@ public abstract class OpenXRProvider implements VRProvider {
             }
         }
         return resultString;
-    }
-
-    @Override
-    public ConfigManager createConfigManager() {
-        return new AtumConfigManager(this);
     }
 
     @Override

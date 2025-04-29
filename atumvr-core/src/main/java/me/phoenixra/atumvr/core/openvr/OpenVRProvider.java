@@ -37,8 +37,6 @@ public abstract class OpenVRProvider implements VRProvider {
     @Getter
     private final List<OpenVREvent> vrEventsReceived = new ArrayList<>();
     
-    @Getter
-    private ConfigManager configManager;
 
     @Getter
     private VRDevicesManager devicesManager;
@@ -70,13 +68,13 @@ public abstract class OpenVRProvider implements VRProvider {
         }
 
         this.attachedApp = vrApp;
-        this.configManager = createConfigManager();
+
         this.inputHandler = createVRInputHandler();
         this.devicesManager = createDevicesManager();
         this.vrRenderer = createVRRenderer(vrApp);
 
         try(MemoryStack stack = MemoryStack.stackPush()) {
-            logInfo("Initializing VR App");
+            attachedApp.logInfo("Initializing VR App");
             IntBuffer error = stack.mallocInt(1);
             int token = VR_InitInternal(error, EVRApplicationType_VRApplication_Scene);
             if (error.get(0) != EVRInitError_VRInitError_None) {
@@ -84,7 +82,7 @@ public abstract class OpenVRProvider implements VRProvider {
                         VR.VR_GetVRInitErrorAsEnglishDescription(error.get(0))
                 );
             }
-            logInfo("Successfully initialized VR app...");
+            attachedApp.logInfo("Successfully initialized VR app...");
 
             OpenVR.create(token);
 
@@ -94,18 +92,18 @@ public abstract class OpenVRProvider implements VRProvider {
                         "VRSystem and VRCompositor not found!"
                 );
             }
-            logInfo("Successfully initialized VR system...");
+            attachedApp.logInfo("Successfully initialized VR system...");
 
             VRCompositor_SetTrackingSpace(
                     ETrackingUniverseOrigin_TrackingUniverseStanding
             );
-            logInfo("Successfully initialized VR Compositor...");
+            attachedApp.logInfo("Successfully initialized VR Compositor...");
 
 
             if(inputHandler != null) {
                 inputHandler.init();
             }
-            logInfo("Successfully initialized VR Input handler...");
+            attachedApp.logInfo("Successfully initialized VR Input handler...");
 
             getDevicesManager().update();
 
@@ -169,11 +167,6 @@ public abstract class OpenVRProvider implements VRProvider {
 
         vrRenderer.destroy();
         attachedApp.destroy();
-    }
-
-    @Override
-    public ConfigManager createConfigManager() {
-        return new AtumConfigManager(this);
     }
 
     @Override

@@ -98,7 +98,7 @@ public abstract class VRInputHandlerDefault implements VRInputHandler {
         if (actionManifest == null) {
             return;
         }
-        getVrProvider().logInfo("[LOADING] Action manifest");
+        getVrProvider().getAttachedApp().logInfo("[LOADING] Action manifest");
         int error = VRInput_SetActionManifestPath(
                 actionManifest.getAbsolutePath()
         );
@@ -107,6 +107,6 @@ public abstract class VRInputHandlerDefault implements VRInputHandler {
                     "Error while loading action manifest", error
             );
         }
-        getVrProvider().logInfo("[SUCCESS] Action manifest");
+        getVrProvider().getAttachedApp().logInfo("[SUCCESS] Action manifest");
     }
 }

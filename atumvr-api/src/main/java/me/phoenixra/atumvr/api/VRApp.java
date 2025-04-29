@@ -1,10 +1,11 @@
 package me.phoenixra.atumvr.api;
 
+import me.phoenixra.atumconfig.api.ConfigOwner;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-public interface VRApp {
+public interface VRApp extends ConfigOwner {
 
     void init();
 

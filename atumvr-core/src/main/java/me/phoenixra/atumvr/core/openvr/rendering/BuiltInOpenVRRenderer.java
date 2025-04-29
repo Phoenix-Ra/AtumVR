@@ -119,7 +119,7 @@ public abstract class BuiltInOpenVRRenderer implements VRRenderer {
             int triangleCount = areaMesh.unTriangleCount();
 
             if (triangleCount <= 0) {
-                getVrApp().getVrProvider().logInfo("No stencil mesh found for eye " + eye);
+                getVrApp().logInfo("No stencil mesh found for eye " + eye);
             } else {
                 float[] area = new float[areaMesh.unTriangleCount() * 3 * 2];
                 MemoryUtil.memFloatBuffer(

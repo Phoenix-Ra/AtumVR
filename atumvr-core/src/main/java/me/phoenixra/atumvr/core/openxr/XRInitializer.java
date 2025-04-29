@@ -183,7 +183,7 @@ public class XRInitializer {
             String name = memUTF8(memAddress(sysProps.systemName()));
             XrSystemTrackingProperties track = sysProps.trackingProperties();
             XrSystemGraphicsProperties gfx = sysProps.graphicsProperties();
-            provider.logInfo(String.format(
+            provider.getAttachedApp().logInfo(String.format(
                     "Found HMD [%s] (vendor=%d): orientTrack=%b, posTrack=%b, maxRes=%dx%d, maxLayers=%d",
                     name,
                     sysProps.vendorId(),
@@ -213,7 +213,7 @@ public class XRInitializer {
 
             // 4) Wait until the session transitions to READY
             while (provider.isPaused()) {
-                provider.logInfo("Waiting for OpenXR session READY state...");
+                provider.getAttachedApp().logInfo("Waiting for OpenXR session READY state...");
                 provider.pollVREvents();
             }
         }

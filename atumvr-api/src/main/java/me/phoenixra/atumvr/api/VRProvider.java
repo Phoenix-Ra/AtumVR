@@ -11,7 +11,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 
-public interface VRProvider extends ConfigOwner {
+public interface VRProvider {
 
 
 
@@ -29,7 +29,6 @@ public interface VRProvider extends ConfigOwner {
     int getEyeTextureHeight();
 
 
-    ConfigManager createConfigManager();
     @Nullable
     VRInputHandler createVRInputHandler();
     VRDevicesManager createDevicesManager();

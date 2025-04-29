@@ -109,7 +109,7 @@ public abstract class OpenVRRenderer implements VRRenderer {
         glfwWindowHint(GLFW_DEPTH_BITS, 24);
         glfwWindowHint(GLFW_STENCIL_BITS, 8);
 
-        windowHandle = glfwCreateWindow(640, 480, getVrApp().getVrProvider().getName(), 0L, 0L);
+        windowHandle = glfwCreateWindow(640, 480, getVrApp().getName(), 0L, 0L);
         if (windowHandle == 0L) {
             throw new RuntimeException("Failed to create the GLFW window");
         }
@@ -158,7 +158,7 @@ public abstract class OpenVRRenderer implements VRRenderer {
                 int triangleCount = areaMesh.unTriangleCount();
 
                 if (triangleCount <= 0) {
-                    getVrApp().getVrProvider().logInfo("No stencil mesh found for eye " + eye);
+                    getVrApp().logInfo("No stencil mesh found for eye " + eye);
                 } else {
                     float[] area = new float[areaMesh.unTriangleCount() * 3 * 2];
                     MemoryUtil.memFloatBuffer(

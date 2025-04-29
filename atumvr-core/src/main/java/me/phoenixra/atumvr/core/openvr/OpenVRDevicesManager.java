@@ -146,7 +146,7 @@ public class OpenVRDevicesManager implements VRDevicesManager {
             for(VRDevice vrDevice : newDevices.values()){
 
                 devices.put(vrDevice.getSerialNumber(),vrDevice);
-                vrProvider.logInfo("Device connected: " + vrDevice.getSerialNumber()
+                vrProvider.getAttachedApp().logInfo("Device connected: " + vrDevice.getSerialNumber()
                         + " [  Type: " + vrDevice.getType() +" Role: " + vrDevice.getRole()+ " ]");
 
 
@@ -157,7 +157,7 @@ public class OpenVRDevicesManager implements VRDevicesManager {
             for (String serial : disconnectedSerials) {
                 VRDevice vrDevice = devices.remove(serial);
                 if (vrDevice != null) { // Ensure the device was indeed previously tracked
-                    vrProvider.logInfo("Device disconnected: " + vrDevice.getSerialNumber()
+                    vrProvider.getAttachedApp().logInfo("Device disconnected: " + vrDevice.getSerialNumber()
                             + " [  Type: " + vrDevice.getType() +" Role: " + vrDevice.getRole()+ " ]");
 
                 }

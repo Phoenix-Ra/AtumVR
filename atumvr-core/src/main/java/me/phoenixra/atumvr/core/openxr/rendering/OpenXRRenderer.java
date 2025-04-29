@@ -177,7 +177,7 @@ public abstract class OpenXRRenderer implements VRRenderer {
         glfwWindowHint(GLFW_DEPTH_BITS, 24);
         glfwWindowHint(GLFW_STENCIL_BITS, 8);
 
-        windowHandle = glfwCreateWindow(640, 480, getVrApp().getVrProvider().getName(), 0L, 0L);
+        windowHandle = glfwCreateWindow(640, 480, getVrApp().getName(), 0L, 0L);
         if (windowHandle == 0L) {
             throw new RuntimeException("Failed to create the GLFW window");
         }

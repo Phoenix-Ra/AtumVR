@@ -2,14 +2,16 @@ package me.phoenixra.atumvr.core;
 
 import lombok.Getter;
 import lombok.Setter;
+import me.phoenixra.atumconfig.api.config.ConfigManager;
 import me.phoenixra.atumvr.api.VRApp;
 import me.phoenixra.atumvr.api.VRProvider;
 
-public class AtumVRApp implements VRApp {
+public abstract class AtumVRApp implements VRApp {
 
     @Getter
     private final VRProvider vrProvider;
-
+    @Getter
+    private ConfigManager configManager;
 
     @Getter @Setter
     private boolean paused;
@@ -21,9 +23,10 @@ public class AtumVRApp implements VRApp {
 
     @Override
     public void init() {
+        configManager = createConfigManager();
         vrProvider.initializeVR(this);
     }
-
+    protected abstract ConfigManager createConfigManager();
     @Override
     public void preRender(float partialTick) {
         vrProvider.onPreRender(partialTick);
