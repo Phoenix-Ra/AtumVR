@@ -3,7 +3,10 @@ package me.phoenixra.atumvr.example;
 import lombok.Getter;
 import me.phoenixra.atumvr.api.VRApp;
 import me.phoenixra.atumvr.api.input.VRInputHandler;
-import me.phoenixra.atumvr.core.AtumVRCore;
+import me.phoenixra.atumvr.core.AtumVRApp;
+import me.phoenixra.atumvr.core.openxr.OpenXRProvider;
+import me.phoenixra.atumvr.core.openxr.rendering.OpenXRRenderer;
+import me.phoenixra.atumvr.example.rendering.ExampleVRRenderer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -11,7 +14,7 @@ import java.io.File;
 import java.util.Scanner;
 import java.util.logging.Logger;
 
-public class ExampleVRCore extends AtumVRCore {
+public class ExampleVRCore extends OpenXRProvider {
     public static ExampleVRCore instance;
     private final Logger logger;
     @Getter
@@ -48,7 +51,9 @@ public class ExampleVRCore extends AtumVRCore {
                 if(!init){
                     try {
                         instance = new ExampleVRCore();
-                        instance.initializeVR();
+
+                        new AtumVRApp(instance)
+                                .init();
                     }catch (Throwable throwable){
                         throwable.printStackTrace();
                         System.out.println("WHAT tick");
@@ -58,15 +63,20 @@ public class ExampleVRCore extends AtumVRCore {
                     continue;
                 }
                 if(Thread.interrupted()){
-                    instance.clear();
+                    instance.destroy();
                     break;
                 }
-                instance.getVrApp().preRender(1);
-                instance.getVrApp().render(1);
-                instance.getVrApp().postRender(1);
+                instance.getAttachedApp().preRender(1);
+                instance.getAttachedApp().render(1);
+                instance.getAttachedApp().postRender(1);
 
             } while (true);
         });
+    }
+
+    @Override
+    public @NotNull OpenXRRenderer createVRRenderer(@NotNull VRApp vrApp) {
+        return new ExampleVRRenderer(vrApp);
     }
 
     @Override
@@ -94,10 +104,6 @@ public class ExampleVRCore extends AtumVRCore {
         logger.severe(message);
     }
 
-    @Override
-    public @NotNull VRApp createVRApp() {
-        return new ExampleVRApp(this);
-    }
 
     @Override
     public @Nullable VRInputHandler createVRInputHandler() {

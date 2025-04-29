@@ -1,7 +1,7 @@
 package me.phoenixra.atumvr.api.input;
 
 import lombok.Getter;
-import me.phoenixra.atumvr.api.VRCore;
+import me.phoenixra.atumvr.api.VRProvider;
 import me.phoenixra.atumvr.api.exceptions.VRInputException;
 import me.phoenixra.atumvr.api.input.data.VRInputActionData;
 import me.phoenixra.atumvr.api.input.data.VRInputActionSetData;
@@ -20,13 +20,13 @@ import static org.lwjgl.openvr.VRInput.VRInput_SetActionManifestPath;
 
 public abstract class VRInputHandlerDefault implements VRInputHandler {
     @Getter
-    private VRCore vrCore;
+    private VRProvider vrProvider;
 
     @Getter
     private File actionManifest;
 
-    public VRInputHandlerDefault(VRCore vrCore, @Nullable File actionManifest) {
-        this.vrCore = vrCore;
+    public VRInputHandlerDefault(VRProvider vrProvider, @Nullable File actionManifest) {
+        this.vrProvider = vrProvider;
         this.actionManifest = actionManifest;
     }
 
@@ -98,7 +98,7 @@ public abstract class VRInputHandlerDefault implements VRInputHandler {
         if (actionManifest == null) {
             return;
         }
-        getVrCore().logInfo("[LOADING] Action manifest");
+        getVrProvider().logInfo("[LOADING] Action manifest");
         int error = VRInput_SetActionManifestPath(
                 actionManifest.getAbsolutePath()
         );
@@ -107,6 +107,6 @@ public abstract class VRInputHandlerDefault implements VRInputHandler {
                     "Error while loading action manifest", error
             );
         }
-        getVrCore().logInfo("[SUCCESS] Action manifest");
+        getVrProvider().logInfo("[SUCCESS] Action manifest");
     }
 }

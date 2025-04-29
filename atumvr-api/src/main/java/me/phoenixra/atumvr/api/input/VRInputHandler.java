@@ -1,6 +1,6 @@
 package me.phoenixra.atumvr.api.input;
 
-import me.phoenixra.atumvr.api.VRCore;
+import me.phoenixra.atumvr.api.VRProvider;
 import me.phoenixra.atumvr.api.exceptions.VRInputException;
 import me.phoenixra.atumvr.api.input.data.*;
 import me.phoenixra.atumvr.api.utils.VRUtils;
@@ -182,5 +182,5 @@ public interface VRInputHandler {
 
 
     @NotNull
-    VRCore getVrCore();
+    VRProvider getVrCore();
 }

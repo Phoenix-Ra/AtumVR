@@ -2,8 +2,7 @@ package me.phoenixra.atumvr.api.rendering;
 
 import me.phoenixra.atumvr.api.VRApp;
 import me.phoenixra.atumvr.api.devices.hmd.EyeType;
-import me.phoenixra.atumvr.api.rendering.texture.VRTexture;
-import me.phoenixra.atumvr.api.scene.VRScene;
+import me.phoenixra.atumvr.api.texture.VRTexture;
 import org.jetbrains.annotations.NotNull;
 
 public interface VRRenderer {
@@ -16,14 +15,13 @@ public interface VRRenderer {
 
     VRScene getCurrentScene();
 
-    boolean isMultiView();
-
     VRTexture getTextureRightEye();
 
     VRTexture getTextureLeftEye();
 
     int getResolutionWidth();
     int getResolutionHeight();
+    long getWindowHandle();
 
     /**
      * [USE AFTER INITIALIZATION]

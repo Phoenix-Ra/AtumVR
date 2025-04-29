@@ -100,7 +100,7 @@ allprojects {
         dependsOn(shadowJar)
     }
     compileJava{
-        sourceCompatibility = targetCompatibility = '1.8'
+        sourceCompatibility = targetCompatibility = JavaVersion.VERSION_17
         [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
         dependsOn(clean)
     }

@@ -1,12 +1,10 @@
 package me.phoenixra.atumvr.api.devices;
 
-
-import me.phoenixra.atumvr.api.VRCore;
+import me.phoenixra.atumvr.api.VRProvider;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
-import java.util.function.Consumer;
 
 public interface VRDevicesManager {
 
@@ -34,14 +32,6 @@ public interface VRDevicesManager {
     void setWaitPoses(boolean flag);
 
 
-    void addObserverOnDeviceDisconnected(String serialNum, Consumer<VRDevice> deviceConsumer);
-    void addObserverOnDeviceConnected(String serialNum, Consumer<VRDevice> deviceConsumer);
-    void removeObserverOnDeviceDisconnected(String serialNum, Consumer<VRDevice> deviceConsumer);
-    void removeObserverOnDeviceConnected(String serialNum, Consumer<VRDevice> deviceConsumer);
-
-
-
-
     @NotNull
     List<VRDevice> getAvailableDevices();
 
@@ -62,5 +52,5 @@ public interface VRDevicesManager {
     VRDevice getLeftHand();
 
     @NotNull
-    VRCore getVrCore();
+    VRProvider getVrProvider();
 }

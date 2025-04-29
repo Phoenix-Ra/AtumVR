@@ -1,16 +1,15 @@
 package me.phoenixra.atumvr.example.rendering;
 
 import me.phoenixra.atumvr.api.VRApp;
-import me.phoenixra.atumvr.api.rendering.DefaultVRRenderer;
-import me.phoenixra.atumvr.api.scene.VRScene;
+import me.phoenixra.atumvr.api.rendering.VRScene;
+import me.phoenixra.atumvr.core.openxr.rendering.OpenXRRenderer;
 import me.phoenixra.atumvr.example.scene.ExampleScene;
-import me.phoenixra.atumvr.example.scene.ExampleSceneMultiView;
 
-public class ExampleVRRenderer extends DefaultVRRenderer {
+public class ExampleVRRenderer extends OpenXRRenderer {
     private VRScene vrScene;
     public ExampleVRRenderer(VRApp vrApp) {
         super(vrApp);
-        vrScene = new ExampleSceneMultiView(this);
+        vrScene = new ExampleScene(this);
     }
 
     @Override
@@ -23,8 +22,5 @@ public class ExampleVRRenderer extends DefaultVRRenderer {
         return vrScene;
     }
 
-    @Override
-    public boolean isMultiView() {
-        return true;
-    }
+
 }
