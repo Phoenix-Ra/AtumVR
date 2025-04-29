@@ -2,7 +2,6 @@ package me.phoenixra.atumvr.api.devices.pose;
 
 import me.phoenixra.atumvr.api.devices.VRDevice;
 import me.phoenixra.atumvr.api.devices.pose.impl.*;
-import me.phoenixra.atumvr.api.provider.openvr.devices.pose.impl.*;
 import org.jetbrains.annotations.NotNull;
 
 

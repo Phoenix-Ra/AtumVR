@@ -27,7 +27,9 @@ import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.nio.LongBuffer;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static org.lwjgl.system.MemoryStack.*;
 import static org.lwjgl.system.MemoryUtil.*;
@@ -51,35 +53,49 @@ public abstract class OpenXRProvider implements VRProvider {
     @Getter
     private OpenXRRenderer vrRenderer;
 
-    @Getter
-    private boolean initialized = false;
-    @Getter
-    private boolean paused = false;
-    private boolean active = false;
-    public long time;
 
-    @Getter
-    private final List<OpenXREvent> vrEventsReceived = new ArrayList<>();
-
+    //--------XR SPECIFIC--------
     @Getter
     private OSCompatibility osCompatibility;
 
+    @Getter
     private XrInstance xrInstance;
-    public XrSession xrSession;
-    public XrSpace xrAppSpace;
-    public XrSpace xrViewSpace;
-    public XrSwapchain xrSwapchain;
-    private final XrEventDataBuffer eventDataBuffer = XrEventDataBuffer.calloc();
+    @Getter
+    private XrSession xrSession;
+    @Getter
+    private XrSpace xrAppSpace;
+    @Getter
+    private XrSpace xrViewSpace;
+    @Getter
+    private XrSwapchain xrSwapchain;
+    @Getter
+    private final List<OpenXREvent> xrEventsReceived = new ArrayList<>();
+    @Getter
+    private long xrSystemId;
+    @Getter
+    private String xrSystemName;
+    @Getter
+    private long xrDisplayTime;
 
-    private long systemId;
-    private String systemName;
 
-    private XrView.Buffer viewBuffer;
+    private XrView.Buffer xrViewBuffer;
+
+    private final XrEventDataBuffer xrEventBuffer = XrEventDataBuffer.calloc();
+
+    //----------------
+
 
     @Getter
     private int eyeTextureWidth;
     @Getter
     private int eyeTextureHeight;
+
+    @Getter
+    private boolean paused = true;
+    @Getter
+    private boolean initialized = false;
+
+
 
 
     @Override
@@ -111,89 +127,85 @@ public abstract class OpenXRProvider implements VRProvider {
 
     private void initOpenXRInstance() {
         try (MemoryStack stack = MemoryStack.stackPush()) {
+
+            // Initialize platform-specific XR loader
             osCompatibility.initOpenXRLoader(stack);
 
-            // Check extensions
-            IntBuffer numExtensions = stack.callocInt(1);
-            int error = XR10.xrEnumerateInstanceExtensionProperties((ByteBuffer) null, numExtensions, null);
-            logError(error, "xrEnumerateInstanceExtensionProperties", "get count");
-
-            XrExtensionProperties.Buffer properties = new XrExtensionProperties.Buffer(
-                    bufferStack(numExtensions.get(0), XrExtensionProperties.SIZEOF, XR10.XR_TYPE_EXTENSION_PROPERTIES)
+            // 1) Enumerate available instance extensions
+            IntBuffer extCountBuf = stack.callocInt(1);
+            logError(
+                    XR10.xrEnumerateInstanceExtensionProperties((ByteBuffer)null, extCountBuf, null),
+                    "xrEnumerateInstanceExtensionProperties", "count"
             );
 
-            // Load extensions
-            error = XR10.xrEnumerateInstanceExtensionProperties((ByteBuffer) null, numExtensions, properties);
-            logError(error, "xrEnumerateInstanceExtensionProperties", "get extensions");
+            int extCount = extCountBuf.get(0);
+            XrExtensionProperties.Buffer extProps = XrExtensionProperties
+                    .calloc(extCount, stack);
+            extProps.forEach(prop -> prop.type(XR10.XR_TYPE_EXTENSION_PROPERTIES));
 
-            // get needed extensions
-            String graphicsExtension = osCompatibility.getGraphicsExtension();
-            boolean missingGraphics = true;
-            PointerBuffer extensions = stack.callocPointer(5);
-            while (properties.hasRemaining()) {
-                XrExtensionProperties prop = properties.get();
-                String extensionName = prop.extensionNameString();
-                if (extensionName.equals(graphicsExtension)) {
-                    missingGraphics = false;
-                    extensions.put(memAddress(stackUTF8(graphicsExtension)));
-                }
-                if (extensionName.equals(
-                        EXTHPMixedRealityController.XR_EXT_HP_MIXED_REALITY_CONTROLLER_EXTENSION_NAME))
-                {
-                    extensions.put(memAddress(
-                            stackUTF8(EXTHPMixedRealityController.XR_EXT_HP_MIXED_REALITY_CONTROLLER_EXTENSION_NAME)));
-                }
-                if (extensionName.equals(
-                        HTCViveCosmosControllerInteraction.XR_HTC_VIVE_COSMOS_CONTROLLER_INTERACTION_EXTENSION_NAME))
-                {
-                    extensions.put(memAddress(stackUTF8(
-                            HTCViveCosmosControllerInteraction.XR_HTC_VIVE_COSMOS_CONTROLLER_INTERACTION_EXTENSION_NAME)));
-                }
-                if (extensionName.equals(
-                        BDControllerInteraction.XR_BD_CONTROLLER_INTERACTION_EXTENSION_NAME))
-                {
-                    extensions.put(memAddress(stackUTF8(
-                            BDControllerInteraction.XR_BD_CONTROLLER_INTERACTION_EXTENSION_NAME)));
-                }
-                if (extensionName.equals(
-                        FBDisplayRefreshRate.XR_FB_DISPLAY_REFRESH_RATE_EXTENSION_NAME))
-                {
-                    extensions.put(memAddress(stackUTF8(
-                            FBDisplayRefreshRate.XR_FB_DISPLAY_REFRESH_RATE_EXTENSION_NAME)));
-                }
+            logError(
+                    XR10.xrEnumerateInstanceExtensionProperties((ByteBuffer)null, extCountBuf, null),
+                    "xrEnumerateInstanceExtensionProperties", "properties"
+            );
+
+            // Collect supported extension names
+            Set<String> availableExtensions = new HashSet<>(extCount);
+            for (XrExtensionProperties prop : extProps) {
+                availableExtensions.add(prop.extensionNameString());
             }
 
-            if (missingGraphics) {
-                throw new RuntimeException("OpenXR runtime is missing a supported graphics extension.");
+            // 2) Define desired extensions in priority order
+            List<String> desiredExtensions = List.of(
+                    osCompatibility.getGraphicsExtension(),
+                    EXTHPMixedRealityController.XR_EXT_HP_MIXED_REALITY_CONTROLLER_EXTENSION_NAME,
+                    HTCViveCosmosControllerInteraction.XR_HTC_VIVE_COSMOS_CONTROLLER_INTERACTION_EXTENSION_NAME,
+                    BDControllerInteraction.XR_BD_CONTROLLER_INTERACTION_EXTENSION_NAME,
+                    FBDisplayRefreshRate.XR_FB_DISPLAY_REFRESH_RATE_EXTENSION_NAME
+            );
+
+            // Ensure graphics extension is present
+            String graphicsExt = desiredExtensions.get(0);
+            if (!availableExtensions.contains(graphicsExt)) {
+                throw new VRException("Missing required graphics extension: " + graphicsExt);
             }
 
-            // Create APP info
-            XrApplicationInfo applicationInfo = XrApplicationInfo.calloc(stack);
-            applicationInfo.apiVersion(XR10.XR_MAKE_VERSION(1, 0, 40));
-            applicationInfo.applicationName(stack.UTF8("AtumVRExample"));
-            applicationInfo.applicationVersion(1);
-
-            // Create instance info
-            XrInstanceCreateInfo createInfo = XrInstanceCreateInfo.calloc(stack);
-            createInfo.type(XR10.XR_TYPE_INSTANCE_CREATE_INFO);
-            createInfo.next(osCompatibility.getPlatformInfo(stack));
-            createInfo.createFlags(0);
-            createInfo.applicationInfo(applicationInfo);
-            createInfo.enabledApiLayerNames(null);
-            createInfo.enabledExtensionNames(extensions.flip());
-
-            // Create XR instance
-            PointerBuffer instancePtr = stack.callocPointer(1);
-            int xrResult = XR10.xrCreateInstance(createInfo, instancePtr);
-            if (xrResult == XR10.XR_ERROR_RUNTIME_FAILURE) {
-                throw new VRException("Failed to create xrInstance, are you sure your headset is plugged in?");
-            } else if (xrResult == XR10.XR_ERROR_INSTANCE_LOST) {
-                throw new VRException("Failed to create xrInstance due to runtime updating");
-            } else if (xrResult < 0) {
-                throw new VRException("XR method returned " + xrResult);
+            // Build PointerBuffer of only the extensions actually supported
+            PointerBuffer enabledExtBuf = stack.mallocPointer(desiredExtensions.size());
+            for (String extName : desiredExtensions) {
+                if (availableExtensions.contains(extName)) {
+                    enabledExtBuf.put(stack.UTF8(extName));
+                }
             }
-            this.xrInstance = new XrInstance(instancePtr.get(0), createInfo);
+            enabledExtBuf.flip();
 
+            // 3) Fill XrApplicationInfo
+            XrApplicationInfo appInfo = XrApplicationInfo.calloc(stack)
+                    .applicationName(stack.UTF8("AtumVRExample"))
+                    .applicationVersion(1)
+                    .engineName(stack.UTF8("AtumEngine"))
+                    .engineVersion(1)
+                    .apiVersion(XR10.XR_MAKE_VERSION(1, 0, 40));
+
+            // 4) Create XrInstanceCreateInfo
+            XrInstanceCreateInfo instInfo = XrInstanceCreateInfo.calloc(stack)
+                    .type(XR10.XR_TYPE_INSTANCE_CREATE_INFO)
+                    .next(osCompatibility.getPlatformInfo(stack))
+                    .applicationInfo(appInfo)
+                    .enabledExtensionNames(enabledExtBuf)
+                    .enabledApiLayerNames(null);
+
+            // 5) Create the instance and handle errors
+            PointerBuffer instPtr = stack.callocPointer(1);
+            int result = XR10.xrCreateInstance(instInfo, instPtr);
+            if (result == XR10.XR_ERROR_RUNTIME_FAILURE) {
+                throw new VRException("Failed to create XrInstance: runtime failure (is headset connected?)");
+            } else if (result == XR10.XR_ERROR_INSTANCE_LOST) {
+                throw new VRException("Failed to create XrInstance: instance lost during creation");
+            } else if (result != XR10.XR_SUCCESS) {
+                throw new VRException("xrCreateInstance returned: " + getActionResult(result));
+            }
+
+            this.xrInstance = new XrInstance(instPtr.get(0), instInfo);
         }
     }
 
@@ -208,19 +220,19 @@ public abstract class OpenXRProvider implements VRProvider {
             LongBuffer longBuffer = stack.callocLong(1);
             int error = XR10.xrGetSystem(this.xrInstance, system, longBuffer);
             logError(error, "xrGetSystem", "");
-            this.systemId = longBuffer.get(0);
+            this.xrSystemId = longBuffer.get(0);
 
-            if (this.systemId == 0) {
+            if (this.xrSystemId == 0) {
                 throw new RuntimeException("No compatible headset detected");
             }
 
             XrSystemProperties systemProperties = XrSystemProperties.calloc(stack).type(XR10.XR_TYPE_SYSTEM_PROPERTIES);
-            error = XR10.xrGetSystemProperties(this.xrInstance, this.systemId, systemProperties);
+            error = XR10.xrGetSystemProperties(this.xrInstance, this.xrSystemId, systemProperties);
             logError(error, "xrGetSystemProperties", "");
             XrSystemTrackingProperties trackingProperties = systemProperties.trackingProperties();
             XrSystemGraphicsProperties graphicsProperties = systemProperties.graphicsProperties();
 
-            systemName = memUTF8(memAddress(systemProperties.systemName()));
+            xrSystemName = memUTF8(memAddress(systemProperties.systemName()));
             int vendor = systemProperties.vendorId();
             boolean orientationTracking = trackingProperties.orientationTracking();
             boolean positionTracking = trackingProperties.positionTracking();
@@ -228,8 +240,8 @@ public abstract class OpenXRProvider implements VRProvider {
             int maxHeight = graphicsProperties.maxSwapchainImageHeight();
             int maxLayerCount = graphicsProperties.maxLayerCount();
 
-            logInfo("Found device with id: "+ this.systemId);
-            logInfo(String.format("Headset Name: %s, Vendor: %s", systemName, vendor));
+            logInfo("Found device with id: "+ this.xrSystemId);
+            logInfo(String.format("Headset Name: %s, Vendor: %s", xrSystemName, vendor));
             logInfo(String.format("Headset Orientation Tracking: %s, Position Tracking: %s", orientationTracking,
                     positionTracking));
             logInfo(String.format("Headset Max Width: %s, Max Height: %s, Max Layer Count: %s", maxWidth, maxHeight,
@@ -238,9 +250,9 @@ public abstract class OpenXRProvider implements VRProvider {
             // Create session
             XrSessionCreateInfo info = XrSessionCreateInfo.calloc(stack);
             info.type(XR10.XR_TYPE_SESSION_CREATE_INFO);
-            info.next(osCompatibility.checkGraphics(stack, this.xrInstance, this.systemId, vrRenderer.getWindowHandle()).address());
+            info.next(osCompatibility.checkGraphics(stack, this.xrInstance, this.xrSystemId, vrRenderer.getWindowHandle()).address());
             info.createFlags(0);
-            info.systemId(this.systemId);
+            info.systemId(this.xrSystemId);
 
             PointerBuffer sessionPtr = stack.callocPointer(1);
             error = XR10.xrCreateSession(this.xrInstance, info, sessionPtr);
@@ -248,8 +260,8 @@ public abstract class OpenXRProvider implements VRProvider {
 
             this.xrSession = new XrSession(sessionPtr.get(0), this.xrInstance);
 
-            while (!active) {
-                logInfo("Vivecraft: waiting for OpenXR session to start");
+            while (paused) {
+                logInfo("Waiting for OpenXR session to start");
                 pollVREvents();
             }
         }
@@ -285,7 +297,7 @@ public abstract class OpenXRProvider implements VRProvider {
         try (MemoryStack stack = stackPush()) {
             // Check amount of views
             IntBuffer intBuf = stack.callocInt(1);
-            int error = XR10.xrEnumerateViewConfigurationViews(this.xrInstance, this.systemId,
+            int error = XR10.xrEnumerateViewConfigurationViews(this.xrInstance, this.xrSystemId,
                     XR10.XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO, intBuf, null);
             logError(error, "xrEnumerateViewConfigurationViews", "get count");
 
@@ -293,12 +305,12 @@ public abstract class OpenXRProvider implements VRProvider {
             ByteBuffer viewConfBuffer = bufferStack(intBuf.get(0), XrViewConfigurationView.SIZEOF,
                     XR10.XR_TYPE_VIEW_CONFIGURATION_VIEW);
             XrViewConfigurationView.Buffer views = new XrViewConfigurationView.Buffer(viewConfBuffer);
-            error = XR10.xrEnumerateViewConfigurationViews(this.xrInstance, this.systemId,
+            error = XR10.xrEnumerateViewConfigurationViews(this.xrInstance, this.xrSystemId,
                     XR10.XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO, intBuf, views);
             logError(error, "xrEnumerateViewConfigurationViews", "get views");
             int viewCountNumber = intBuf.get(0);
 
-            this.viewBuffer = new XrView.Buffer(
+            this.xrViewBuffer = new XrView.Buffer(
                     bufferHeap(viewCountNumber, XrView.SIZEOF, XR10.XR_TYPE_VIEW)
             );
             // Check swapchain formats
@@ -391,16 +403,16 @@ public abstract class OpenXRProvider implements VRProvider {
     }
 
     private void pollVREvents() {
-        vrEventsReceived.clear();
+        xrEventsReceived.clear();
         while (true) {
-            this.eventDataBuffer.clear();
-            this.eventDataBuffer.type(XR10.XR_TYPE_EVENT_DATA_BUFFER);
-            int error = XR10.xrPollEvent(this.xrInstance, this.eventDataBuffer);
+            this.xrEventBuffer.clear();
+            this.xrEventBuffer.type(XR10.XR_TYPE_EVENT_DATA_BUFFER);
+            int error = XR10.xrPollEvent(this.xrInstance, this.xrEventBuffer);
             logError(error, "xrPollEvent", "");
             if (error != XR10.XR_SUCCESS) {
                 break;
             }
-            try (var event = XrEventDataBaseHeader.create(this.eventDataBuffer.address())) {
+            try (var event = XrEventDataBaseHeader.create(this.xrEventBuffer.address())) {
 
                 var vrEvent = OpenXREvent.fromId(event.type());
                 if (vrEvent == OpenXREvent.SESSION_STATE_CHANGED) {
@@ -408,7 +420,7 @@ public abstract class OpenXRProvider implements VRProvider {
                             XrEventDataSessionStateChanged.create(event.address())
                     );
                 } else {
-                    vrEventsReceived.add(vrEvent);
+                    xrEventsReceived.add(vrEvent);
                 }
             }
         }
@@ -426,7 +438,7 @@ public abstract class OpenXRProvider implements VRProvider {
                     int error = XR10.xrBeginSession(this.xrSession, sessionBeginInfo);
                     logError(error, "xrBeginSession", "XRStateChangeREADY");
                 }
-                this.active = true;
+                this.paused = false;
                 break;
             }
             case STOPPING: {
@@ -437,11 +449,11 @@ public abstract class OpenXRProvider implements VRProvider {
                 destroy();
             }
             case VISIBLE, FOCUSED: {
-                active = true;
+                paused = false;
                 break;
             }
             case EXITING, IDLE, SYNCHRONIZED: {
-                active = false;
+                paused = true;
                 break;
             }
             case LOSS_PENDING: {
@@ -465,7 +477,7 @@ public abstract class OpenXRProvider implements VRProvider {
                     frameState);
             logError(error, "xrWaitFrame", "");
 
-            time = frameState.predictedDisplayTime();
+            xrDisplayTime = frameState.predictedDisplayTime();
 
             error = XR10.xrBeginFrame(
                     this.xrSession,
@@ -484,7 +496,7 @@ public abstract class OpenXRProvider implements VRProvider {
                     this.xrAppSpace
             );
 
-            error = XR10.xrLocateViews(this.xrSession, viewLocateInfo, viewState, intBuf, this.viewBuffer);
+            error = XR10.xrLocateViews(this.xrSession, viewLocateInfo, viewState, intBuf, this.xrViewBuffer);
             logError(error, "xrLocateViews", "");
 
 
@@ -503,7 +515,7 @@ public abstract class OpenXRProvider implements VRProvider {
 
 
     public XrView getXrView(EyeType eyeType){
-        return viewBuffer.get(eyeType.getId());
+        return xrViewBuffer.get(eyeType.getId());
     }
     @Override
     public void destroy() {
@@ -513,8 +525,8 @@ public abstract class OpenXRProvider implements VRProvider {
             error = XR10.xrDestroySwapchain(this.xrSwapchain);
             logError(error, "xrDestroySwapchain", "");
         }
-        if (this.viewBuffer != null) {
-            this.viewBuffer.close();
+        if (this.xrViewBuffer != null) {
+            this.xrViewBuffer.close();
         }
         if (this.xrAppSpace != null) {
             error = XR10.xrDestroySpace(this.xrAppSpace);
@@ -532,7 +544,7 @@ public abstract class OpenXRProvider implements VRProvider {
             error = XR10.xrDestroyInstance(this.xrInstance);
             logError(error, "xrDestroyInstance", "");
         }
-        this.eventDataBuffer.close();
+        this.xrEventBuffer.close();
     }
 
     public void logError(int xrResult, String caller, String... args) {

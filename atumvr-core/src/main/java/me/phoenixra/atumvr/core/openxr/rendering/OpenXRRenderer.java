@@ -59,18 +59,19 @@ public abstract class OpenXRRenderer implements VRRenderer {
 
     @Override
     public void renderFrame() {
+        XrSwapchain xrSwapchain = openXRProvider.getXrSwapchain();
         this.projectionLayerViews = XrCompositionLayerProjectionView.calloc(2);
         try (MemoryStack stack = MemoryStack.stackPush()) {
 
             IntBuffer intBuf2 = stack.callocInt(1);
 
             int error = XR10.xrAcquireSwapchainImage(
-                    openXRProvider.xrSwapchain,
+                    xrSwapchain,
                     XrSwapchainImageAcquireInfo.calloc(stack).type(XR10.XR_TYPE_SWAPCHAIN_IMAGE_ACQUIRE_INFO),
                     intBuf2);
             openXRProvider.logError(error, "xrAcquireSwapchainImage", "");
 
-            error = XR10.xrWaitSwapchainImage(openXRProvider.xrSwapchain,
+            error = XR10.xrWaitSwapchainImage(xrSwapchain,
                     XrSwapchainImageWaitInfo.calloc(stack)
                             .type(XR10.XR_TYPE_SWAPCHAIN_IMAGE_WAIT_INFO)
                             .timeout(XR10.XR_INFINITE_DURATION));
@@ -87,7 +88,7 @@ public abstract class OpenXRRenderer implements VRRenderer {
                         .pose(xrView.pose())
                         .fov(xrView.fov())
                         .subImage();
-                subImage.swapchain(openXRProvider.xrSwapchain);
+                subImage.swapchain(xrSwapchain);
                 subImage.imageRect().offset().set(0, 0);
                 subImage.imageRect().extent().set(resolutionWidth, resolutionHeight);
                 subImage.imageArrayIndex(index);
@@ -105,14 +106,14 @@ public abstract class OpenXRRenderer implements VRRenderer {
             int error;
 
             error = XR10.xrReleaseSwapchainImage(
-                    openXRProvider.xrSwapchain,
+                    xrSwapchain,
                     XrSwapchainImageReleaseInfo.calloc(stack)
                             .type(XR10.XR_TYPE_SWAPCHAIN_IMAGE_RELEASE_INFO));
             openXRProvider.logError(error, "xrReleaseSwapchainImage", "");
 
             XrCompositionLayerProjection compositionLayerProjection = XrCompositionLayerProjection.calloc(stack)
                     .type(XR10.XR_TYPE_COMPOSITION_LAYER_PROJECTION)
-                    .space(openXRProvider.xrAppSpace)
+                    .space(openXRProvider.getXrAppSpace())
                     .views(this.projectionLayerViews);
 
             layers.put(compositionLayerProjection);
@@ -120,10 +121,10 @@ public abstract class OpenXRRenderer implements VRRenderer {
             layers.flip();
 
             error = XR10.xrEndFrame(
-                    openXRProvider.xrSession,
+                    openXRProvider.getXrSession(),
                     XrFrameEndInfo.calloc(stack)
                             .type(XR10.XR_TYPE_FRAME_END_INFO)
-                            .displayTime(openXRProvider.time)
+                            .displayTime(openXRProvider.getXrDisplayTime())
                             .environmentBlendMode(XR10.XR_ENVIRONMENT_BLEND_MODE_OPAQUE)
                             .layers(layers));
             openXRProvider.logError(error, "xrEndFrame", "");
@@ -187,7 +188,7 @@ public abstract class OpenXRRenderer implements VRRenderer {
 
             // Get amount of views in the swapchain
             IntBuffer intBuffer = stack.ints(0); //Set value to 0
-            int error = XR10.xrEnumerateSwapchainImages(openXRProvider.xrSwapchain, intBuffer, null);
+            int error = XR10.xrEnumerateSwapchainImages(openXRProvider.getXrSwapchain(), intBuffer, null);
             openXRProvider.logError(error, "xrEnumerateSwapchainImages", "get count");
 
             // Now we know the amount, create the image buffer
@@ -195,7 +196,7 @@ public abstract class OpenXRRenderer implements VRRenderer {
             XrSwapchainImageOpenGLKHR.Buffer swapchainImageBuffer = openXRProvider.getOsCompatibility().createImageBuffers(imageCount,
                     stack);
 
-            error = XR10.xrEnumerateSwapchainImages(openXRProvider.xrSwapchain, intBuffer,
+            error = XR10.xrEnumerateSwapchainImages(openXRProvider.getXrSwapchain(), intBuffer,
                     XrSwapchainImageBaseHeader.create(swapchainImageBuffer.address(), swapchainImageBuffer.capacity()));
             openXRProvider.logError(error, "xrEnumerateSwapchainImages", "get images");
 
