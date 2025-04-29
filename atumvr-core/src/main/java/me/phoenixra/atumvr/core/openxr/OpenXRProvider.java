@@ -144,7 +144,7 @@ public abstract class OpenXRProvider implements VRProvider {
             extProps.forEach(prop -> prop.type(XR10.XR_TYPE_EXTENSION_PROPERTIES));
 
             logError(
-                    XR10.xrEnumerateInstanceExtensionProperties((ByteBuffer)null, extCountBuf, null),
+                    XR10.xrEnumerateInstanceExtensionProperties((ByteBuffer)null, extCountBuf, extProps),
                     "xrEnumerateInstanceExtensionProperties", "properties"
             );
 
@@ -412,16 +412,14 @@ public abstract class OpenXRProvider implements VRProvider {
             if (error != XR10.XR_SUCCESS) {
                 break;
             }
-            try (var event = XrEventDataBaseHeader.create(this.xrEventBuffer.address())) {
-
-                var vrEvent = OpenXREvent.fromId(event.type());
-                if (vrEvent == OpenXREvent.SESSION_STATE_CHANGED) {
-                    this.sessionChanged(
-                            XrEventDataSessionStateChanged.create(event.address())
-                    );
-                } else {
-                    xrEventsReceived.add(vrEvent);
-                }
+            var event = XrEventDataBaseHeader.create(this.xrEventBuffer.address());
+            var vrEvent = OpenXREvent.fromId(event.type());
+            if (vrEvent == OpenXREvent.SESSION_STATE_CHANGED) {
+                this.sessionChanged(
+                        XrEventDataSessionStateChanged.create(event.address())
+                );
+            }else {
+                xrEventsReceived.add(vrEvent);
             }
         }
     }
