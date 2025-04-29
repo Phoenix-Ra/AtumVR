@@ -59,23 +59,46 @@ public abstract class OpenXRRenderer implements VRRenderer {
 
     @Override
     public void renderFrame() {
-        XrSwapchain xrSwapchain = openXRProvider.getXrSwapchain();
+
+        prepareXrFrame();
+
+        GL30.glViewport(0, 0, resolutionWidth, resolutionHeight);
+        GL30.glEnable(GL30.GL_DEPTH_TEST);
+
+        getCurrentScene().prepareFrame();
+
+        finishXrFrame();
+
+        GL30.glFlush();
+        GL30.glFinish();
+    }
+
+    protected void prepareXrFrame(){
+        XrSwapchain xrSwapchain = openXRProvider.getXrInitializer().getXrSwapchain();
         this.projectionLayerViews = XrCompositionLayerProjectionView.calloc(2);
         try (MemoryStack stack = MemoryStack.stackPush()) {
 
             IntBuffer intBuf2 = stack.callocInt(1);
 
-            int error = XR10.xrAcquireSwapchainImage(
-                    xrSwapchain,
-                    XrSwapchainImageAcquireInfo.calloc(stack).type(XR10.XR_TYPE_SWAPCHAIN_IMAGE_ACQUIRE_INFO),
-                    intBuf2);
-            openXRProvider.logError(error, "xrAcquireSwapchainImage", "");
+            openXRProvider.checkXRError(
+                    XR10.xrAcquireSwapchainImage(
+                            xrSwapchain,
+                            XrSwapchainImageAcquireInfo
+                                    .calloc(stack)
+                                    .type(XR10.XR_TYPE_SWAPCHAIN_IMAGE_ACQUIRE_INFO),
+                            intBuf2
+                    ),
+                    "xrAcquireSwapchainImage", ""
+            );
 
-            error = XR10.xrWaitSwapchainImage(xrSwapchain,
-                    XrSwapchainImageWaitInfo.calloc(stack)
-                            .type(XR10.XR_TYPE_SWAPCHAIN_IMAGE_WAIT_INFO)
-                            .timeout(XR10.XR_INFINITE_DURATION));
-            openXRProvider.logError(error, "xrWaitSwapchainImage", "");
+            openXRProvider.checkXRError(
+                    XR10.xrWaitSwapchainImage(xrSwapchain,
+                            XrSwapchainImageWaitInfo.calloc(stack)
+                                    .type(XR10.XR_TYPE_SWAPCHAIN_IMAGE_WAIT_INFO)
+                                    .timeout(XR10.XR_INFINITE_DURATION)
+                    ),
+                    "xrWaitSwapchainImage", ""
+            );
 
             this.swapIndex = intBuf2.get(0);
 
@@ -95,11 +118,9 @@ public abstract class OpenXRRenderer implements VRRenderer {
             }
 
         }
-
-        GL30.glViewport(0, 0, resolutionWidth, resolutionHeight);
-        GL30.glEnable(GL30.GL_DEPTH_TEST);
-
-        getCurrentScene().prepareFrame();
+    }
+    protected void finishXrFrame(){
+        XrSwapchain xrSwapchain = openXRProvider.getXrInitializer().getXrSwapchain();
 
         try (MemoryStack stack = MemoryStack.stackPush()) {
             PointerBuffer layers = stack.callocPointer(1);
@@ -109,11 +130,11 @@ public abstract class OpenXRRenderer implements VRRenderer {
                     xrSwapchain,
                     XrSwapchainImageReleaseInfo.calloc(stack)
                             .type(XR10.XR_TYPE_SWAPCHAIN_IMAGE_RELEASE_INFO));
-            openXRProvider.logError(error, "xrReleaseSwapchainImage", "");
+            openXRProvider.checkXRError(error, "xrReleaseSwapchainImage", "");
 
             XrCompositionLayerProjection compositionLayerProjection = XrCompositionLayerProjection.calloc(stack)
                     .type(XR10.XR_TYPE_COMPOSITION_LAYER_PROJECTION)
-                    .space(openXRProvider.getXrAppSpace())
+                    .space(openXRProvider.getXrInitializer().getXrAppSpace())
                     .views(this.projectionLayerViews);
 
             layers.put(compositionLayerProjection);
@@ -121,19 +142,16 @@ public abstract class OpenXRRenderer implements VRRenderer {
             layers.flip();
 
             error = XR10.xrEndFrame(
-                    openXRProvider.getXrSession(),
+                    openXRProvider.getXrInitializer().getXrSession(),
                     XrFrameEndInfo.calloc(stack)
                             .type(XR10.XR_TYPE_FRAME_END_INFO)
                             .displayTime(openXRProvider.getXrDisplayTime())
                             .environmentBlendMode(XR10.XR_ENVIRONMENT_BLEND_MODE_OPAQUE)
                             .layers(layers));
-            openXRProvider.logError(error, "xrEndFrame", "");
+            openXRProvider.checkXRError(error, "xrEndFrame", "");
 
             this.projectionLayerViews.close();
         }
-
-        GL30.glFlush();
-        GL30.glFinish();
     }
 
 
@@ -188,17 +206,17 @@ public abstract class OpenXRRenderer implements VRRenderer {
 
             // Get amount of views in the swapchain
             IntBuffer intBuffer = stack.ints(0); //Set value to 0
-            int error = XR10.xrEnumerateSwapchainImages(openXRProvider.getXrSwapchain(), intBuffer, null);
-            openXRProvider.logError(error, "xrEnumerateSwapchainImages", "get count");
+            int error = XR10.xrEnumerateSwapchainImages(openXRProvider.getXrInitializer().getXrSwapchain(), intBuffer, null);
+            openXRProvider.checkXRError(error, "xrEnumerateSwapchainImages", "get count");
 
             // Now we know the amount, create the image buffer
             int imageCount = intBuffer.get(0);
-            XrSwapchainImageOpenGLKHR.Buffer swapchainImageBuffer = openXRProvider.getOsCompatibility().createImageBuffers(imageCount,
+            XrSwapchainImageOpenGLKHR.Buffer swapchainImageBuffer = openXRProvider.getXrInitializer().getOsCompatibility().createImageBuffers(imageCount,
                     stack);
 
-            error = XR10.xrEnumerateSwapchainImages(openXRProvider.getXrSwapchain(), intBuffer,
+            error = XR10.xrEnumerateSwapchainImages(openXRProvider.getXrInitializer().getXrSwapchain(), intBuffer,
                     XrSwapchainImageBaseHeader.create(swapchainImageBuffer.address(), swapchainImageBuffer.capacity()));
-            openXRProvider.logError(error, "xrEnumerateSwapchainImages", "get images");
+            openXRProvider.checkXRError(error, "xrEnumerateSwapchainImages", "get images");
 
             this.leftFramebuffers = new OpenXRTexture[imageCount];
             this.rightFramebuffers = new OpenXRTexture[imageCount];
