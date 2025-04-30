@@ -9,22 +9,23 @@ import me.phoenixra.atumvr.api.VRProvider;
 public abstract class AtumVRApp implements VRApp {
 
     @Getter
-    private final VRProvider vrProvider;
+    protected final VRProvider vrProvider;
     @Getter
-    private ConfigManager configManager;
+    protected ConfigManager configManager;
 
     @Getter @Setter
-    private boolean paused;
+    protected boolean paused;
 
     public AtumVRApp(VRProvider vrProvider){
         this.vrProvider = vrProvider;
+        configManager = createConfigManager();
     }
 
 
     @Override
-    public void init() {
-        configManager = createConfigManager();
+    public boolean init() {
         vrProvider.initializeVR(this);
+        return true;
     }
     protected abstract ConfigManager createConfigManager();
     @Override
