@@ -140,13 +140,13 @@ public abstract class OpenVRRenderer implements VRRenderer {
                 resolutionWidth,
                 resolutionHeight,
                 false
-        );
+        ).init(false);
 
         textureRightEye = new OpenVRTexture(
                 resolutionWidth,
                 resolutionHeight,
                 false
-        );
+        ).init(false);
 
     }
 

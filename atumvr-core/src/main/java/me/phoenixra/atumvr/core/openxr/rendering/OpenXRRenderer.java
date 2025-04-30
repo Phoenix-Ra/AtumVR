@@ -223,9 +223,9 @@ public abstract class OpenXRRenderer implements VRRenderer {
 
             for (int i = 0; i < imageCount; i++) {
                 XrSwapchainImageOpenGLKHR openxrImage = swapchainImageBuffer.get(i);
-                this.leftFramebuffers[i] = new OpenXRTexture(resolutionWidth, resolutionHeight, openxrImage.image(), 0);
+                this.leftFramebuffers[i] = new OpenXRTexture(resolutionWidth, resolutionHeight, openxrImage.image(), 0).init();
                 GLUtils.checkGLError("Left Eye " + i + " framebuffer setup");
-                this.rightFramebuffers[i] = new OpenXRTexture(resolutionWidth, resolutionHeight, openxrImage.image(), 1);
+                this.rightFramebuffers[i] = new OpenXRTexture(resolutionWidth, resolutionHeight, openxrImage.image(), 1).init();
                 GLUtils.checkGLError("Right Eye " + i + " framebuffer setup");
 
             }

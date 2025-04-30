@@ -101,13 +101,13 @@ public abstract class BuiltInOpenVRRenderer implements VRRenderer {
                 getResolutionWidth(),
                 getResolutionHeight(),
                 false
-        );
+        ).init(false);
 
         OpenVRTexture textureRight = new OpenVRTexture(
                 getResolutionWidth(),
                 getResolutionHeight(),
                 false
-        );
+        ).init(false);
         return new PairRecord<>(textureLeft, textureRight);
 
     }

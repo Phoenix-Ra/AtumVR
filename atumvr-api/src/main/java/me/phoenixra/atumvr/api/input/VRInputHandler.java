@@ -32,7 +32,8 @@ public interface VRInputHandler {
 
     @NotNull File getActionManifest();
 
-
+    @NotNull
+    VRProvider getVrProvider();
 
 
     static long getInputActionHandle(@NotNull String actionPath,
@@ -181,6 +182,5 @@ public interface VRInputHandler {
 
 
 
-    @NotNull
-    VRProvider getVrCore();
+
 }
