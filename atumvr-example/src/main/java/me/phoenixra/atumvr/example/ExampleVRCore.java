@@ -12,6 +12,7 @@ import java.util.Scanner;
 import java.util.logging.Logger;
 
 public class ExampleVRCore extends AtumVRApp {
+    public static ExampleVRCore appInstance;
     public static ExampleVRProvider provider;
     private final Logger logger;
     @Getter
@@ -58,8 +59,8 @@ public class ExampleVRCore extends AtumVRApp {
                     try {
                         provider = new ExampleVRProvider();
 
-                        new ExampleVRCore(provider)
-                                .init();
+                        appInstance = new ExampleVRCore(provider);
+                        appInstance.init();
                     }catch (Throwable throwable){
                         throwable.printStackTrace();
                         System.out.println("WHAT tick");
@@ -69,7 +70,7 @@ public class ExampleVRCore extends AtumVRApp {
                     continue;
                 }
                 if(Thread.interrupted()){
-                    provider.destroy();
+                    appInstance.destroy();
                     break;
                 }
                 provider.getAttachedApp().preRender(1);

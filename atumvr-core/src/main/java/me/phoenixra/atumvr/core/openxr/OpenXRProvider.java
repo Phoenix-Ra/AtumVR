@@ -194,7 +194,7 @@ public abstract class OpenXRProvider implements VRProvider {
                         "xrEndSession", "XRStateChangeSTOPPING"
                 );
 
-                destroy();
+                attachedApp.destroy();
             }
             case VISIBLE, FOCUSED: {
                 paused = false;

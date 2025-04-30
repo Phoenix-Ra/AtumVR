@@ -166,7 +166,6 @@ public abstract class OpenVRProvider implements VRProvider {
         VR.VR_ShutdownInternal();
 
         vrRenderer.destroy();
-        attachedApp.destroy();
     }
 
     @Override

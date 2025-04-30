@@ -46,7 +46,7 @@ public abstract class AtumVRApp implements VRApp {
 
     @Override
     public void destroy() {
-
+        vrProvider.destroy();
     }
 
     @Override
