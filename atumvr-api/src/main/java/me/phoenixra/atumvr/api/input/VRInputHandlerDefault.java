@@ -76,7 +76,7 @@ public abstract class VRInputHandlerDefault implements VRInputHandler {
                 VRActiveActionSet.Buffer buffer = VRActiveActionSet.malloc(actionSets.size(), stack);
                 for(int i = 0; i< actionSets.size(); i++){
                     buffer.get(i).set(
-                            VRInputHandler.getInputActionSetHandle(actionSets.get(i).getName(), stack),
+                            OpenVRInputHelper.getInputActionSetHandle(actionSets.get(i).getName(), stack),
                             0L, 0, 0
                     );
                 }
