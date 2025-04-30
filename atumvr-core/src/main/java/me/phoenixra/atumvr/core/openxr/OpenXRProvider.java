@@ -64,7 +64,7 @@ public abstract class OpenXRProvider implements VRProvider {
 
 
     @Override
-    public void initializeVR(@NotNull VRApp vrApp) {
+    public void initializeVR(@NotNull VRApp vrApp) throws Throwable{
         if (initialized) {
             throw new VRException("Already initialized!");
         }
@@ -76,11 +76,7 @@ public abstract class OpenXRProvider implements VRProvider {
 
         xrInitializer.init();
 
-        try {
-            vrRenderer.init();
-        } catch (Throwable e) {
-            throw new RuntimeException(e);
-        }
+        vrRenderer.init();
         initialized = true;
     }
 

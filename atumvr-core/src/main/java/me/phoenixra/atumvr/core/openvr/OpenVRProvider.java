@@ -62,7 +62,7 @@ public abstract class OpenVRProvider implements VRProvider {
 
 
     @Override
-    public void initializeVR(@NotNull VRApp vrApp) {
+    public void initializeVR(@NotNull VRApp vrApp) throws Throwable{
         if(initialized) {
             throw new VRException("Tried to initialize already initialized provider!");
         }
@@ -117,11 +117,6 @@ public abstract class OpenVRProvider implements VRProvider {
 
             initialized = true;
 
-        }catch (Throwable exception){
-            throw new VRException(
-                    "Exception while initializing VR provider",
-                    exception
-            );
         }
     }
 

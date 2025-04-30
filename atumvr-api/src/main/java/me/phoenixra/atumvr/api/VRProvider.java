@@ -16,7 +16,7 @@ public interface VRProvider {
 
 
 
-    void initializeVR(@NotNull VRApp app);
+    void initializeVR(@NotNull VRApp app) throws Throwable;
 
     void onPreRender(float partialTick);
     void onRender(float partialTick);
