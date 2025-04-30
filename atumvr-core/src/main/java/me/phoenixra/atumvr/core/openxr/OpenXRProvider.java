@@ -29,23 +29,23 @@ public abstract class OpenXRProvider implements VRProvider {
 
 
     @Getter
-    private VRApp attachedApp;
+    protected VRApp attachedApp;
 
 
     @Getter
-    private VRDevicesManager devicesManager;
+    protected VRDevicesManager devicesManager;
 
     @Getter
-    private VRInputHandler inputHandler;
+    protected VRInputHandler inputHandler;
 
     @Getter
-    private VRRenderer vrRenderer;
+    protected VRRenderer vrRenderer;
 
 
     @Getter
-    private XRInitializer xrInitializer;
+    protected XRInitializer xrInitializer;
     @Getter
-    private final List<OpenXREvent> xrEventsReceived = new ArrayList<>();
+    protected final List<OpenXREvent> xrEventsReceived = new ArrayList<>();
     @Getter
     protected long xrDisplayTime;
 
@@ -56,9 +56,9 @@ public abstract class OpenXRProvider implements VRProvider {
     protected int eyeTextureHeight;
 
     @Getter
-    private boolean paused = true;
+    protected boolean paused = true;
     @Getter
-    private boolean initialized = false;
+    protected boolean initialized = false;
 
 
 

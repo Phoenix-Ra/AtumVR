@@ -21,8 +21,8 @@ import static org.lwjgl.glfw.GLFW.*;
 
 public abstract class OpenXRRenderer implements VRRenderer {
     @Getter
-    private VRApp vrApp;
-    private OpenXRProvider openXRProvider;
+    protected VRApp vrApp;
+    protected OpenXRProvider openXRProvider;
 
 
     @Getter
@@ -33,14 +33,14 @@ public abstract class OpenXRRenderer implements VRRenderer {
 
 
 
-    private XrCompositionLayerProjectionView.Buffer projectionLayerViews;
-    private int swapIndex;
+    protected XrCompositionLayerProjectionView.Buffer projectionLayerViews;
+    protected int swapIndex;
 
     @Getter
     protected long windowHandle;
 
-    private OpenXRTexture[] leftFramebuffers;
-    private OpenXRTexture[] rightFramebuffers;
+    protected OpenXRTexture[] leftFramebuffers;
+    protected OpenXRTexture[] rightFramebuffers;
 
     public OpenXRRenderer(VRApp vrApp) {
         this.vrApp = vrApp;
@@ -223,9 +223,16 @@ public abstract class OpenXRRenderer implements VRRenderer {
 
             for (int i = 0; i < imageCount; i++) {
                 XrSwapchainImageOpenGLKHR openxrImage = swapchainImageBuffer.get(i);
-                this.leftFramebuffers[i] = new OpenXRTexture(resolutionWidth, resolutionHeight, openxrImage.image(), 0).init();
+                this.leftFramebuffers[i] = new OpenXRTexture(
+                        resolutionWidth, resolutionHeight,
+                        openxrImage.image(), 0
+                ).init();
                 GLUtils.checkGLError("Left Eye " + i + " framebuffer setup");
-                this.rightFramebuffers[i] = new OpenXRTexture(resolutionWidth, resolutionHeight, openxrImage.image(), 1).init();
+                this.rightFramebuffers[i] = new OpenXRTexture(
+                        resolutionWidth, resolutionHeight,
+                        openxrImage.image(),
+                        1
+                ).init();
                 GLUtils.checkGLError("Right Eye " + i + " framebuffer setup");
 
             }
