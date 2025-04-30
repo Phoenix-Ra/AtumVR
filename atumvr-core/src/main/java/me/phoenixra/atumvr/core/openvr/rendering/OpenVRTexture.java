@@ -22,9 +22,8 @@ public class OpenVRTexture implements VRTexture {
 
         this.glTextureId = GL30.glGenTextures();
         openVrTexture = Texture.calloc();
-        init(depth);
     }
-    protected void init(boolean depth){
+    public OpenVRTexture init(boolean depth){
         //TEXTURE
         GL30.glBindTexture(GL30.GL_TEXTURE_2D, glTextureId);
         GL30.glTexParameteri(GL30.GL_TEXTURE_2D, GL30.GL_TEXTURE_MIN_FILTER, GL30.GL_LINEAR);
@@ -61,6 +60,7 @@ public class OpenVRTexture implements VRTexture {
         VRTexture.checkStatus();
 
         GL30.glBindFramebuffer(GL30.GL_FRAMEBUFFER, 0);
+        return this;
     }
 
     public Texture applyDataToTexture(Texture texture){

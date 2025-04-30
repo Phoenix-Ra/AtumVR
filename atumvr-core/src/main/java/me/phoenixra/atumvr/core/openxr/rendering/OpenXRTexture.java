@@ -21,9 +21,8 @@ public class OpenXRTexture implements VRTexture {
         this.textureIndex = index;
 
 
-        init();
     }
-    protected void init(){
+    public OpenXRTexture init(){
         frameBufferId = GL30.glGenFramebuffers();
 
         GL30.glBindFramebuffer(GL30.GL_FRAMEBUFFER, this.frameBufferId);
@@ -40,6 +39,7 @@ public class OpenXRTexture implements VRTexture {
         GL30.glBindFramebuffer(GL30.GL_FRAMEBUFFER, 0);
         GL30.glBindTexture(3553, 0);
 
+        return this;
     }
 
 
