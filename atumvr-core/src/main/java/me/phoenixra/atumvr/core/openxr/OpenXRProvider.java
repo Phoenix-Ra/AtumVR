@@ -10,6 +10,7 @@ import me.phoenixra.atumvr.api.devices.VRDevicesManager;
 import me.phoenixra.atumvr.api.devices.hmd.EyeType;
 import me.phoenixra.atumvr.api.exceptions.VRException;
 import me.phoenixra.atumvr.api.input.VRInputHandler;
+import me.phoenixra.atumvr.api.rendering.VRRenderer;
 import me.phoenixra.atumvr.core.openxr.rendering.OpenXRRenderer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -38,7 +39,7 @@ public abstract class OpenXRProvider implements VRProvider {
     private VRInputHandler inputHandler;
 
     @Getter
-    private OpenXRRenderer vrRenderer;
+    private VRRenderer vrRenderer;
 
 
     @Getter
@@ -72,7 +73,6 @@ public abstract class OpenXRProvider implements VRProvider {
         this.inputHandler = createVRInputHandler();
         this.devicesManager = createDevicesManager();
         this.vrRenderer = createVRRenderer(vrApp);
-        vrRenderer.setupGLContext();
 
         xrInitializer.init();
 
@@ -263,7 +263,7 @@ public abstract class OpenXRProvider implements VRProvider {
     }
 
     @Override
-    public @NotNull OpenXRRenderer createVRRenderer(@NotNull VRApp vrApp) {
+    public @NotNull VRRenderer createVRRenderer(@NotNull VRApp vrApp) {
         return null;
     }
 

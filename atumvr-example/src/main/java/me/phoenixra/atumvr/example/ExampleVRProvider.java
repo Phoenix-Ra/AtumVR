@@ -13,7 +13,9 @@ public class ExampleVRProvider extends OpenXRProvider {
 
     @Override
     public @NotNull OpenXRRenderer createVRRenderer(@NotNull VRApp vrApp) {
-        return new ExampleVRRenderer(vrApp);
+        ExampleVRRenderer vrRenderer = new ExampleVRRenderer(vrApp);
+        vrRenderer.setupGLContext();
+        return vrRenderer;
     }
 
     @Override
