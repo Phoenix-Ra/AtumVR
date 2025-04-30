@@ -23,7 +23,7 @@ public abstract class AtumVRApp implements VRApp {
 
 
     @Override
-    public boolean init() {
+    public boolean init() throws Throwable{
         vrProvider.initializeVR(this);
         return true;
     }

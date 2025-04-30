@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface VRApp extends ConfigOwner {
 
-    boolean init();
+    boolean init() throws Throwable;
 
 
     void preRender(float partialTick);
