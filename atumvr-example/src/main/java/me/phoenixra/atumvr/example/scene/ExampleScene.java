@@ -1,9 +1,8 @@
 package me.phoenixra.atumvr.example.scene;
 
-import me.phoenixra.atumvr.api.devices.hmd.EyeType;
-import me.phoenixra.atumvr.api.rendering.VRRenderer;
-import me.phoenixra.atumvr.api.texture.VRShaderProgram;
-import me.phoenixra.atumvr.core.openxr.rendering.OpenXRScene;
+import me.phoenixra.atumvr.api.enums.EyeType;
+import me.phoenixra.atumvr.core.rendering.OpenXRRenderer;
+import me.phoenixra.atumvr.core.rendering.OpenXRScene;
 import me.phoenixra.atumvr.example.texture.StbTexture;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4f;
@@ -22,7 +21,7 @@ public class ExampleScene extends OpenXRScene {
     private ExampleCube floorCube;
 
     private float timer;
-    public ExampleScene(@NotNull VRRenderer vrRenderer) {
+    public ExampleScene(@NotNull OpenXRRenderer vrRenderer) {
         super(vrRenderer);
     }
 
@@ -128,7 +127,7 @@ public class ExampleScene extends OpenXRScene {
         );
     }
     private void initShaders(){
-        shaderProgram = new VRShaderProgram(getVrRenderer().getVrApp());
+        shaderProgram = new VRShaderProgram(getVrRenderer().getVrProvider());
         shaderProgram.bindVertexShader("vertex.vsh");
         shaderProgram.bindFragmentShader("fragment.fsh");
         shaderProgram.finishShader();

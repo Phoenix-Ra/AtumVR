@@ -4,7 +4,7 @@ package me.phoenixra.atumvr.api.input.data;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.lwjgl.openvr.VRInput;
+
 
 
 @Data @AllArgsConstructor @NoArgsConstructor
@@ -52,19 +52,16 @@ public class InputAnalogData {
 
     /**
      * deltas since the previous call
-     * to {@link VRInput#VRInput_UpdateActionState UpdateActionState}
      **/
     private float deltaX;
 
     /**
      * deltas since the previous call
-     * to {@link VRInput#VRInput_UpdateActionState UpdateActionState}
      **/
     private float deltaY;
 
     /**
      * deltas since the previous call
-     * to {@link VRInput#VRInput_UpdateActionState UpdateActionState}
      **/
     private float deltaZ;
 

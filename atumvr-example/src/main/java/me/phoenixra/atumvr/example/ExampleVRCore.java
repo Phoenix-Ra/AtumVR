@@ -1,34 +1,25 @@
 package me.phoenixra.atumvr.example;
 
 import lombok.Getter;
-import me.phoenixra.atumconfig.api.config.ConfigManager;
-import me.phoenixra.atumconfig.core.config.AtumConfigManager;
-import me.phoenixra.atumvr.api.VRProvider;
-import me.phoenixra.atumvr.core.AtumVRApp;
+import me.phoenixra.atumconfig.api.ConfigLogger;
+import me.phoenixra.atumvr.api.VRLogger;
+import me.phoenixra.atumvr.api.rendering.RenderContext;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.util.Scanner;
-import java.util.logging.Logger;
 
-public class ExampleVRCore extends AtumVRApp {
+public class ExampleVRCore {
     public static ExampleVRCore appInstance;
     public static ExampleVRProvider provider;
-    private final Logger logger;
     @Getter
     private final File dataFolder;
 
-    public ExampleVRCore(VRProvider vrProvider) {
-        super(vrProvider);
-        logger = Logger.getLogger("ExampleVRApp");
+    public ExampleVRCore() {
+
         dataFolder = new File("data");
     }
 
-
-    @Override
-    protected ConfigManager createConfigManager() {
-        return new AtumConfigManager(this);
-    }
 
 
     public static void main(String[] args) {
@@ -57,54 +48,28 @@ public class ExampleVRCore extends AtumVRApp {
             do {
                 if(!init){
                     try {
-                        provider = new ExampleVRProvider();
-
-                        appInstance = new ExampleVRCore(provider);
-                        appInstance.init();
+                        provider = new ExampleVRProvider(VRLogger.SIMPLE);
+                        provider.initializeVR();
                     }catch (Throwable throwable){
                         throwable.printStackTrace();
-                        System.out.println("WHAT tick");
+                        System.out.println("Init error");
                         break;
                     }
                     init=true;
                     continue;
                 }
                 if(Thread.interrupted()){
-                    appInstance.destroy();
+                    provider.destroy();
                     break;
                 }
-                provider.getAttachedApp().preRender(1);
-                provider.getAttachedApp().render(1);
-                provider.getAttachedApp().postRender(1);
+                RenderContext context = () -> 1;
+                provider.preRender(context);
+                provider.render(context);
+                provider.postRender(context);
 
             } while (true);
         });
     }
 
-
-    @Override
-    public @NotNull String getName() {
-        return "Example App";
-    }
-
-    @Override
-    public boolean supportMinecraft() {
-        return false;
-    }
-
-    @Override
-    public void logInfo(String message) {
-        logger.info(message);
-    }
-
-    @Override
-    public void logWarning(String message) {
-        logger.warning(message);
-    }
-
-    @Override
-    public void logError(String message) {
-        logger.severe(message);
-    }
 
 }
