@@ -71,6 +71,15 @@ public class ExampleScene extends OpenXRScene {
                         new Vector3f(0f,0f,0f)
                 )
         );
+        exampleCubes.add(
+                new ExampleCubeHand(
+                        getVrRenderer().getVrProvider(),
+                        new StbTexture("textures/test.png"),
+                        new Vector3f(2f,1f,2.5f),
+                        new Vector3f(1f,1f,1f),
+                        new Vector3f(0f,0f,0f)
+                )
+        );
         for(ExampleCube cube : exampleCubes){
             cube.init();
         }

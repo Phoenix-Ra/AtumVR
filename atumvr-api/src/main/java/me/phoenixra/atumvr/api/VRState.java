@@ -9,11 +9,13 @@ public interface VRState{
     boolean isInitialized();
 
     boolean isPaused();
+    boolean isRunning();
 
 
-    int getEyeMaxWidth();
+    int getEyeTexWidth();
 
-    int getEyeMaxHeight();
+    int getEyeTexHeight();
+
 
 
     @NotNull

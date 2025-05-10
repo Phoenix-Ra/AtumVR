@@ -1,17 +1,16 @@
 package me.phoenixra.atumvr.core;
 
 import lombok.Getter;
-import me.phoenixra.atumconfig.api.ConfigLogger;
 import me.phoenixra.atumvr.api.VRLogger;
 import me.phoenixra.atumvr.api.VRProvider;
-import me.phoenixra.atumvr.api.VRState;
 import me.phoenixra.atumvr.api.enums.EyeType;
 import me.phoenixra.atumvr.api.exceptions.VRException;
 import me.phoenixra.atumvr.api.input.VRInputHandler;
 import me.phoenixra.atumvr.api.rendering.RenderContext;
 import me.phoenixra.atumvr.api.rendering.VRRenderer;
-import me.phoenixra.atumvr.core.enums.OpenXREvent;
 import me.phoenixra.atumvr.core.enums.XRActionResult;
+import me.phoenixra.atumvr.core.enums.XRSessionStateChange;
+import me.phoenixra.atumvr.core.input.OpenXRInputHandler;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.openxr.*;
@@ -19,7 +18,6 @@ import org.lwjgl.system.MemoryStack;
 
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.lwjgl.system.MemoryUtil.*;
@@ -37,7 +35,7 @@ public abstract class OpenXRProvider implements VRProvider {
     protected OpenXRState vrState;
 
     @Getter
-    protected VRInputHandler inputHandler;
+    protected OpenXRInputHandler inputHandler;
 
     @Getter
     protected VRRenderer vrRenderer;
@@ -61,10 +59,20 @@ public abstract class OpenXRProvider implements VRProvider {
 
     public abstract @Nullable OpenXRState createStateHandler();
 
-    public abstract @Nullable VRInputHandler createInputHandler();
+    public abstract @Nullable OpenXRInputHandler createInputHandler();
 
     public abstract @NotNull VRRenderer createRenderer();
 
+    public abstract void onStateChanged(XRSessionStateChange state);
+
+    public List<String> getXRAppExtensions(){
+        return List.of(
+                EXTHPMixedRealityController.XR_EXT_HP_MIXED_REALITY_CONTROLLER_EXTENSION_NAME,
+                HTCViveCosmosControllerInteraction.XR_HTC_VIVE_COSMOS_CONTROLLER_INTERACTION_EXTENSION_NAME,
+                BDControllerInteraction.XR_BD_CONTROLLER_INTERACTION_EXTENSION_NAME
+
+        );
+    }
 
     @Override
     public void initializeVR() throws Throwable{
@@ -76,6 +84,7 @@ public abstract class OpenXRProvider implements VRProvider {
         this.inputHandler = createInputHandler();
 
         vrState.init();
+
     }
 
     @Override
@@ -126,6 +135,7 @@ public abstract class OpenXRProvider implements VRProvider {
                     ),
                     "xrLocateViews", ""
             );
+            inputHandler.update();
 
 
         }
@@ -144,23 +154,30 @@ public abstract class OpenXRProvider implements VRProvider {
 
 
 
-
-
-
-    public XrView getXrView(EyeType eyeType){
-        return vrState.xrSwapChain.getXrViewBuffer().get(eyeType.getId());
-    }
-
     @Override
     public void destroy() {
         vrState.destroy();
     }
 
-    public void checkXRError(int xrResult, String caller, String... args) {
+    public void checkXRError(int xrResult, String caller, String... args) throws VRException{
+        checkXRError(true,xrResult,caller,args);
+    }
+    public void checkXRError(boolean throwError,
+                             int xrResult, String caller, String... args) throws VRException{
         if (xrResult < 0) {
-            logger.logError(String.format(
-                    "%s for %s error: %s", caller, String.join(" ", args), getXRActionResult(xrResult)
-            ));
+            String msg = String.format(
+                    "%s for %s error: %s",
+                    caller,
+                    String.join(" ", args),
+                    getXRActionResult(xrResult)
+            );
+            if(!throwError){
+                logger.logError(
+                        msg
+                );
+                return;
+            }
+            throw new VRException(msg);
         }
     }
     public String getXRActionResult(int resultId) {

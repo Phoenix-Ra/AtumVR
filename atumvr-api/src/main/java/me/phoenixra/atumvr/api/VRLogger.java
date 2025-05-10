@@ -1,10 +1,11 @@
 package me.phoenixra.atumvr.api;
 
 
+import me.phoenixra.atumconfig.api.ConfigLogger;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-public interface VRLogger {
+
+public interface VRLogger extends ConfigLogger {
     /**
      * VR logger with no output
      */
@@ -40,46 +41,5 @@ public interface VRLogger {
      */
     void logDebug(@NotNull String msg);
 
-    /**
-     * Logs an informational message.
-     *
-     * @param msg the message to log, must be non-null
-     */
-    void logInfo(@NotNull String msg);
 
-    /**
-     * Logs a warning message.
-     *
-     * @param msg the message to log, must be non-null
-     */
-    void logWarn(@NotNull String msg);
-
-    /**
-     * Logs an error message.
-     *
-     * @param msg the message to log, must be non-null
-     */
-    void logError(@NotNull String msg);
-
-    /**
-     * Logs an error message with optional exception details.
-     *
-     * @param msg the error message, may be null
-     * @param t   the throwable whose stack trace to log
-     */
-    default void logError(@Nullable String msg, @NotNull Throwable t) {
-        if (msg != null) {
-            logError(msg);
-        }
-        for (StackTraceElement element : t.getStackTrace()) {
-            logError(element.toString());
-        }
-        Throwable cause = t.getCause();
-        if (cause != null) {
-            logError("Caused by: " + cause);
-        }
-        for (Throwable suppressed : t.getSuppressed()) {
-            logError(null, suppressed);
-        }
-    }
 }

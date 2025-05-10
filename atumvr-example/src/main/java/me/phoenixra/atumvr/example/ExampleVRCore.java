@@ -59,7 +59,9 @@ public class ExampleVRCore {
                     continue;
                 }
                 if(Thread.interrupted()){
-                    provider.destroy();
+                    break;
+                }
+                if(provider.isXrStopping()){
                     break;
                 }
                 RenderContext context = () -> 1;

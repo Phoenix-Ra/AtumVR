@@ -6,8 +6,7 @@ import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
-//@TODO make for both eyes and rename to smth better, since main thing here is the 2 eyes
-public interface VRCamera {
+public interface VREyeCamera {
 
     @NotNull Vector3f getLocation();
 

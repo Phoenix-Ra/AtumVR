@@ -1,13 +1,17 @@
 package me.phoenixra.atumvr.api.input.devices;
 
 import org.jetbrains.annotations.NotNull;
+import org.joml.Matrix4f;
 
 public interface VRDevice {
 
-    int getIndex();
+    @NotNull
+    String getId();
 
-    boolean isConnected();
+    boolean isActive();
+
+    boolean isPoseValid();
 
     @NotNull
-    VRPose getPose();
+    Matrix4f getPose();
 }

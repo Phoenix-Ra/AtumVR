@@ -17,7 +17,6 @@ import java.nio.LongBuffer;
 import java.util.ArrayList;
 
 import static org.lwjgl.system.MemoryStack.stackCalloc;
-import static org.lwjgl.system.MemoryStack.stackPush;
 import static org.lwjgl.system.MemoryUtil.NULL;
 import static org.lwjgl.system.MemoryUtil.memCalloc;
 
@@ -46,37 +45,37 @@ public class OpenXRSwapChain {
     }
 
     public void init() {
-        try (MemoryStack stack = stackPush()) {
+        try (MemoryStack stack = MemoryStack.stackPush()) {
             OpenXRProvider provider = this.xrState.getVrProvider();
             OpenXRInstance xrInstance  = xrState.getXrInstance();
             long systemId = xrState.getXrSystem().getSystemId();
             OpenXRSession xrSession  = xrState.getXrSession();
 
             // Check amount of views
-            IntBuffer intBuf = stack.callocInt(1);
+            IntBuffer viewCountBuf = stack.callocInt(1);
             int error = XR10.xrEnumerateViewConfigurationViews(xrInstance.getHandle(), systemId,
-                    XR10.XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO, intBuf, null);
+                    XR10.XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO, viewCountBuf, null);
             provider.checkXRError(error, "xrEnumerateViewConfigurationViews", "get count");
 
             // Get all views
-            ByteBuffer viewConfBuffer = bufferStack(intBuf.get(0), XrViewConfigurationView.SIZEOF,
+            ByteBuffer viewConfBuffer = bufferStack(viewCountBuf.get(0), XrViewConfigurationView.SIZEOF,
                     XR10.XR_TYPE_VIEW_CONFIGURATION_VIEW);
-            XrViewConfigurationView.Buffer views = new XrViewConfigurationView.Buffer(viewConfBuffer);
+            var views = new XrViewConfigurationView.Buffer(viewConfBuffer);
             error = XR10.xrEnumerateViewConfigurationViews(xrInstance.getHandle(), systemId,
-                    XR10.XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO, intBuf, views);
+                    XR10.XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO, viewCountBuf, views);
             provider.checkXRError(error, "xrEnumerateViewConfigurationViews", "get views");
-            int viewCountNumber = intBuf.get(0);
+            int viewCountNumber = viewCountBuf.get(0);
 
             this.xrViewBuffer = new XrView.Buffer(
                     bufferHeap(viewCountNumber, XrView.SIZEOF, XR10.XR_TYPE_VIEW)
             );
             // Check swapchain formats
-            error = XR10.xrEnumerateSwapchainFormats(xrSession.getHandle(), intBuf, null);
+            error = XR10.xrEnumerateSwapchainFormats(xrSession.getHandle(), viewCountBuf, null);
             provider.checkXRError(error, "xrEnumerateSwapchainFormats", "get count");
 
             // Get swapchain formats
-            LongBuffer swapchainFormats = stack.callocLong(intBuf.get(0));
-            error = XR10.xrEnumerateSwapchainFormats(xrSession.getHandle(), intBuf, swapchainFormats);
+            LongBuffer swapchainFormats = stack.callocLong(viewCountBuf.get(0));
+            error = XR10.xrEnumerateSwapchainFormats(xrSession.getHandle(), viewCountBuf, swapchainFormats);
             provider.checkXRError(error, "xrEnumerateSwapchainFormats", "get formats");
 
             long[] desiredSwapchainFormats = {
@@ -119,38 +118,36 @@ public class OpenXRSwapChain {
             }
 
             // Make swapchain
-            XrViewConfigurationView viewConfig = views.get(0);
-            XrSwapchainCreateInfo swapchainCreateInfo = XrSwapchainCreateInfo.calloc(stack);
-            swapchainCreateInfo.type(XR10.XR_TYPE_SWAPCHAIN_CREATE_INFO);
-            swapchainCreateInfo.next(NULL);
-            swapchainCreateInfo.createFlags(0);
-            swapchainCreateInfo.usageFlags(XR10.XR_SWAPCHAIN_USAGE_COLOR_ATTACHMENT_BIT);
-            swapchainCreateInfo.format(chosenFormat);
-            swapchainCreateInfo.sampleCount(1);
-            swapchainCreateInfo.width(viewConfig.recommendedImageRectWidth());
-            swapchainCreateInfo.height(viewConfig.recommendedImageRectHeight());
-            swapchainCreateInfo.faceCount(1);
-            swapchainCreateInfo.arraySize(2);
-            swapchainCreateInfo.mipCount(1);
+            var viewConfig = views.get(0);
+            var swapchainInfo = XrSwapchainCreateInfo.calloc(stack);
+            swapchainInfo.type(XR10.XR_TYPE_SWAPCHAIN_CREATE_INFO);
+            swapchainInfo.next(NULL);
+            swapchainInfo.createFlags(0);
+            swapchainInfo.usageFlags(XR10.XR_SWAPCHAIN_USAGE_COLOR_ATTACHMENT_BIT);
+            swapchainInfo.format(chosenFormat);
+            swapchainInfo.sampleCount(1);
+            swapchainInfo.width(viewConfig.recommendedImageRectWidth());
+            swapchainInfo.height(viewConfig.recommendedImageRectHeight());
+            swapchainInfo.faceCount(1);
+            swapchainInfo.arraySize(2);
+            swapchainInfo.mipCount(1);
 
             PointerBuffer handlePointer = stack.callocPointer(1);
-            error = XR10.xrCreateSwapchain(xrSession.getHandle(), swapchainCreateInfo, handlePointer);
+            error = XR10.xrCreateSwapchain(xrSession.getHandle(), swapchainInfo, handlePointer);
             provider.checkXRError(error, "xrCreateSwapchain", "format: " + chosenFormat);
             handle = new XrSwapchain(handlePointer.get(0), xrSession.getHandle());
-            eyeMaxWidth = swapchainCreateInfo.width();
-            eyeMaxHeight = swapchainCreateInfo.height();
+            eyeMaxWidth = swapchainInfo.width();
+            eyeMaxHeight = swapchainInfo.height();
         }
     }
 
+    public XrSwapchainImageOpenGLKHR.Buffer createImageBuffers(int imageCount, MemoryStack stack) {
+        XrSwapchainImageOpenGLKHR.Buffer swapchainImageBuffer = XrSwapchainImageOpenGLKHR.calloc(imageCount, stack);
+        for (XrSwapchainImageOpenGLKHR image : swapchainImageBuffer) {
+            image.type(KHROpenGLEnable.XR_TYPE_SWAPCHAIN_IMAGE_OPENGL_KHR);
+        }
 
-    public void destroy(){
-        if (handle != null) {
-            int error = XR10.xrDestroySwapchain(handle);
-            xrState.getVrProvider().checkXRError(error, "xrDestroySwapchain", "");
-        }
-        if (this.xrViewBuffer != null) {
-            this.xrViewBuffer.close();
-        }
+        return swapchainImageBuffer;
     }
 
 
@@ -173,5 +170,20 @@ public class OpenXRSwapChain {
         }
         b.rewind();
         return b;
+    }
+
+
+    public void destroy(){
+        if (handle != null) {
+            xrState.getVrProvider().checkXRError(
+                    false,
+                    XR10.xrDestroySwapchain(handle),
+                    "xrDestroySwapchain",
+                    ""
+            );
+        }
+        if (this.xrViewBuffer != null) {
+            this.xrViewBuffer.close();
+        }
     }
 }

@@ -1,7 +1,6 @@
 package me.phoenixra.atumvr.core.rendering;
 
 import lombok.Getter;
-import me.phoenixra.atumvr.api.VRProvider;
 import me.phoenixra.atumvr.api.enums.EyeType;
 import me.phoenixra.atumvr.api.rendering.VRRenderer;
 import me.phoenixra.atumvr.api.rendering.VRTexture;
@@ -103,7 +102,7 @@ public abstract class OpenXRRenderer implements VRRenderer {
             // Render view to the appropriate part of the swapchain image.
             for (EyeType eyeType : EyeType.values()) {
                 int index = eyeType.getId();
-                XrView xrView = vrProvider.getXrView(eyeType);
+                XrView xrView = vrProvider.getInputHandler().getHmd().getXrView(eyeType);
                 XrSwapchainSubImage subImage = this.projectionLayerViews.get(index)
                         .type(XR10.XR_TYPE_COMPOSITION_LAYER_PROJECTION_VIEW)
                         .pose(xrView.pose())
@@ -194,8 +193,8 @@ public abstract class OpenXRRenderer implements VRRenderer {
 
     protected void setupResolution() {
 
-        resolutionWidth = vrProvider.getVrState().getEyeMaxWidth();
-        resolutionHeight = vrProvider.getVrState().getEyeMaxHeight();
+        resolutionWidth = vrProvider.getVrState().getEyeTexWidth();
+        resolutionHeight = vrProvider.getVrState().getEyeTexHeight();
     }
 
     protected void setupEyes() {
@@ -209,7 +208,8 @@ public abstract class OpenXRRenderer implements VRRenderer {
 
             // Now we know the amount, create the image buffer
             int imageCount = intBuffer.get(0);
-            XrSwapchainImageOpenGLKHR.Buffer swapchainImageBuffer = vrProvider.getVrState().getOsCompatibility().createImageBuffers(imageCount,
+            XrSwapchainImageOpenGLKHR.Buffer swapchainImageBuffer = vrProvider
+                    .getVrState().getXrSwapChain().createImageBuffers(imageCount,
                     stack);
 
             error = XR10.xrEnumerateSwapchainImages(vrProvider.getVrState().getXrSwapChain().getHandle(), intBuffer,

@@ -2,10 +2,8 @@ package me.phoenixra.atumvr.core.rendering;
 
 import lombok.Getter;
 import me.phoenixra.atumvr.api.enums.EyeType;
-import me.phoenixra.atumvr.api.rendering.VRCamera;
-import me.phoenixra.atumvr.api.rendering.VRRenderer;
+import me.phoenixra.atumvr.api.rendering.VREyeCamera;
 import me.phoenixra.atumvr.api.rendering.VRScene;
-import me.phoenixra.atumvr.core.OpenXRProvider;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
@@ -20,9 +18,9 @@ public abstract class OpenXRScene implements VRScene {
 
 
     @Getter
-    protected VRCamera rightEyeCamera;
+    protected VREyeCamera rightEyeCamera;
     @Getter
-    protected VRCamera leftEyeCamera;
+    protected VREyeCamera leftEyeCamera;
 
     public OpenXRScene(OpenXRRenderer vrRenderer) {
         this.vrRenderer = vrRenderer;
@@ -37,11 +35,11 @@ public abstract class OpenXRScene implements VRScene {
     public void init() {
         try (MemoryStack stack = MemoryStack.stackPush()) {
 
-            leftEyeCamera = new OpenXRCamera(
+            leftEyeCamera = new OpenXREyeCamera(
                     vrRenderer.getVrProvider(),
                     new Vector3f(),new Quaternionf()
             );
-            rightEyeCamera = new OpenXRCamera(
+            rightEyeCamera = new OpenXREyeCamera(
                     vrRenderer.getVrProvider(),
                     new Vector3f(),new Quaternionf()
             );

@@ -1,11 +1,13 @@
 package me.phoenixra.atumvr.example;
 
 
-import me.phoenixra.atumconfig.api.ConfigLogger;
+import lombok.Getter;
 import me.phoenixra.atumvr.api.VRLogger;
 import me.phoenixra.atumvr.api.input.VRInputHandler;
 import me.phoenixra.atumvr.core.OpenXRState;
 import me.phoenixra.atumvr.core.OpenXRProvider;
+import me.phoenixra.atumvr.core.enums.XRSessionStateChange;
+import me.phoenixra.atumvr.core.input.OpenXRInputHandler;
 import me.phoenixra.atumvr.core.rendering.OpenXRRenderer;
 import me.phoenixra.atumvr.example.rendering.ExampleVRRenderer;
 import org.jetbrains.annotations.NotNull;
@@ -13,6 +15,8 @@ import org.jetbrains.annotations.Nullable;
 
 public class ExampleVRProvider extends OpenXRProvider {
 
+    @Getter
+    private boolean xrStopping = false;
     public ExampleVRProvider(@NotNull VRLogger logger) {
         super("ExampleApp",logger);
     }
@@ -23,6 +27,12 @@ public class ExampleVRProvider extends OpenXRProvider {
         return new OpenXRState(this);
     }
 
+    @Override
+    public void onStateChanged(XRSessionStateChange state) {
+        if(state == XRSessionStateChange.STOPPING){
+            xrStopping = true;
+        }
+    }
 
     @Override
     public @NotNull OpenXRRenderer createRenderer() {
@@ -33,7 +43,7 @@ public class ExampleVRProvider extends OpenXRProvider {
 
 
     @Override
-    public @NotNull VRInputHandler createInputHandler() {
-        return null;
+    public @NotNull OpenXRInputHandler createInputHandler() {
+        return new OpenXRInputHandler(this);
     }
 }

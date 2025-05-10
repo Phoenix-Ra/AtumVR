@@ -2,39 +2,23 @@ package me.phoenixra.atumvr.core;
 
 import lombok.Getter;
 import me.phoenixra.atumvr.api.VRState;
-import me.phoenixra.atumvr.core.enums.OpenXREvent;
+import me.phoenixra.atumvr.core.enums.XREvent;
 import me.phoenixra.atumvr.core.enums.XRSessionStateChange;
 import me.phoenixra.atumvr.core.init.OpenXRInstance;
 import me.phoenixra.atumvr.core.init.OpenXRSession;
 import me.phoenixra.atumvr.core.init.OpenXRSwapChain;
 import me.phoenixra.atumvr.core.init.OpenXRSystem;
-import me.phoenixra.atumvr.core.oscompat.OSCompatibility;
-import org.lwjgl.PointerBuffer;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL21;
-import org.lwjgl.opengl.GL30;
-import org.lwjgl.opengl.GL31;
 import org.lwjgl.openxr.*;
 import org.lwjgl.system.MemoryStack;
 
-import java.nio.ByteBuffer;
-import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
-import java.nio.LongBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.lwjgl.system.MemoryStack.stackCalloc;
-import static org.lwjgl.system.MemoryStack.stackPush;
-import static org.lwjgl.system.MemoryUtil.*;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
 public class OpenXRState implements VRState {
     @Getter
     private OpenXRProvider vrProvider;
-
-    @Getter
-    protected OSCompatibility osCompatibility;
 
     @Getter
     protected OpenXRInstance xrInstance;
@@ -48,37 +32,39 @@ public class OpenXRState implements VRState {
 
 
     @Getter
-    protected final List<OpenXREvent> xrEventsReceived = new ArrayList<>();
+    protected final List<XREvent> xrEventsReceived = new ArrayList<>();
 
 
     @Getter
-    protected boolean paused = true;
+    protected boolean paused = false;
+    @Getter
+    protected boolean running = false;
+
     @Getter
     protected boolean initialized = false;
 
     public OpenXRState(OpenXRProvider vrProvider){
         this.vrProvider = vrProvider;
-        this.osCompatibility = OSCompatibility.detectDevice();
-        xrInstance = new OpenXRInstance(this);
-        xrSystem = new OpenXRSystem(this);
-        xrSession = new OpenXRSession(this);
-        xrSwapChain = new OpenXRSwapChain(this);
+
     }
 
     @Override
     public void init() throws Throwable{
+        this.xrInstance = new OpenXRInstance(this);
+        this.xrSystem = new OpenXRSystem(this);
+        this.xrSession = new OpenXRSession(this);
+        this.xrSwapChain = new OpenXRSwapChain(this);
+
         xrInstance.init();
         xrSystem.init();
         xrSession.init();
-        /*while (paused) {
-            vrProvider.getLogger().logInfo("Waiting for OpenXR session READY state...");
-            pollVREvents();
-        }
-        xrSession.initSpace();*/
 
         xrSwapChain.init();
 
-        vrProvider.getVrRenderer().init();
+        vrProvider.inputHandler.init();
+        vrProvider.vrRenderer.init();
+
+        initialized = true;
     }
 
 
@@ -95,8 +81,8 @@ public class OpenXRState implements VRState {
                 break;
             }
             var event = XrEventDataBaseHeader.create(eventBuffer.address());
-            var vrEvent = OpenXREvent.fromId(event.type());
-            if (vrEvent == OpenXREvent.SESSION_STATE_CHANGED) {
+            var vrEvent = XREvent.fromId(event.type());
+            if (vrEvent == XREvent.SESSION_STATE_CHANGED) {
                 xrStateChanged(
                         XrEventDataSessionStateChanged.create(event.address())
                 );
@@ -108,7 +94,7 @@ public class OpenXRState implements VRState {
     private void xrStateChanged(XrEventDataSessionStateChanged event) {
         var stateChange = XRSessionStateChange.fromId(event.state());
         switch (stateChange) {
-            case READY: {
+            case READY -> {
                 try (MemoryStack stack = MemoryStack.stackPush()) {
                     XrSessionBeginInfo sessionBeginInfo = XrSessionBeginInfo.calloc(stack)
                             .type(XR10.XR_TYPE_SESSION_BEGIN_INFO)
@@ -120,42 +106,31 @@ public class OpenXRState implements VRState {
                             "xrBeginSession", "XRStateChangeREADY"
                     );
                 }
-                this.paused = false;
-                break;
-            }
-            case STOPPING: {
-                vrProvider.checkXRError(
-                        XR10.xrEndSession(xrSession.getHandle()),
-                        "xrEndSession", "XRStateChangeSTOPPING"
-                );
+                this.running = true;
 
-                vrProvider.destroy();
             }
-            case VISIBLE, FOCUSED: {
-                paused = false;
-                break;
+
+            case STOPPING -> {
+                this.running = false;
+                this.paused = false;
             }
-            case EXITING, IDLE, SYNCHRONIZED: {
-                paused = true;
-                break;
-            }
-            case LOSS_PENDING: {
-                break;
-            }
-            default:
-                break;
+
+            case VISIBLE, FOCUSED -> paused = false;
+
+            case EXITING, IDLE, SYNCHRONIZED -> paused = true;
         }
+        vrProvider.onStateChanged(stateChange);
     }
 
 
 
     @Override
-    public int getEyeMaxWidth() {
+    public int getEyeTexWidth() {
         return xrSwapChain.getEyeMaxWidth();
     }
 
     @Override
-    public int getEyeMaxHeight() {
+    public int getEyeTexHeight() {
         return xrSwapChain.getEyeMaxHeight();
     }
 

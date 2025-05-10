@@ -9,15 +9,14 @@ import org.lwjgl.openxr.*;
 import org.lwjgl.system.MemoryStack;
 
 import java.nio.ByteBuffer;
-import java.nio.IntBuffer;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class OpenXRInstance {
+    private final static String GRAPHICS_EXTENSION = KHROpenGLEnable.XR_KHR_OPENGL_ENABLE_EXTENSION_NAME;
     private final OpenXRState xrState;
     @Getter
     protected XrInstance handle;
+
     @Getter
     protected final XrEventDataBuffer xrEventBuffer;
 
@@ -25,7 +24,7 @@ public class OpenXRInstance {
 
     public OpenXRInstance(OpenXRState xrState){
         this.xrState = xrState;
-        xrEventBuffer = XrEventDataBuffer.calloc();
+        this.xrEventBuffer = XrEventDataBuffer.calloc();
     }
 
     public void init() {
@@ -33,148 +32,165 @@ public class OpenXRInstance {
 
 
             OpenXRProvider provider = this.xrState.getVrProvider();
-            // Initialize platform-specific XR loader
-            this.xrState.getOsCompatibility().initOpenXRLoader(stack);
 
-            // 1) Enumerate available instance extensions
-            IntBuffer extCountBuf = stack.callocInt(1);
-            provider.checkXRError(
-                    XR10.xrEnumerateInstanceExtensionProperties((ByteBuffer)null, extCountBuf, null),
-                    "xrEnumerateInstanceExtensionProperties", "count"
+            var extensionsPointer = setupExtensions(
+                    provider, stack
             );
 
-            int extCount = extCountBuf.get(0);
-            XrExtensionProperties.Buffer extProps = XrExtensionProperties
-                    .calloc(extCount, stack);
-            extProps.forEach(prop -> prop.type(XR10.XR_TYPE_EXTENSION_PROPERTIES));
-
-            provider.checkXRError(
-                    XR10.xrEnumerateInstanceExtensionProperties((ByteBuffer)null, extCountBuf, extProps),
-                    "xrEnumerateInstanceExtensionProperties", "properties"
-            );
-
-            // Collect supported extension names
-            Set<String> availableExtensions = new HashSet<>(extCount);
-            for (XrExtensionProperties prop : extProps) {
-                availableExtensions.add(prop.extensionNameString());
-            }
-
-            // 2) Define desired extensions in priority order
-            List<String> desiredExtensions = List.of(
-                    this.xrState.getOsCompatibility().getGraphicsExtension(),
-                    EXTDebugUtils.XR_EXT_DEBUG_UTILS_EXTENSION_NAME,
-                    EXTHPMixedRealityController.XR_EXT_HP_MIXED_REALITY_CONTROLLER_EXTENSION_NAME,
-                    HTCViveCosmosControllerInteraction.XR_HTC_VIVE_COSMOS_CONTROLLER_INTERACTION_EXTENSION_NAME,
-                    BDControllerInteraction.XR_BD_CONTROLLER_INTERACTION_EXTENSION_NAME,
-                    FBDisplayRefreshRate.XR_FB_DISPLAY_REFRESH_RATE_EXTENSION_NAME,
-                    KHRVisibilityMask.XR_KHR_VISIBILITY_MASK_EXTENSION_NAME //@TODO test mask for performance improvements
-            );
-
-            // Ensure graphics extension is present
-            String graphicsExt = desiredExtensions.get(0);
-            if (!availableExtensions.contains(graphicsExt)) {
-                throw new VRException("Missing required graphics extension: " + graphicsExt);
-            }
-
-            // Build PointerBuffer of only the extensions actually supported
-            PointerBuffer enabledExtBuf = stack.mallocPointer(desiredExtensions.size());
-            for (String extName : desiredExtensions) {
-                if (availableExtensions.contains(extName)) {
-                    enabledExtBuf.put(stack.UTF8(extName));
-                }
-            }
-            enabledExtBuf.flip();
-
-            // 3) Fill XrApplicationInfo
-            XrApplicationInfo appInfo = XrApplicationInfo.calloc(stack)
+            // 1) Fill XrApplicationInfo
+            var appInfo = XrApplicationInfo.calloc(stack)
                     .applicationName(stack.UTF8("AtumVRExample"))
                     .applicationVersion(1)
                     .engineName(stack.UTF8("AtumEngine"))
                     .engineVersion(1)
                     .apiVersion(XR10.XR_MAKE_VERSION(1, 0, 40));
 
-            // 4) Create XrInstanceCreateInfo
-            XrInstanceCreateInfo instInfo = XrInstanceCreateInfo.calloc(stack)
+            // 2) Create XrInstanceCreateInfo
+            var instInfo = XrInstanceCreateInfo.calloc(stack)
                     .type(XR10.XR_TYPE_INSTANCE_CREATE_INFO)
                     .next(0)
                     .applicationInfo(appInfo)
-                    .enabledExtensionNames(enabledExtBuf)
+                    .enabledExtensionNames(extensionsPointer)
                     .enabledApiLayerNames(null);
 
-            // 5) Create the instance and handle errors
-            PointerBuffer instPtr = stack.callocPointer(1);
-            int result = XR10.xrCreateInstance(instInfo, instPtr);
+            // 3) Create the instance and handle errors
+            var instancePointer = stack.callocPointer(1);
+            int result = XR10.xrCreateInstance(instInfo, instancePointer);
             if (result == XR10.XR_ERROR_RUNTIME_FAILURE) {
                 throw new VRException("Failed to create XrInstance: runtime failure (is headset connected?)");
             } else if (result == XR10.XR_ERROR_INSTANCE_LOST) {
                 throw new VRException("Failed to create XrInstance: instance lost during creation");
             } else if (result != XR10.XR_SUCCESS) {
-                throw new VRException("xrCreateInstance returned: " + provider.getXRActionResult(result));
+                provider.checkXRError(result, "xrCreateInstance", "Failed to create XrInstance");
             }
 
-            this.handle = new XrInstance(instPtr.get(0), instInfo);
+            this.handle = new XrInstance(instancePointer.get(0), instInfo);
 
             if(handle.getCapabilities().XR_EXT_debug_utils) {
-                setupDebugMessenger();
+                setupDebugMessenger(provider, stack);
             }
         }
     }
-    private void setupDebugMessenger() {
-        try ( MemoryStack stack = MemoryStack.stackPush() ) {
-            XrDebugUtilsMessengerCreateInfoEXT createInfo = XrDebugUtilsMessengerCreateInfoEXT
-                    .calloc(stack)
-                    .type$Default()  // XR_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT :contentReference[oaicite:0]{index=0}
-                    .messageSeverities(
-                            EXTDebugUtils.XR_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT
-                                    | EXTDebugUtils.XR_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT
-                                    | EXTDebugUtils.XR_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT
-                                    | EXTDebugUtils.XR_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT
-                    )
-                    // catch every message type:
-                    .messageTypes(
-                            EXTDebugUtils.XR_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT
-                                    | EXTDebugUtils.XR_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT
-                                    | EXTDebugUtils.XR_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT
-                                    | EXTDebugUtils.XR_DEBUG_UTILS_MESSAGE_TYPE_CONFORMANCE_BIT_EXT
-                    );
+
+    private PointerBuffer setupExtensions(OpenXRProvider provider, MemoryStack stack){
 
 
-            XrDebugUtilsMessengerCallbackEXTI debugCallback = (messageSeverity, messageTypes, pCallbackData, pUserData) -> {
+        // 1) Enumerate available instance extensions
+        var extCountBuf = stack.callocInt(1);
+        provider.checkXRError(
+                XR10.xrEnumerateInstanceExtensionProperties((ByteBuffer)null, extCountBuf, null),
+                "xrEnumerateInstanceExtensionProperties", "count"
+        );
 
-                XrDebugUtilsMessengerCallbackDataEXT data =
-                        XrDebugUtilsMessengerCallbackDataEXT.create(pCallbackData);
+        int extCount = extCountBuf.get(0);
+        var extProperties = XrExtensionProperties
+                .calloc(extCount, stack);
+        extProperties.forEach(
+                prop -> prop.type(XR10.XR_TYPE_EXTENSION_PROPERTIES)
+        );
 
-                xrState.getVrProvider().getLogger().logDebug(
-                        String.format(
-                                "[OpenXR][%s] %s%n",
-                                data.functionNameString(),
-                                data.messageString()
-                        )
-                );
-                return XR10.XR_FALSE; // don't abort the call that triggered this
-            };
+        provider.checkXRError(
+                XR10.xrEnumerateInstanceExtensionProperties((ByteBuffer)null, extCountBuf, extProperties),
+                "xrEnumerateInstanceExtensionProperties", "properties"
+        );
 
-            createInfo
-                    .userCallback(debugCallback)
-                    .userData(0);
-
-            PointerBuffer pMessenger = stack.mallocPointer(1);
-            int err = EXTDebugUtils.xrCreateDebugUtilsMessengerEXT(
-                    handle, createInfo, pMessenger
-            );
-            xrState.getVrProvider().checkXRError(
-                    err, "xrCreateDebugUtilsMessengerEXT", ""
-            );
-            debugMessenger = new XrDebugUtilsMessengerEXT(pMessenger.get(0), handle);
+        // Collect supported extension names
+        Set<String> availableExtensions = new HashSet<>(extCount);
+        for (XrExtensionProperties prop : extProperties) {
+            availableExtensions.add(prop.extensionNameString());
         }
+
+
+        // 2) Define desired extensions in priority order
+        List<String> desiredExtensions = new ArrayList<>(List.of(
+                GRAPHICS_EXTENSION,
+
+                EXTDebugUtils.XR_EXT_DEBUG_UTILS_EXTENSION_NAME,
+                FBDisplayRefreshRate.XR_FB_DISPLAY_REFRESH_RATE_EXTENSION_NAME,
+                KHRVisibilityMask.XR_KHR_VISIBILITY_MASK_EXTENSION_NAME //@TODO test mask for performance improvements
+        ));
+        desiredExtensions.addAll(provider.getXRAppExtensions());
+
+        // Ensure graphics extension is present
+        if (!availableExtensions.contains(GRAPHICS_EXTENSION)) {
+            throw new VRException(
+                    "Missing required graphics extension: " + GRAPHICS_EXTENSION
+            );
+        }
+
+        // Build PointerBuffer of only the extensions actually supported
+        var enabledExtensions = stack.mallocPointer(desiredExtensions.size());
+        for (String extName : desiredExtensions) {
+            if (availableExtensions.contains(extName)) {
+                enabledExtensions.put(stack.UTF8(extName));
+            }
+        }
+        enabledExtensions.flip();
+        return enabledExtensions;
+    }
+
+    private void setupDebugMessenger(OpenXRProvider provider, MemoryStack stack) {
+        var createInfo = XrDebugUtilsMessengerCreateInfoEXT
+                .calloc(stack)
+                .type$Default()  // XR_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT :contentReference[oaicite:0]{index=0}
+                .messageSeverities(
+                        EXTDebugUtils.XR_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT
+                                | EXTDebugUtils.XR_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT
+                                | EXTDebugUtils.XR_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT
+                                | EXTDebugUtils.XR_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT
+                )
+                // catch every message type:
+                .messageTypes(
+                        EXTDebugUtils.XR_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT
+                                | EXTDebugUtils.XR_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT
+                                | EXTDebugUtils.XR_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT
+                                | EXTDebugUtils.XR_DEBUG_UTILS_MESSAGE_TYPE_CONFORMANCE_BIT_EXT
+                );
+
+
+        XrDebugUtilsMessengerCallbackEXTI debugCallback = (messageSeverity, messageTypes, pCallbackData, pUserData) -> {
+
+            var data = XrDebugUtilsMessengerCallbackDataEXT.create(pCallbackData);
+
+            provider.getLogger().logDebug(
+                    String.format(
+                            "[OpenXR][%s] %s%n",
+                            data.functionNameString(),
+                            data.messageString()
+                    )
+            );
+            return XR10.XR_FALSE; // don't abort the call that triggered this
+        };
+
+        createInfo
+                .userCallback(debugCallback)
+                .userData(0);
+
+        PointerBuffer pMessenger = stack.callocPointer(1);
+        int err = EXTDebugUtils.xrCreateDebugUtilsMessengerEXT(
+                handle, createInfo, pMessenger
+        );
+        provider.checkXRError(
+                err, "xrCreateDebugUtilsMessengerEXT", ""
+        );
+        debugMessenger = new XrDebugUtilsMessengerEXT(pMessenger.get(0), handle);
     }
     public void destroy(){
         if (debugMessenger != null) {
-            EXTDebugUtils.xrDestroyDebugUtilsMessengerEXT(debugMessenger);
+            xrState.getVrProvider().checkXRError(
+                    false,
+                    EXTDebugUtils.xrDestroyDebugUtilsMessengerEXT(debugMessenger),
+                    "xrDestroyDebugUtilsMessengerEXT",
+                    ""
+            );
         }
         if (handle != null) {
-            int error = XR10.xrDestroyInstance(handle);
-            xrState.getVrProvider().checkXRError(error, "xrDestroyInstance", "");
+            xrState.getVrProvider().checkXRError(
+                    false,
+                    XR10.xrDestroyInstance(handle),
+                    "xrDestroyInstance",
+                    ""
+            );
         }
         xrEventBuffer.close();
     }

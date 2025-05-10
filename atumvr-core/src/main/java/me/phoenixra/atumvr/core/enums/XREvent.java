@@ -5,7 +5,7 @@ import org.lwjgl.openxr.*;
 
 import java.util.HashMap;
 
-public enum OpenXREvent {
+public enum XREvent {
     DISPLAY_REFRESH_RATE_CHANGED_FB(FBDisplayRefreshRate.XR_TYPE_EVENT_DATA_DISPLAY_REFRESH_RATE_CHANGED_FB),
     EVENTS_LOST(XR10.XR_TYPE_EVENT_DATA_EVENTS_LOST),
     EYE_CALIBRATION_CHANGED_ML(MLUserCalibration.XR_TYPE_EVENT_DATA_EYE_CALIBRATION_CHANGED_ML),
@@ -32,16 +32,16 @@ public enum OpenXREvent {
     @Getter
     private final int id;
 
-    private static final HashMap<Integer, OpenXREvent> values = new HashMap<>();
+    private static final HashMap<Integer, XREvent> values = new HashMap<>();
 
 
-    OpenXREvent(int id){
+    XREvent(int id){
         this.id = id;
     }
 
-    public static OpenXREvent fromId(int id){
+    public static XREvent fromId(int id){
         if(values.isEmpty()){
-            for(OpenXREvent event : values()){
+            for(XREvent event : values()){
                 values.put(event.id,event);
             }
         }
