@@ -1,4 +1,4 @@
-package me.phoenixra.atumvr.api.misc;
+package me.phoenixra.atumvr.api.misc.color;
 
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;

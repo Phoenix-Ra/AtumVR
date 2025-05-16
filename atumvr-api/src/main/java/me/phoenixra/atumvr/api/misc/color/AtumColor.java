@@ -1,4 +1,4 @@
-package me.phoenixra.atumvr.api.misc;
+package me.phoenixra.atumvr.api.misc.color;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -7,7 +7,6 @@ import java.awt.Color;
 
 /**
  * The AtumColor interface defines the common functionality for color objects
- * used throughout the API.
  * Colors are represented with normalized float values
  * for red, green, blue, and alpha (transparency) as well as corresponding integer
  * representations (0–255) cached for performance reasons.

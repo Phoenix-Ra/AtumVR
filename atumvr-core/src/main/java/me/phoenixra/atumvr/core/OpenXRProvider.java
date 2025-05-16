@@ -3,9 +3,7 @@ package me.phoenixra.atumvr.core;
 import lombok.Getter;
 import me.phoenixra.atumvr.api.VRLogger;
 import me.phoenixra.atumvr.api.VRProvider;
-import me.phoenixra.atumvr.api.enums.EyeType;
 import me.phoenixra.atumvr.api.exceptions.VRException;
-import me.phoenixra.atumvr.api.input.VRInputHandler;
 import me.phoenixra.atumvr.api.rendering.RenderContext;
 import me.phoenixra.atumvr.api.rendering.VRRenderer;
 import me.phoenixra.atumvr.core.enums.XRActionResult;
@@ -32,13 +30,13 @@ public abstract class OpenXRProvider implements VRProvider {
     private final VRLogger logger;
 
     @Getter
-    protected OpenXRState vrState;
+    protected OpenXRState state;
 
     @Getter
     protected OpenXRInputHandler inputHandler;
 
     @Getter
-    protected VRRenderer vrRenderer;
+    protected VRRenderer renderer;
 
 
 
@@ -53,7 +51,7 @@ public abstract class OpenXRProvider implements VRProvider {
                           @NotNull VRLogger logger){
         this.appName = appName;
         this.logger = logger;
-        this.vrState =  createStateHandler();
+        this.state =  createStateHandler();
     }
 
 
@@ -76,26 +74,26 @@ public abstract class OpenXRProvider implements VRProvider {
 
     @Override
     public void initializeVR() throws Throwable{
-        if (vrState.isInitialized()) {
+        if (state.isInitialized()) {
             throw new VRException("Already initialized!");
         }
-        this.vrState = new OpenXRState(this);
-        this.vrRenderer = createRenderer();
+        this.state = new OpenXRState(this);
+        this.renderer = createRenderer();
         this.inputHandler = createInputHandler();
 
-        vrState.init();
+        state.init();
 
     }
 
     @Override
     public void preRender(@NotNull RenderContext context) {
-        vrState.pollVREvents();
+        state.pollVREvents();
         try (MemoryStack stack = MemoryStack.stackPush()) {
             XrFrameState frameState = XrFrameState.calloc(stack).type(XR10.XR_TYPE_FRAME_STATE);
 
             checkXRError(
                     XR10.xrWaitFrame(
-                            vrState.xrSession.getHandle(),
+                            state.vrSession.getHandle(),
                             XrFrameWaitInfo.calloc(stack)
                                     .type(XR10.XR_TYPE_FRAME_WAIT_INFO),
                             frameState
@@ -107,7 +105,7 @@ public abstract class OpenXRProvider implements VRProvider {
 
             checkXRError(
                     XR10.xrBeginFrame(
-                            vrState.xrSession.getHandle(),
+                            state.vrSession.getHandle(),
                             XrFrameBeginInfo.calloc(stack)
                                     .type(XR10.XR_TYPE_FRAME_BEGIN_INFO)
                     ),
@@ -124,14 +122,14 @@ public abstract class OpenXRProvider implements VRProvider {
                     0,
                     XR10.XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO,
                     frameState.predictedDisplayTime(),
-                    vrState.getXrSession().getXrAppSpace()
+                    state.getVrSession().getXrAppSpace()
             );
 
             checkXRError(
                     XR10.xrLocateViews(
-                            vrState.xrSession.getHandle(),
+                            state.vrSession.getHandle(),
                             viewLocateInfo, viewState,
-                            intBuf, vrState.xrSwapChain.getXrViewBuffer()
+                            intBuf, state.vrSwapChain.getXrViewBuffer()
                     ),
                     "xrLocateViews", ""
             );
@@ -143,7 +141,7 @@ public abstract class OpenXRProvider implements VRProvider {
 
     @Override
     public void render(@NotNull RenderContext context) {
-        vrRenderer.renderFrame();
+        renderer.renderFrame();
     }
 
     @Override
@@ -156,7 +154,7 @@ public abstract class OpenXRProvider implements VRProvider {
 
     @Override
     public void destroy() {
-        vrState.destroy();
+        state.destroy();
     }
 
     public void checkXRError(int xrResult, String caller, String... args) throws VRException{
@@ -186,14 +184,14 @@ public abstract class OpenXRProvider implements VRProvider {
                 ? result.toString()
                 : null;
         if (resultString == null) {
-            if(vrState.xrInstance == null){
+            if(state.vrInstance == null){
                 return  "Unknown XR Action Result: " + resultId;
             }
             // ask the runtime for the xrResult name
             try (MemoryStack stack = MemoryStack.stackPush()) {
                 ByteBuffer str = stack.calloc(XR10.XR_MAX_RESULT_STRING_SIZE);
 
-                if (XR10.xrResultToString(vrState.xrInstance.getHandle(), resultId, str) == XR10.XR_SUCCESS) {
+                if (XR10.xrResultToString(state.vrInstance.getHandle(), resultId, str) == XR10.XR_SUCCESS) {
                     resultString = (memUTF8(memAddress(str)));
                 } else {
                     resultString = "Unknown XR Action Result: " + resultId;

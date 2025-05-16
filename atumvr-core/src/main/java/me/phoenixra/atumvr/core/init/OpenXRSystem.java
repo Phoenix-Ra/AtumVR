@@ -45,7 +45,7 @@ public class OpenXRSystem {
             LongBuffer sysIdBuf = stack.callocLong(1);
             provider.checkXRError(
                     XR10.xrGetSystem(
-                            xrState.getXrInstance().getHandle(),
+                            xrState.getVrInstance().getHandle(),
                             sysGetInfo,
                             sysIdBuf
                     ),
@@ -62,7 +62,7 @@ public class OpenXRSystem {
                     .type(XR10.XR_TYPE_SYSTEM_PROPERTIES);
             provider.checkXRError(
                     XR10.xrGetSystemProperties(
-                            xrState.getXrInstance().getHandle(),
+                            xrState.getVrInstance().getHandle(),
                             systemId,
                             sysProps
                     ),

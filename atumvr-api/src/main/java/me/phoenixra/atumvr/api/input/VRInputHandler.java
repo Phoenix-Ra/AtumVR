@@ -1,37 +1,33 @@
 package me.phoenixra.atumvr.api.input;
 
 import me.phoenixra.atumvr.api.VRProvider;
-import me.phoenixra.atumvr.api.input.devices.VRDevice;
+import me.phoenixra.atumvr.api.input.action.VRActionSet;
+import me.phoenixra.atumvr.api.input.device.VRDevice;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
-import java.util.List;
 
 
-public interface VRInputHandler<DEVICE extends VRDevice> {
+public interface VRInputHandler {
 
     void init();
+
     void update();
 
 
 
+    Collection<? extends VRActionSet> getActionSets();
 
 
-    Collection<DEVICE> getDevices();
+    void registerDevice(VRDevice device);
 
-    DEVICE getDevice(String id);
+    VRDevice getDevice(String id);
 
-    void registerDevice(DEVICE device);
+    default <T extends VRDevice> T getDevice(String id, Class<T> clazz){
+        return (T) getDevice(id);
+    }
 
-    @NotNull
-    DEVICE getHmd();
-    @NotNull
-    DEVICE getRightController();
-    @NotNull
-    DEVICE getLeftController();
-
-
+    Collection<? extends VRDevice> getDevices();
 
 
     @NotNull

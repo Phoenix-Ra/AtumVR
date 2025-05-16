@@ -1,15 +1,46 @@
 package me.phoenixra.atumvr.core;
 
+import org.jetbrains.annotations.Nullable;
+import org.joml.*;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.openxr.*;
 import org.lwjgl.system.MemoryStack;
-
-import java.nio.LongBuffer;
 
 import static org.lwjgl.openxr.XR10.xrStringToPath;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
 public class OpenXRHelper {
+
+    public static XrPosef getPoseIdentity(MemoryStack stack){
+        return XrPosef
+                .calloc(stack)
+                .orientation(XrQuaternionf.calloc(stack).set(0,0,0,1))
+                .position$(XrVector3f.calloc(stack).set(0,0,0));
+    }
+
+    @Nullable
+    public static XrSpaceLocation getXrLocationFromSpace(OpenXRProvider provider,
+                                                         XrSpace xrSpace,
+                                                         MemoryStack stack){
+        XrSpaceLocation space_location = XrSpaceLocation.calloc(stack).type(XR10.XR_TYPE_SPACE_LOCATION);
+
+        provider.checkXRError(
+                XR10.xrLocateSpace(
+                        xrSpace,
+                        provider.getState().getVrSession().getXrAppSpace(),
+                        provider.xrDisplayTime,
+                        space_location
+                ),
+                "xrLocateSpace"
+        );
+
+        if ((space_location.locationFlags() & XR10.XR_SPACE_LOCATION_POSITION_VALID_BIT) != 0 &&
+                (space_location.locationFlags() & XR10.XR_SPACE_LOCATION_ORIENTATION_VALID_BIT) != 0) {
+
+            return space_location;
+        }
+        return null;
+    }
     public static XrSpace createReferenceSpace(OpenXRState state,
                                                int spaceType,
                                                XrPosef identityPose,
@@ -20,7 +51,7 @@ public class OpenXRHelper {
                 .referenceSpaceType(spaceType)
                 .poseInReferenceSpace(identityPose);
 
-        XrSession handle = state.getXrSession().getHandle();
+        XrSession handle = state.getVrSession().getHandle();
         PointerBuffer pSpace = stack.callocPointer(1);
         state.getVrProvider().checkXRError(
                 XR10.xrCreateReferenceSpace(handle, spaceInfo, pSpace),
@@ -29,9 +60,52 @@ public class OpenXRHelper {
 
         return new XrSpace(pSpace.get(0), handle);
     }
-    public static long toPath(XrInstance instance, String path, MemoryStack stack) {
-        LongBuffer pb = stack.callocLong(1);
-        xrStringToPath(instance, stack.UTF8(path), pb);
-        return pb.get(0);
+
+
+    public static Matrix4f normalizeXrPose(XrPosef value){
+
+        XrQuaternionf orientation = value.orientation();
+        XrVector3f position = value.position$();
+
+        Quaternionf rotation = new Quaternionf(
+                orientation.x(),
+                orientation.y(),
+                orientation.z(),
+                orientation.w()
+        );
+        return new Matrix4f().identity()
+                .translate(position.x(), position.y(), position.z())
+                .rotate(rotation);
+    }
+
+    public static Quaternionf normalizeXrQuaternion(XrQuaternionf value){
+        return new Quaternionf(
+                value.x(),
+                value.y(),
+                value.z(),
+                value.w()
+        );
+    }
+
+    public static Vector2f normalizeXrVector(XrVector2f xrVector){
+        return new Vector2f(
+                xrVector.x(),
+                xrVector.y()
+        );
+    }
+    public static Vector3f normalizeXrVector(XrVector3f xrVector){
+        return new Vector3f(
+                xrVector.x(),
+                xrVector.y(),
+                xrVector.z()
+        );
+    }
+    public static Vector4f normalizeXrVector(XrVector4f xrVector){
+        return new Vector4f(
+                xrVector.x(),
+                xrVector.y(),
+                xrVector.z(),
+                xrVector.w()
+        );
     }
 }

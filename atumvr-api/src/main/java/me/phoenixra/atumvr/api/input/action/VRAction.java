@@ -1,17 +1,8 @@
 package me.phoenixra.atumvr.api.input.action;
 
-public interface VRAction<HANDLE, SET_HANDLE>  {
+public interface VRAction  {
 
-    void init(VRActionSet<SET_HANDLE> actionSet);
-
-    void update();
-
-    void destroy();
-
-
-    HANDLE getHandle();
-
-    VRActionSet<SET_HANDLE> getActionSet();
+    VRActionSet getActionSet();
 
 
     String getName();

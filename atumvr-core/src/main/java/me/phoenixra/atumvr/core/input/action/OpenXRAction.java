@@ -4,16 +4,18 @@ import lombok.Getter;
 import me.phoenixra.atumvr.api.input.action.VRAction;
 
 
+import me.phoenixra.atumvr.core.OpenXRProvider;
 import me.phoenixra.atumvr.core.enums.XRInputActionType;
-import me.phoenixra.atumvr.core.enums.XRInteractionProfile;
-import me.phoenixra.atumvr.core.input.actionset.OpenXRActionSet;
 import org.lwjgl.openxr.XR10;
 import org.lwjgl.openxr.XrAction;
-import org.lwjgl.openxr.XrActionSet;
 
-import java.util.HashMap;
 
-public abstract class OpenXRAction implements VRAction<XrAction, XrActionSet> {
+
+public abstract class OpenXRAction implements VRAction {
+    public static final String LEFT_HAND_PATH = "/user/hand/left";
+    public static final String RIGHT_HAND_PATH = "/user/hand/right";
+
+    protected OpenXRProvider provider;
 
     @Getter
     protected XrAction handle;
@@ -28,23 +30,27 @@ public abstract class OpenXRAction implements VRAction<XrAction, XrActionSet> {
 
     protected final XRInputActionType actionType;
 
-    public OpenXRAction(OpenXRActionSet actionSet,
+    public OpenXRAction(OpenXRProvider provider,
+                        OpenXRActionSet actionSet,
                         String name,
                         String localizedName,
                         XRInputActionType actionType) {
+        this.provider = provider;
         this.actionSet = actionSet;
         this.name = name;
         this.localizedName = localizedName;
         this.actionType = actionType;
     }
 
+    public abstract void init(OpenXRActionSet actionSet);
 
-    public abstract HashMap<XRInteractionProfile, String> getProfiles();
+    public abstract void update();
 
 
-    @Override
     public void destroy() {
-        XR10.xrDestroyAction(handle);
+        if(handle != null) {
+            XR10.xrDestroyAction(handle);
+        }
     }
 
 

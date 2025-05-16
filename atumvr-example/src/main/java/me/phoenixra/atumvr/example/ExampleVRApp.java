@@ -1,7 +1,6 @@
 package me.phoenixra.atumvr.example;
 
 import lombok.Getter;
-import me.phoenixra.atumconfig.api.ConfigLogger;
 import me.phoenixra.atumvr.api.VRLogger;
 import me.phoenixra.atumvr.api.rendering.RenderContext;
 import org.jetbrains.annotations.NotNull;
@@ -9,13 +8,15 @@ import org.jetbrains.annotations.NotNull;
 import java.io.File;
 import java.util.Scanner;
 
-public class ExampleVRCore {
-    public static ExampleVRCore appInstance;
+public class ExampleVRApp {
+    public static ExampleVRApp appInstance;
     public static ExampleVRProvider provider;
     @Getter
     private final File dataFolder;
 
-    public ExampleVRCore() {
+    public static boolean leftHanded;
+
+    public ExampleVRApp() {
 
         dataFolder = new File("data");
     }
@@ -48,7 +49,7 @@ public class ExampleVRCore {
             do {
                 if(!init){
                     try {
-                        provider = new ExampleVRProvider(VRLogger.SIMPLE);
+                        provider = new ExampleVRProvider(VRLogger.SIMPLE.setDebug(true));
                         provider.initializeVR();
                     }catch (Throwable throwable){
                         throwable.printStackTrace();

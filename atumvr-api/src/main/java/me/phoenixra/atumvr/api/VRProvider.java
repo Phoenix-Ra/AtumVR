@@ -1,8 +1,6 @@
 package me.phoenixra.atumvr.api;
 
 
-
-import me.phoenixra.atumconfig.api.ConfigLogger;
 import me.phoenixra.atumvr.api.input.VRInputHandler;
 import me.phoenixra.atumvr.api.rendering.RenderContext;
 import me.phoenixra.atumvr.api.rendering.VRRenderer;
@@ -23,13 +21,13 @@ public interface VRProvider {
 
 
     @NotNull
-    VRState getVrState();
+    VRState getState();
 
     @NotNull
     VRInputHandler getInputHandler();
 
     @NotNull
-    VRRenderer getVrRenderer();
+    VRRenderer getRenderer();
 
 
 

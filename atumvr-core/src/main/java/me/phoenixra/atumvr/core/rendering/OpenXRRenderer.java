@@ -2,10 +2,12 @@ package me.phoenixra.atumvr.core.rendering;
 
 import lombok.Getter;
 import me.phoenixra.atumvr.api.enums.EyeType;
+import me.phoenixra.atumvr.api.input.device.VRDeviceHMD;
 import me.phoenixra.atumvr.api.rendering.VRRenderer;
 import me.phoenixra.atumvr.api.rendering.VRTexture;
 import me.phoenixra.atumvr.api.utils.GLUtils;
 import me.phoenixra.atumvr.core.OpenXRProvider;
+import me.phoenixra.atumvr.core.input.device.OpenXRDeviceHMD;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.opengl.GL;
@@ -14,6 +16,7 @@ import org.lwjgl.openxr.*;
 import org.lwjgl.system.MemoryStack;
 
 import java.nio.IntBuffer;
+import java.util.HashMap;
 
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
@@ -40,6 +43,8 @@ public abstract class OpenXRRenderer implements VRRenderer {
     protected OpenXRTexture[] leftFramebuffers;
     protected OpenXRTexture[] rightFramebuffers;
 
+    protected final HashMap<EyeType, float[]> hiddenArea = new HashMap<>();
+
     public OpenXRRenderer(OpenXRProvider vrProvider) {
         this.vrProvider = vrProvider;
 
@@ -51,6 +56,7 @@ public abstract class OpenXRRenderer implements VRRenderer {
     public void init() throws Throwable{
         setupResolution();
         setupEyes();
+        setupHiddenArea();
         onInit();
     }
 
@@ -66,12 +72,15 @@ public abstract class OpenXRRenderer implements VRRenderer {
 
         finishXrFrame();
 
+
         GL30.glFlush();
         GL30.glFinish();
     }
 
+
+
     protected void prepareXrFrame(){
-        XrSwapchain xrSwapchain = vrProvider.getVrState().getXrSwapChain().getHandle();
+        XrSwapchain xrSwapchain = vrProvider.getState().getVrSwapChain().getHandle();
         this.projectionLayerViews = XrCompositionLayerProjectionView.calloc(2);
         try (MemoryStack stack = MemoryStack.stackPush()) {
 
@@ -101,8 +110,9 @@ public abstract class OpenXRRenderer implements VRRenderer {
 
             // Render view to the appropriate part of the swapchain image.
             for (EyeType eyeType : EyeType.values()) {
-                int index = eyeType.getId();
-                XrView xrView = vrProvider.getInputHandler().getHmd().getXrView(eyeType);
+                int index = eyeType.getIndex();
+                XrView xrView = vrProvider.getInputHandler()
+                        .getDevice(VRDeviceHMD.ID, OpenXRDeviceHMD.class).getXrView(eyeType);
                 XrSwapchainSubImage subImage = this.projectionLayerViews.get(index)
                         .type(XR10.XR_TYPE_COMPOSITION_LAYER_PROJECTION_VIEW)
                         .pose(xrView.pose())
@@ -116,8 +126,9 @@ public abstract class OpenXRRenderer implements VRRenderer {
 
         }
     }
+
     protected void finishXrFrame(){
-        XrSwapchain xrSwapchain = vrProvider.getVrState().getXrSwapChain().getHandle();
+        XrSwapchain xrSwapchain = vrProvider.getState().getVrSwapChain().getHandle();
 
         try (MemoryStack stack = MemoryStack.stackPush()) {
             PointerBuffer layers = stack.callocPointer(1);
@@ -131,7 +142,7 @@ public abstract class OpenXRRenderer implements VRRenderer {
 
             XrCompositionLayerProjection compositionLayerProjection = XrCompositionLayerProjection.calloc(stack)
                     .type(XR10.XR_TYPE_COMPOSITION_LAYER_PROJECTION)
-                    .space(vrProvider.getVrState().getXrSession().getXrAppSpace())
+                    .space(vrProvider.getState().getVrSession().getXrAppSpace())
                     .views(this.projectionLayerViews);
 
             layers.put(compositionLayerProjection);
@@ -139,7 +150,7 @@ public abstract class OpenXRRenderer implements VRRenderer {
             layers.flip();
 
             error = XR10.xrEndFrame(
-                    vrProvider.getVrState().getXrSession().getHandle(),
+                    vrProvider.getState().getVrSession().getHandle(),
                     XrFrameEndInfo.calloc(stack)
                             .type(XR10.XR_TYPE_FRAME_END_INFO)
                             .displayTime(vrProvider.getXrDisplayTime())
@@ -193,8 +204,8 @@ public abstract class OpenXRRenderer implements VRRenderer {
 
     protected void setupResolution() {
 
-        resolutionWidth = vrProvider.getVrState().getEyeTexWidth();
-        resolutionHeight = vrProvider.getVrState().getEyeTexHeight();
+        resolutionWidth = vrProvider.getState().getEyeTexWidth();
+        resolutionHeight = vrProvider.getState().getEyeTexHeight();
     }
 
     protected void setupEyes() {
@@ -203,16 +214,16 @@ public abstract class OpenXRRenderer implements VRRenderer {
 
             // Get amount of views in the swapchain
             IntBuffer intBuffer = stack.ints(0); //Set value to 0
-            int error = XR10.xrEnumerateSwapchainImages(vrProvider.getVrState().getXrSwapChain().getHandle(), intBuffer, null);
+            int error = XR10.xrEnumerateSwapchainImages(vrProvider.getState().getVrSwapChain().getHandle(), intBuffer, null);
             vrProvider.checkXRError(error, "xrEnumerateSwapchainImages", "get count");
 
             // Now we know the amount, create the image buffer
             int imageCount = intBuffer.get(0);
             XrSwapchainImageOpenGLKHR.Buffer swapchainImageBuffer = vrProvider
-                    .getVrState().getXrSwapChain().createImageBuffers(imageCount,
+                    .getState().getVrSwapChain().createImageBuffers(imageCount,
                     stack);
 
-            error = XR10.xrEnumerateSwapchainImages(vrProvider.getVrState().getXrSwapChain().getHandle(), intBuffer,
+            error = XR10.xrEnumerateSwapchainImages(vrProvider.getState().getVrSwapChain().getHandle(), intBuffer,
                     XrSwapchainImageBaseHeader.create(swapchainImageBuffer.address(), swapchainImageBuffer.capacity()));
             vrProvider.checkXRError(error, "xrEnumerateSwapchainImages", "get images");
 
@@ -239,6 +250,77 @@ public abstract class OpenXRRenderer implements VRRenderer {
 
     }
 
+    protected void setupHiddenArea(){
+        try(MemoryStack stack = MemoryStack.stackPush()) {
+            XrSession xrSession = getVrProvider().getState().getVrSession().getHandle();
+            for (int eye = 0; eye < 2; ++eye) {
+                // 1) Allocate the mask struct
+                XrVisibilityMaskKHR mask = XrVisibilityMaskKHR
+                        .calloc(stack)
+                        .type(KHRVisibilityMask.XR_TYPE_VISIBILITY_MASK_KHR)
+                        .next(0);
+
+                // 2) First call: get counts
+                getVrProvider().checkXRError(
+                        KHRVisibilityMask.xrGetVisibilityMaskKHR(
+                                xrSession,
+                                XR10.XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO,
+                                eye,
+                                KHRVisibilityMask.XR_VISIBILITY_MASK_TYPE_HIDDEN_TRIANGLE_MESH_KHR,
+                                mask
+                        ),
+                        "xrGetVisibilityMaskKHR",
+                        "query counts"
+                );
+                int vertCount  = mask.vertexCountOutput();
+                int indexCount = mask.indexCountOutput();
+
+                if (indexCount <= 0) {
+                    getVrProvider().getLogger().logInfo("No hidden-area mesh found for eye " + eye);
+                    continue;
+                }
+
+                // 3) Allocate buffers for the data
+                XrVector2f.Buffer verts  = XrVector2f.calloc(vertCount, stack);
+                IntBuffer          idxBuf = stack.mallocInt(indexCount);
+
+                mask
+                        .vertexCapacityInput(vertCount)
+                        .indexCapacityInput(indexCount)
+                        .vertices(verts)
+                        .indices(idxBuf);
+
+                // 4) Second call: actually fill verts & indices
+                getVrProvider().checkXRError(
+                        KHRVisibilityMask.xrGetVisibilityMaskKHR(
+                                xrSession,
+                                XR10.XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO,
+                                eye,
+                                KHRVisibilityMask.XR_VISIBILITY_MASK_TYPE_HIDDEN_TRIANGLE_MESH_KHR,
+                                mask
+                        ),
+                        "xrGetVisibilityMaskKHR",
+                        "retrieve mesh"
+                );
+
+                // 5) Flatten into your float[] format (tri-list: x,y,x,y,…)
+                float[] area = new float[indexCount * 2];
+                for (int i = 0; i < indexCount; i++) {
+                    XrVector2f v = verts.get(idxBuf.get(i));
+                    // If your runtime gives coords in [-1..1], map them to [0..1]:
+                    float ux = (v.x() * 0.5f) + 0.5f;
+                    float uy = (v.y() * 0.5f) + 0.5f;
+                    // then to pixels:
+                    area[i*2    ] = ux * getResolutionWidth();
+                    area[i*2 + 1] = uy * getResolutionHeight();
+                }
+
+                hiddenArea.put(EyeType.asIndex(eye), area);
+                System.out.println("Hidden-area mesh loaded for eye " + eye);
+            }
+        }
+    }
+
     @Override
     public VRTexture getTextureLeftEye() {
         return leftFramebuffers[swapIndex];
@@ -251,7 +333,7 @@ public abstract class OpenXRRenderer implements VRRenderer {
 
     @Override
     public float[] getHiddenAreaVertices(EyeType eyeType) {
-        return new float[0];
+        return hiddenArea.get(eyeType);
     }
 
 }

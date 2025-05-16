@@ -75,13 +75,13 @@ public class ExampleCube {
 
 
 
-    private Vector3f position;
+    protected Vector3f position;
     @Getter
     private Vector3f positionOffset;
     @Getter
-    private Vector3f scale;
+    protected Vector3f scale;
     @Getter
-    private Vector3f rotation;
+    protected Vector3f rotation;
 
     public ExampleCube(StbTexture texture,Vector3f position, Vector3f scale, Vector3f rotation){
         this.texture = texture;

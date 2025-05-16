@@ -20,6 +20,13 @@ public class OpenXRInstance {
     @Getter
     protected final XrEventDataBuffer xrEventBuffer;
 
+    @Getter
+    private String runtimeName;
+    @Getter
+    private long runtimeVersion;
+    @Getter
+    private String runtimeVersionString;
+
     private XrDebugUtilsMessengerEXT debugMessenger;
 
     public OpenXRInstance(OpenXRState xrState){
@@ -29,9 +36,9 @@ public class OpenXRInstance {
 
     public void init() {
         try (MemoryStack stack = MemoryStack.stackPush()) {
-
-
             OpenXRProvider provider = this.xrState.getVrProvider();
+
+
 
             var extensionsPointer = setupExtensions(
                     provider, stack
@@ -69,6 +76,17 @@ public class OpenXRInstance {
             if(handle.getCapabilities().XR_EXT_debug_utils) {
                 setupDebugMessenger(provider, stack);
             }
+
+            var properties = XrInstanceProperties.calloc(stack).type$Default();
+            provider.checkXRError(
+                    XR10.xrGetInstanceProperties(handle, properties),
+                    "xrGetInstanceProperties"
+            );
+            runtimeName = properties.runtimeNameString();
+            runtimeVersion = properties.runtimeVersion();
+            runtimeVersionString = XR10.XR_VERSION_MAJOR(runtimeVersion)
+                    + "." + XR10.XR_VERSION_MINOR(runtimeVersion)
+                    + "." + XR10.XR_VERSION_PATCH(runtimeVersion);
         }
     }
 

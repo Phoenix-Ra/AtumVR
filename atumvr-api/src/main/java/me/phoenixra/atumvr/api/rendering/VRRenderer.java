@@ -12,19 +12,23 @@ public interface VRRenderer {
 
     void destroy();
 
+
     VRScene getCurrentScene();
+
 
     VRTexture getTextureRightEye();
 
     VRTexture getTextureLeftEye();
 
+
     int getResolutionWidth();
+
     int getResolutionHeight();
+
+
     long getWindowHandle();
 
     /**
-     * [USE AFTER INITIALIZATION]
-     * <br>
      * The area for which the stencil has to be used.
      * It is not rendered on VR eye
      *

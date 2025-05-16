@@ -4,7 +4,9 @@ package me.phoenixra.atumvr.example.rendering;
 import me.phoenixra.atumvr.api.rendering.VRScene;
 import me.phoenixra.atumvr.core.OpenXRProvider;
 import me.phoenixra.atumvr.core.rendering.OpenXRRenderer;
+import me.phoenixra.atumvr.example.ExampleVRProvider;
 import me.phoenixra.atumvr.example.scene.ExampleScene;
+import org.jetbrains.annotations.NotNull;
 
 public class ExampleVRRenderer extends OpenXRRenderer {
     private VRScene vrScene;
@@ -24,5 +26,8 @@ public class ExampleVRRenderer extends OpenXRRenderer {
     }
 
 
-
+    @Override
+    public @NotNull ExampleVRProvider getVrProvider() {
+        return (ExampleVRProvider) super.getVrProvider();
+    }
 }

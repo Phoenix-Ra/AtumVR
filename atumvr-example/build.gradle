@@ -9,6 +9,6 @@ dependencies {
 }
 jar {
     manifest {
-        attributes 'Main-Class': 'me.phoenixra.atumvr.example.ExampleVRCore'
+        attributes 'Main-Class': 'me.phoenixra.atumvr.example.ExampleVRApp'
     }
 }

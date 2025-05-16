@@ -21,13 +21,13 @@ public class OpenXRState implements VRState {
     private OpenXRProvider vrProvider;
 
     @Getter
-    protected OpenXRInstance xrInstance;
+    protected OpenXRInstance vrInstance;
     @Getter
-    protected OpenXRSystem xrSystem;
+    protected OpenXRSystem vrSystem;
     @Getter
-    protected OpenXRSession xrSession;
+    protected OpenXRSession vrSession;
     @Getter
-    protected OpenXRSwapChain xrSwapChain;
+    protected OpenXRSwapChain vrSwapChain;
 
 
 
@@ -48,21 +48,24 @@ public class OpenXRState implements VRState {
 
     }
 
-    @Override
     public void init() throws Throwable{
-        this.xrInstance = new OpenXRInstance(this);
-        this.xrSystem = new OpenXRSystem(this);
-        this.xrSession = new OpenXRSession(this);
-        this.xrSwapChain = new OpenXRSwapChain(this);
+        this.vrInstance = new OpenXRInstance(this);
+        this.vrSystem = new OpenXRSystem(this);
+        this.vrSession = new OpenXRSession(this);
+        this.vrSwapChain = new OpenXRSwapChain(this);
 
-        xrInstance.init();
-        xrSystem.init();
-        xrSession.init();
+        vrInstance.init();
+        vrSystem.init();
+        vrSession.init();
 
-        xrSwapChain.init();
+        vrSwapChain.init();
 
+        while (!running){
+            vrProvider.getLogger().logInfo("Waiting for OpenXR session to start...");
+            pollVREvents();
+        }
         vrProvider.inputHandler.init();
-        vrProvider.vrRenderer.init();
+        vrProvider.renderer.init();
 
         initialized = true;
     }
@@ -71,13 +74,14 @@ public class OpenXRState implements VRState {
 
     protected void pollVREvents() {
         xrEventsReceived.clear();
-        XrEventDataBuffer eventBuffer = xrInstance.getXrEventBuffer();
+        XrEventDataBuffer eventBuffer = vrInstance.getXrEventBuffer();
         while (true) {
             eventBuffer.clear();
             eventBuffer.type(XR10.XR_TYPE_EVENT_DATA_BUFFER);
-            int error = XR10.xrPollEvent(xrInstance.getHandle(), eventBuffer);
+            int error = XR10.xrPollEvent(vrInstance.getHandle(), eventBuffer);
             vrProvider.checkXRError(error, "xrPollEvent", "");
             if (error != XR10.XR_SUCCESS) {
+                //no more events available
                 break;
             }
             var event = XrEventDataBaseHeader.create(eventBuffer.address());
@@ -102,11 +106,12 @@ public class OpenXRState implements VRState {
                             .primaryViewConfigurationType(XR10.XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO);
 
                     vrProvider.checkXRError(
-                            XR10.xrBeginSession(xrSession.getHandle(), sessionBeginInfo),
+                            XR10.xrBeginSession(vrSession.getHandle(), sessionBeginInfo),
                             "xrBeginSession", "XRStateChangeREADY"
                     );
                 }
                 this.running = true;
+                vrProvider.getLogger().logInfo("OpenXR session is READY");
 
             }
 
@@ -124,14 +129,12 @@ public class OpenXRState implements VRState {
 
 
 
-    @Override
     public int getEyeTexWidth() {
-        return xrSwapChain.getEyeMaxWidth();
+        return vrSwapChain.getEyeMaxWidth();
     }
 
-    @Override
     public int getEyeTexHeight() {
-        return xrSwapChain.getEyeMaxHeight();
+        return vrSwapChain.getEyeMaxHeight();
     }
 
 
@@ -139,17 +142,17 @@ public class OpenXRState implements VRState {
 
     public void destroy(){
 
-        if(xrSwapChain != null){
-            xrSwapChain.destroy();
+        if(vrSwapChain != null){
+            vrSwapChain.destroy();
         }
-        if(xrSession != null){
-            xrSession.destroy();
+        if(vrSession != null){
+            vrSession.destroy();
         }
-        if(xrSystem != null){
-            xrSystem.destroy();
+        if(vrSystem != null){
+            vrSystem.destroy();
         }
-        if(xrInstance != null){
-            xrInstance.destroy();
+        if(vrInstance != null){
+            vrInstance.destroy();
         }
     }
 }

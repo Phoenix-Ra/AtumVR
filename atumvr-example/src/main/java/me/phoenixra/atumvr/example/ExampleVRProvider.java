@@ -9,6 +9,7 @@ import me.phoenixra.atumvr.core.OpenXRProvider;
 import me.phoenixra.atumvr.core.enums.XRSessionStateChange;
 import me.phoenixra.atumvr.core.input.OpenXRInputHandler;
 import me.phoenixra.atumvr.core.rendering.OpenXRRenderer;
+import me.phoenixra.atumvr.example.input.ExampleVRInputHandler;
 import me.phoenixra.atumvr.example.rendering.ExampleVRRenderer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -44,6 +45,11 @@ public class ExampleVRProvider extends OpenXRProvider {
 
     @Override
     public @NotNull OpenXRInputHandler createInputHandler() {
-        return new OpenXRInputHandler(this);
+        return new ExampleVRInputHandler(this);
+    }
+
+    @Override
+    public @NotNull ExampleVRInputHandler getInputHandler() {
+        return (ExampleVRInputHandler) super.getInputHandler();
     }
 }

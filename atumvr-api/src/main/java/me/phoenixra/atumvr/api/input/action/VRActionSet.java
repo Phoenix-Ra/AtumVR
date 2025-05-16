@@ -2,7 +2,7 @@ package me.phoenixra.atumvr.api.input.action;
 
 import java.util.Collection;
 
-public interface VRActionSet<HANDLE> {
+public interface VRActionSet {
 
 
     void init();
@@ -12,15 +12,14 @@ public interface VRActionSet<HANDLE> {
     void destroy();
 
 
-    HANDLE getHandle();
 
 
-    Collection<? extends VRAction<?,?>> getActions();
+    Collection<? extends VRAction> getActions();
 
 
     String getName();
 
     String getLocalizedName();
 
-    String getPriority();
+    int getPriority();
 }

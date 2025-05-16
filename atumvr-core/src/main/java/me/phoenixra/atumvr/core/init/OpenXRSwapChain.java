@@ -47,9 +47,9 @@ public class OpenXRSwapChain {
     public void init() {
         try (MemoryStack stack = MemoryStack.stackPush()) {
             OpenXRProvider provider = this.xrState.getVrProvider();
-            OpenXRInstance xrInstance  = xrState.getXrInstance();
-            long systemId = xrState.getXrSystem().getSystemId();
-            OpenXRSession xrSession  = xrState.getXrSession();
+            OpenXRInstance xrInstance  = xrState.getVrInstance();
+            long systemId = xrState.getVrSystem().getSystemId();
+            OpenXRSession xrSession  = xrState.getVrSession();
 
             // Check amount of views
             IntBuffer viewCountBuf = stack.callocInt(1);

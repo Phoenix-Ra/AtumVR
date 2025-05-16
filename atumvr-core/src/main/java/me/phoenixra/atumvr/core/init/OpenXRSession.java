@@ -13,7 +13,6 @@ import org.lwjgl.system.Struct;
 
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
-import static org.lwjgl.system.MemoryUtil.NULL;
 
 public class OpenXRSession {
     private final OpenXRState xrState;
@@ -43,15 +42,15 @@ public class OpenXRSession {
 
 
     private void initSession(OpenXRProvider provider, MemoryStack stack){
-        OpenXRInstance xrInstance  = xrState.getXrInstance();
-        OpenXRSystem xrSystem  = xrState.getXrSystem();
-        long systemId = xrState.getXrSystem().getSystemId();
+        OpenXRInstance xrInstance  = xrState.getVrInstance();
+        OpenXRSystem xrSystem  = xrState.getVrSystem();
+        long systemId = xrState.getVrSystem().getSystemId();
 
         Struct<?> graphicsBind = xrSystem.createGraphicsBinding(
                 stack,
                 xrInstance.getHandle(),
                 systemId,
-                provider.getVrRenderer().getWindowHandle()
+                provider.getRenderer().getWindowHandle()
         );
         var sessionInfo = XrSessionCreateInfo.calloc(stack)
                 .type(XR10.XR_TYPE_SESSION_CREATE_INFO)
@@ -79,6 +78,18 @@ public class OpenXRSession {
         xrAppSpace  = OpenXRHelper.createReferenceSpace(
                 xrState,
                 XR10.XR_REFERENCE_SPACE_TYPE_STAGE,
+                identity,
+                stack
+        );
+
+        identity = XrPosef.calloc(stack)
+                .set(
+                        XrQuaternionf.calloc(stack).set(0, 0, 0, 1),
+                        XrVector3f.calloc(stack).set(0f, 0f, 0f)
+                );
+        xrViewSpace = OpenXRHelper.createReferenceSpace(
+                xrState,
+                XR10.XR_REFERENCE_SPACE_TYPE_VIEW,
                 identity,
                 stack
         );

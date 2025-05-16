@@ -1,8 +1,12 @@
 package me.phoenixra.atumvr.example.scene;
 
+import me.phoenixra.atumvr.api.VRProvider;
 import me.phoenixra.atumvr.api.enums.EyeType;
+import me.phoenixra.atumvr.core.OpenXRProvider;
 import me.phoenixra.atumvr.core.rendering.OpenXRRenderer;
 import me.phoenixra.atumvr.core.rendering.OpenXRScene;
+import me.phoenixra.atumvr.example.ExampleVRProvider;
+import me.phoenixra.atumvr.example.rendering.ExampleVRRenderer;
 import me.phoenixra.atumvr.example.texture.StbTexture;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4f;
@@ -73,10 +77,10 @@ public class ExampleScene extends OpenXRScene {
         );
         exampleCubes.add(
                 new ExampleCubeHand(
-                        getVrRenderer().getVrProvider(),
+                        getVrProvider(),
                         new StbTexture("textures/test.png"),
-                        new Vector3f(2f,1f,2.5f),
-                        new Vector3f(1f,1f,1f),
+                        new Vector3f(0f,0f,0f),
+                        new Vector3f(0.3f,0.3f,0.3f),
                         new Vector3f(0f,0f,0f)
                 )
         );
@@ -136,7 +140,7 @@ public class ExampleScene extends OpenXRScene {
         );
     }
     private void initShaders(){
-        shaderProgram = new VRShaderProgram(getVrRenderer().getVrProvider());
+        shaderProgram = new VRShaderProgram(getVrProvider());
         shaderProgram.bindVertexShader("vertex.vsh");
         shaderProgram.bindFragmentShader("fragment.fsh");
         shaderProgram.finishShader();
@@ -173,5 +177,15 @@ public class ExampleScene extends OpenXRScene {
     @Override
     public void destroy() {
         //release all resources attached to scene
+    }
+
+    @Override
+    public @NotNull ExampleVRRenderer getVrRenderer() {
+        return (ExampleVRRenderer) super.getVrRenderer();
+    }
+
+    @Override
+    public ExampleVRProvider getVrProvider() {
+        return getVrRenderer().getVrProvider();
     }
 }

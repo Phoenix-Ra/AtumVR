@@ -2,18 +2,19 @@ package me.phoenixra.atumvr.api.enums;
 
 import lombok.Getter;
 
+@Getter
 public enum EyeType {
     LEFT(0),
     RIGHT(1);
 
-    @Getter
-    private final int id;
-    EyeType(int id){
-       this.id = id;
+    private final int index;
+
+    EyeType(int index){
+       this.index = index;
     }
 
-    public static EyeType fromInt(int id){
-        if(id == 0) return LEFT;
+    public static EyeType asIndex(int index){
+        if(index == EyeType.LEFT.index) return LEFT;
         return RIGHT;
     }
 }
