@@ -44,9 +44,6 @@ public abstract class OpenXRMultiAction<T> extends OpenXRAction {
         this.subActions = Collections.unmodifiableList(subActions);
     }
 
-    public SubAction<T> getHandSubaction(ControllerType type){
-        return subActions.get(type.ordinal());
-    }
     protected abstract void onInit(OpenXRActionSet actionSet,
                                    MemoryStack stack);
 
@@ -85,6 +82,10 @@ public abstract class OpenXRMultiAction<T> extends OpenXRAction {
 
             onInit(actionSet, stack);
         }
+    }
+
+    public SubAction<T> getHandSubaction(ControllerType type){
+        return subActions.get(type.ordinal());
     }
 
     @Getter

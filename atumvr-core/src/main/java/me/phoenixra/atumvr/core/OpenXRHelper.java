@@ -62,10 +62,10 @@ public class OpenXRHelper {
     }
 
 
-    public static Matrix4f normalizeXrPose(XrPosef value){
+    public static Matrix4f normalizeXrPose(XrPosef xrPose){
 
-        XrQuaternionf orientation = value.orientation();
-        XrVector3f position = value.position$();
+        XrQuaternionf orientation = xrPose.orientation();
+        XrVector3f position = xrPose.position$();
 
         Quaternionf rotation = new Quaternionf(
                 orientation.x(),
@@ -78,12 +78,12 @@ public class OpenXRHelper {
                 .rotate(rotation);
     }
 
-    public static Quaternionf normalizeXrQuaternion(XrQuaternionf value){
+    public static Quaternionf normalizeXrQuaternion(XrQuaternionf xrQuaternion){
         return new Quaternionf(
-                value.x(),
-                value.y(),
-                value.z(),
-                value.w()
+                xrQuaternion.x(),
+                xrQuaternion.y(),
+                xrQuaternion.z(),
+                xrQuaternion.w()
         );
     }
 

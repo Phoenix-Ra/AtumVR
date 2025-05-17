@@ -7,7 +7,7 @@ public interface VRScene {
 
     void init();
 
-    void prepareFrame();
+    void render(@NotNull RenderContext context);
 
     void destroy();
 

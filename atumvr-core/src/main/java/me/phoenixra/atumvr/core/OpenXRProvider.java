@@ -11,6 +11,10 @@ import me.phoenixra.atumvr.core.enums.XRSessionStateChange;
 import me.phoenixra.atumvr.core.input.OpenXRInputHandler;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL21;
+import org.lwjgl.opengl.GL30;
+import org.lwjgl.opengl.GL31;
 import org.lwjgl.openxr.*;
 import org.lwjgl.system.MemoryStack;
 
@@ -45,8 +49,6 @@ public abstract class OpenXRProvider implements VRProvider {
 
 
 
-
-
     public OpenXRProvider(@NotNull String appName,
                           @NotNull VRLogger logger){
         this.appName = appName;
@@ -69,6 +71,20 @@ public abstract class OpenXRProvider implements VRProvider {
                 HTCViveCosmosControllerInteraction.XR_HTC_VIVE_COSMOS_CONTROLLER_INTERACTION_EXTENSION_NAME,
                 BDControllerInteraction.XR_BD_CONTROLLER_INTERACTION_EXTENSION_NAME
 
+        );
+    }
+    public List<Integer> getSwapChainFormats(){
+        return List.of(
+                // SRGB formats
+                GL21.GL_SRGB8_ALPHA8,
+                GL21.GL_SRGB8,
+                // High-precision
+                GL30.GL_RGBA16F,
+                GL30.GL_RGB16F,
+                // Fallback
+                GL11.GL_RGB10_A2,
+                GL11.GL_RGBA8,
+                GL31.GL_RGBA8_SNORM
         );
     }
 
@@ -141,7 +157,7 @@ public abstract class OpenXRProvider implements VRProvider {
 
     @Override
     public void render(@NotNull RenderContext context) {
-        renderer.renderFrame();
+        renderer.renderFrame(context);
     }
 
     @Override
@@ -151,11 +167,6 @@ public abstract class OpenXRProvider implements VRProvider {
 
 
 
-
-    @Override
-    public void destroy() {
-        state.destroy();
-    }
 
     public void checkXRError(int xrResult, String caller, String... args) throws VRException{
         checkXRError(true,xrResult,caller,args);
@@ -201,4 +212,9 @@ public abstract class OpenXRProvider implements VRProvider {
         return resultString;
     }
 
+
+    @Override
+    public void destroy() {
+        state.destroy();
+    }
 }

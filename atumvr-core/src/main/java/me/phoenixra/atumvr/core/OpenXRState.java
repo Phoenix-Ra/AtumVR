@@ -16,31 +16,23 @@ import java.util.List;
 
 import static org.lwjgl.system.MemoryUtil.NULL;
 
+@Getter
 public class OpenXRState implements VRState {
-    @Getter
-    private OpenXRProvider vrProvider;
+    private final OpenXRProvider vrProvider;
 
-    @Getter
     protected OpenXRInstance vrInstance;
-    @Getter
     protected OpenXRSystem vrSystem;
-    @Getter
     protected OpenXRSession vrSession;
-    @Getter
     protected OpenXRSwapChain vrSwapChain;
 
 
 
-    @Getter
     protected final List<XREvent> xrEventsReceived = new ArrayList<>();
 
 
-    @Getter
     protected boolean paused = false;
-    @Getter
     protected boolean running = false;
 
-    @Getter
     protected boolean initialized = false;
 
     public OpenXRState(OpenXRProvider vrProvider){
@@ -49,10 +41,10 @@ public class OpenXRState implements VRState {
     }
 
     public void init() throws Throwable{
-        this.vrInstance = new OpenXRInstance(this);
-        this.vrSystem = new OpenXRSystem(this);
-        this.vrSession = new OpenXRSession(this);
-        this.vrSwapChain = new OpenXRSwapChain(this);
+        vrInstance = new OpenXRInstance(this);
+        vrSystem = new OpenXRSystem(this);
+        vrSession = new OpenXRSession(this);
+        vrSwapChain = new OpenXRSwapChain(this);
 
         vrInstance.init();
         vrSystem.init();

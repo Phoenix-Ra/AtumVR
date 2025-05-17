@@ -17,11 +17,11 @@ public class OpenXRDeviceController extends OpenXRDevice implements VRDeviceCont
     @Getter
     private final ControllerType type;
 
-    private final VRPoseMutable gripPose = new VRPoseMutable();
-
-
     @Getter
     private boolean gripActive;
+
+    private final VRPoseMutable gripPose = new VRPoseMutable();
+
 
     private final PoseMultiAction aimAction;
     private final PoseMultiAction gripAction;

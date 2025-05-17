@@ -40,6 +40,36 @@ public class HapticPulseAction extends OpenXRAction {
     }
 
 
+    @Override
+    public void init(OpenXRActionSet actionSet) {
+        OpenXRInputHandler inputHandler = provider.getInputHandler();
+        try (MemoryStack stack = MemoryStack.stackPush()) {
+            LongBuffer paths = stack.callocLong(2);
+            paths.put(0, inputHandler.getPath(LEFT_HAND_PATH));
+            paths.put(1, inputHandler.getPath(RIGHT_HAND_PATH));
+
+            XrActionCreateInfo actionCreateInfo = XrActionCreateInfo
+                    .calloc(stack)
+                    .type(XR_TYPE_ACTION_CREATE_INFO)
+                    .next(0)
+                    .actionType(actionType.getId())
+                    .actionName(stack.UTF8(name))
+                    .localizedActionName(stack.UTF8(localizedName))
+                    .countSubactionPaths(2)
+                    .subactionPaths(paths);
+
+            PointerBuffer pAction = stack.callocPointer(1);
+            xrCreateAction(actionSet.getHandle(), actionCreateInfo, pAction);
+            handle = new XrAction(pAction.get(0), actionSet.getHandle());
+        }
+    }
+
+    @Override
+    public void update() {
+
+    }
+
+
     public void triggerHapticPulse(ControllerType controllerType,
                                    float frequency, float amplitude,
                                    float durationSeconds){
@@ -86,36 +116,6 @@ public class HapticPulseAction extends OpenXRAction {
         }
     }
 
-    @Override
-    public void init(OpenXRActionSet actionSet) {
-        OpenXRInputHandler inputHandler = provider.getInputHandler();
-        try (MemoryStack stack = MemoryStack.stackPush()) {
-            LongBuffer paths = stack.callocLong(2);
-            paths.put(0, inputHandler.getPath(LEFT_HAND_PATH));
-            paths.put(1, inputHandler.getPath(RIGHT_HAND_PATH));
-
-            // Fill action creation info
-            XrActionCreateInfo actionCreateInfo = XrActionCreateInfo
-                    .calloc(stack)
-                    .type(XR_TYPE_ACTION_CREATE_INFO)
-                    .next(0)
-                    .actionType(actionType.getId())
-                    .actionName(stack.UTF8(name))
-                    .localizedActionName(stack.UTF8(localizedName))
-                    .countSubactionPaths(2)
-                    .subactionPaths(paths);
-
-            // Create the action
-            PointerBuffer pAction = stack.callocPointer(1);
-            xrCreateAction(actionSet.getHandle(), actionCreateInfo, pAction);
-            handle = new XrAction(pAction.get(0), actionSet.getHandle());
-        }
-    }
-
-    @Override
-    public void update() {
-
-    }
 
     public HapticPulseAction putDefaultBindings(@NotNull XRInteractionProfile profile,
                                                 @Nullable String source){

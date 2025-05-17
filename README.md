@@ -1,2 +1,2 @@
 # AtumVR
-The framework that simplifies the work with OpenVR and OpenXR libraries in java
+The framework that simplifies the work with OpenXR library in java

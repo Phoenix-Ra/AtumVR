@@ -19,7 +19,7 @@ import java.util.*;
 import static org.lwjgl.openxr.XR10.*;
 import static org.lwjgl.system.MemoryStack.*;
 import static org.lwjgl.system.MemoryUtil.NULL;
-import static org.lwjgl.system.MemoryUtil.memUTF8;
+
 
 public abstract class OpenXRInputHandler implements VRInputHandler {
     @Getter
@@ -46,7 +46,6 @@ public abstract class OpenXRInputHandler implements VRInputHandler {
 
         XrSession xrSession = vrProvider.getState().getVrSession().getHandle();
 
-        XrInstance xrInstance = vrProvider.getState().getVrInstance().getHandle();
 
         try (MemoryStack stack = MemoryStack.stackPush()) {
 
@@ -210,4 +209,10 @@ public abstract class OpenXRInputHandler implements VRInputHandler {
         });
     }
 
+    @Override
+    public void destroy() {
+        actionSets.values().forEach(OpenXRActionSet::destroy);
+        actionSets.clear();
+        devices.clear();
+    }
 }

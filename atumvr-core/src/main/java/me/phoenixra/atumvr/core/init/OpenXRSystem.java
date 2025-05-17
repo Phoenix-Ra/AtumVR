@@ -36,6 +36,7 @@ public class OpenXRSystem {
     public void init(){
         try (MemoryStack stack = MemoryStack.stackPush()) {
             OpenXRProvider provider = this.xrState.getVrProvider();
+
             // 1) Acquire system ID for HMD
             var sysGetInfo = XrSystemGetInfo.calloc(stack)
                     .type(XR10.XR_TYPE_SYSTEM_GET_INFO)

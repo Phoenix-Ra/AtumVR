@@ -8,7 +8,7 @@ public interface VRRenderer {
 
     void init() throws Throwable;
 
-    void renderFrame();
+    void renderFrame(@NotNull RenderContext context);
 
     void destroy();
 

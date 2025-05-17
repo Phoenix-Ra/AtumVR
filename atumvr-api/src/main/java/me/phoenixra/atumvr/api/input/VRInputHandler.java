@@ -14,6 +14,8 @@ public interface VRInputHandler {
 
     void update();
 
+    void destroy();
+
 
 
     Collection<? extends VRActionSet> getActionSets();

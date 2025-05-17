@@ -12,9 +12,9 @@ import org.lwjgl.system.MemoryStack;
 
 public class OpenXRDeviceHMD extends OpenXRDevice implements VRDeviceHMD {
 
-    private VRPoseMutable eyeLeftPose = new VRPoseMutable();
+    private final VRPoseMutable eyeLeftPose = new VRPoseMutable();
 
-    private VRPoseMutable eyeRightPose = new VRPoseMutable();
+    private final VRPoseMutable eyeRightPose = new VRPoseMutable();
 
     private final XrSpace space;
 

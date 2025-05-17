@@ -3,11 +3,13 @@ package me.phoenixra.atumvr.core.rendering;
 import lombok.Getter;
 import me.phoenixra.atumvr.api.enums.EyeType;
 import me.phoenixra.atumvr.api.input.device.VRDeviceHMD;
+import me.phoenixra.atumvr.api.rendering.RenderContext;
 import me.phoenixra.atumvr.api.rendering.VRRenderer;
 import me.phoenixra.atumvr.api.rendering.VRTexture;
 import me.phoenixra.atumvr.api.utils.GLUtils;
 import me.phoenixra.atumvr.core.OpenXRProvider;
 import me.phoenixra.atumvr.core.input.device.OpenXRDeviceHMD;
+import org.jetbrains.annotations.NotNull;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.opengl.GL;
@@ -31,19 +33,19 @@ public abstract class OpenXRRenderer implements VRRenderer {
     @Getter
     protected int resolutionHeight;
 
-
-
-
-    protected XrCompositionLayerProjectionView.Buffer projectionLayerViews;
-    protected int swapIndex;
-
     @Getter
     protected long windowHandle;
+    protected final HashMap<EyeType, float[]> hiddenArea = new HashMap<>();
+
+
+
+    protected int swapIndex;
 
     protected OpenXRTexture[] leftFramebuffers;
     protected OpenXRTexture[] rightFramebuffers;
 
-    protected final HashMap<EyeType, float[]> hiddenArea = new HashMap<>();
+    protected XrCompositionLayerProjectionView.Buffer projectionLayerViews;
+
 
     public OpenXRRenderer(OpenXRProvider vrProvider) {
         this.vrProvider = vrProvider;
@@ -61,14 +63,14 @@ public abstract class OpenXRRenderer implements VRRenderer {
     }
 
     @Override
-    public void renderFrame() {
+    public void renderFrame(@NotNull RenderContext context) {
 
         prepareXrFrame();
 
         GL30.glViewport(0, 0, resolutionWidth, resolutionHeight);
         GL30.glEnable(GL30.GL_DEPTH_TEST);
 
-        getCurrentScene().prepareFrame();
+        getCurrentScene().render(context);
 
         finishXrFrame();
 
@@ -112,7 +114,8 @@ public abstract class OpenXRRenderer implements VRRenderer {
             for (EyeType eyeType : EyeType.values()) {
                 int index = eyeType.getIndex();
                 XrView xrView = vrProvider.getInputHandler()
-                        .getDevice(VRDeviceHMD.ID, OpenXRDeviceHMD.class).getXrView(eyeType);
+                        .getDevice(VRDeviceHMD.ID, OpenXRDeviceHMD.class)
+                        .getXrView(eyeType);
                 XrSwapchainSubImage subImage = this.projectionLayerViews.get(index)
                         .type(XR10.XR_TYPE_COMPOSITION_LAYER_PROJECTION_VIEW)
                         .pose(xrView.pose())
@@ -162,15 +165,6 @@ public abstract class OpenXRRenderer implements VRRenderer {
         }
     }
 
-
-    @Override
-    public void destroy() {
-        getCurrentScene().destroy();
-        glfwFreeCallbacks(windowHandle);
-        glfwDestroyWindow(windowHandle);
-
-        glfwTerminate();
-    }
 
 
     public void setupGLContext() {
@@ -247,9 +241,9 @@ public abstract class OpenXRRenderer implements VRRenderer {
             }
         }
 
-
     }
 
+    //@TODO Written By AI, has to be tested!!
     protected void setupHiddenArea(){
         try(MemoryStack stack = MemoryStack.stackPush()) {
             XrSession xrSession = getVrProvider().getState().getVrSession().getHandle();
@@ -336,4 +330,14 @@ public abstract class OpenXRRenderer implements VRRenderer {
         return hiddenArea.get(eyeType);
     }
 
+
+
+    @Override
+    public void destroy() {
+        getCurrentScene().destroy();
+        glfwFreeCallbacks(windowHandle);
+        glfwDestroyWindow(windowHandle);
+
+        glfwTerminate();
+    }
 }

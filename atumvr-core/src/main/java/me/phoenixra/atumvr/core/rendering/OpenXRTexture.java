@@ -23,6 +23,7 @@ public class OpenXRTexture implements VRTexture {
 
 
     }
+
     public OpenXRTexture init(){
         frameBufferId = GL30.glGenFramebuffers();
 
@@ -41,14 +42,6 @@ public class OpenXRTexture implements VRTexture {
         GL30.glBindTexture(3553, 0);
 
         return this;
-    }
-
-
-
-    public void destroy(){
-        GL30.glDeleteTextures(textureId);
-        GL30.glDeleteFramebuffers(frameBufferId);
-
     }
 
     private void checkStatus() {
@@ -71,4 +64,11 @@ public class OpenXRTexture implements VRTexture {
             }
         }
     }
+
+    @Override
+    public void destroy(){
+        GL30.glDeleteTextures(textureId);
+        GL30.glDeleteFramebuffers(frameBufferId);
+    }
+
 }
