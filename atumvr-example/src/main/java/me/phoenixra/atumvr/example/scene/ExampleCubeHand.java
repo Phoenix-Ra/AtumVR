@@ -21,14 +21,18 @@ public class ExampleCubeHand extends ExampleCube{
     }
     protected Matrix4f getModelMatrix(){
         ControllerType type = provider.getInputHandler().getScaleHand().asType();
-        float triggerVal = provider.getInputHandler().getActionSet()
-                .getTriggerValueAction()
-                .getHandSubaction(type)
-                .getCurrentState();
+
         Vector3f scale = this.scale;
-        if(triggerVal>0.5){
-            scale = scale.mul(0.2f, new Vector3f());
+
+        var profileSet = provider.getInputHandler().getProfileSetHolder()
+                .getActiveProfileSet();
+        if(profileSet != null){
+            if(profileSet.getTriggerValue()
+                    .getButtonState(type).pressed()){
+                scale = scale.mul(0.2f, new Vector3f());
+            }
         }
+
         // 1) grab the controller’s world‐space pose
         Matrix4fc handPose = provider.getInputHandler()
                 .getDevice(VRDeviceController.getDefaultId(type))

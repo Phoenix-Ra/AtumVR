@@ -216,5 +216,11 @@ public abstract class OpenXRProvider implements VRProvider {
     @Override
     public void destroy() {
         state.destroy();
+        if(renderer != null){
+            renderer.destroy();
+        }
+        if(inputHandler != null){
+            inputHandler.destroy();
+        }
     }
 }

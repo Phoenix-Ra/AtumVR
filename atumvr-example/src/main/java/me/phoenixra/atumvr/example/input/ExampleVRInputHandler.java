@@ -2,6 +2,8 @@ package me.phoenixra.atumvr.example.input;
 
 import lombok.Getter;
 import me.phoenixra.atumvr.api.input.device.VRDeviceController;
+import me.phoenixra.atumvr.core.input.action.profileset.ProfileSetHolder;
+import me.phoenixra.atumvr.core.input.action.profileset.types.*;
 import me.phoenixra.atumvr.example.ExampleHandEnum;
 import me.phoenixra.atumvr.api.enums.ControllerType;
 import me.phoenixra.atumvr.core.OpenXRProvider;
@@ -16,7 +18,7 @@ import java.util.List;
 
 public class ExampleVRInputHandler extends OpenXRInputHandler {
     @Getter
-    private ExampleActionSet actionSet;
+    private ProfileSetHolder profileSetHolder;
 
     private final ExampleHandEnum pulsatingHand = ExampleHandEnum.MAIN;
     @Getter
@@ -27,28 +29,29 @@ public class ExampleVRInputHandler extends OpenXRInputHandler {
     }
 
     @Override
-    protected List<OpenXRActionSet> generateActionSets(MemoryStack stack) {
-        actionSet = new ExampleActionSet(getVrProvider());
-        return List.of(actionSet);
+    protected List<? extends OpenXRActionSet> generateActionSets(MemoryStack stack) {
+        profileSetHolder = new ProfileSetHolder(getVrProvider());
+
+        return profileSetHolder.getAllSets();
     }
 
     @Override
-    protected List<OpenXRDevice> generateDevices(MemoryStack stack) {
+    protected List<? extends OpenXRDevice> generateDevices(MemoryStack stack) {
         return List.of(
                 new OpenXRDeviceHMD(getVrProvider()),
                 new OpenXRDeviceController(
                         getVrProvider(),
                         ControllerType.LEFT,
-                        actionSet.getAimAction(),
-                        actionSet.getGripAction(),
-                        actionSet.getHapticPulseAction()
+                        profileSetHolder.getSharedSet().getHandPoseAim(),
+                        profileSetHolder.getSharedSet().getHandPoseGrip(),
+                        profileSetHolder.getSharedSet().getHapticPulse()
                 ),
                 new OpenXRDeviceController(
                         getVrProvider(),
                         ControllerType.RIGHT,
-                        actionSet.getAimAction(),
-                        actionSet.getGripAction(),
-                        actionSet.getHapticPulseAction()
+                        profileSetHolder.getSharedSet().getHandPoseAim(),
+                        profileSetHolder.getSharedSet().getHandPoseGrip(),
+                        profileSetHolder.getSharedSet().getHapticPulse()
                 )
         );
     }
@@ -57,7 +60,12 @@ public class ExampleVRInputHandler extends OpenXRInputHandler {
     public void update() {
         super.update();
         ControllerType type = pulsatingHand.asType();
-        if(actionSet.getTriggerValueAction().getHandSubaction(type).getCurrentState() > 0.5){
+
+        var profileSet = profileSetHolder.getActiveProfileSet();
+        if(profileSet == null){
+            return;
+        }
+        if(profileSet.getTriggerValue().getButtonState(type).pressed()){
             getDevice(VRDeviceController.getDefaultId(type), VRDeviceController.class)
                     .triggerHapticPulse(
                             160f,

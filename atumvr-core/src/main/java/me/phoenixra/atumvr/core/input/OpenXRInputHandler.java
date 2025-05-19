@@ -37,8 +37,8 @@ public abstract class OpenXRInputHandler implements VRInputHandler {
         this.vrProvider = provider;
     }
 
-    protected abstract List<OpenXRActionSet> generateActionSets(MemoryStack stack);
-    protected abstract List<OpenXRDevice> generateDevices(MemoryStack stack);
+    protected abstract List<? extends OpenXRActionSet> generateActionSets(MemoryStack stack);
+    protected abstract List<? extends OpenXRDevice> generateDevices(MemoryStack stack);
 
 
     @Override
@@ -52,7 +52,7 @@ public abstract class OpenXRInputHandler implements VRInputHandler {
 
             //LOAD ACTION SETS
             actionSets.clear();
-            List<OpenXRActionSet> loadedActionSets = generateActionSets(stack);
+            var loadedActionSets = generateActionSets(stack);
             loadedActionSets.forEach(OpenXRActionSet::init);
 
             long[] actionSetsArray = new long[loadedActionSets.size()];
@@ -136,9 +136,10 @@ public abstract class OpenXRInputHandler implements VRInputHandler {
             List<PairRecord<OpenXRAction, String>> bindingsSet = new ArrayList<>();
             for(OpenXRActionSet actionSet : actionSets.values()){
                 var binds = actionSet.getDefaultBindings(profile);
-                if(binds == null) continue;
+                if(binds == null || binds.isEmpty()) continue;
                 bindingsSet.addAll(binds);
             }
+            if(bindingsSet.isEmpty()) continue;
 
             var bindings = XrActionSuggestedBinding.calloc(bindingsSet.size(), stack);
 
@@ -168,12 +169,12 @@ public abstract class OpenXRInputHandler implements VRInputHandler {
         }
     };
 
-    public Collection<OpenXRActionSet> getActionSets(){
+    public Collection<? extends OpenXRActionSet> getActionSets(){
         return actionSets.values();
     }
 
     @Override
-    public Collection<OpenXRDevice> getDevices() {
+    public Collection<? extends OpenXRDevice> getDevices() {
         return devices.values();
     }
 

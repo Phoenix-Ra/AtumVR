@@ -6,6 +6,9 @@ plugins {
 dependencies {
     implementation(project(":atumvr-core"))
 
+    api("org.lwjgl:lwjgl-stb")
+    api("org.lwjgl:lwjgl-stb::natives-windows")
+
 }
 jar {
     manifest {

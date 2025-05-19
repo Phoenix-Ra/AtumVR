@@ -3,8 +3,6 @@ package me.phoenixra.atumvr.core.input.action;
 import lombok.Getter;
 import lombok.Setter;
 import me.phoenixra.atumvr.api.enums.ControllerType;
-import me.phoenixra.atumvr.api.exceptions.VRException;
-import me.phoenixra.atumvr.api.input.action.VRActionSet;
 import me.phoenixra.atumvr.core.OpenXRProvider;
 import me.phoenixra.atumvr.core.enums.XRInputActionType;
 import me.phoenixra.atumvr.core.enums.XRInteractionProfile;
@@ -98,7 +96,7 @@ public abstract class OpenXRMultiAction<T> extends OpenXRAction {
         protected T currentState;
         protected long lastChangeTime = 0;
 
-        protected boolean changedSinceLastSync = false;
+        protected boolean changed = false;
         protected boolean active = false;
 
         public SubAction(String path, T initialState){
@@ -111,7 +109,7 @@ public abstract class OpenXRMultiAction<T> extends OpenXRAction {
                            boolean isActive){
             this.currentState = state;
             this.lastChangeTime = lastChangeTime;
-            this.changedSinceLastSync = changedSinceLastSync;
+            this.changed = changedSinceLastSync;
             this.active = isActive;
         }
 

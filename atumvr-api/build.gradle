@@ -10,18 +10,17 @@ dependencies {
 
     api("org.joml:joml:1.10.5")
 
-    api platform("org.lwjgl:lwjgl-bom:3.3.4")
+    api platform("org.lwjgl:lwjgl-bom:3.3.6")
 
     api("org.lwjgl:lwjgl")
     api("org.lwjgl:lwjgl-opengl")
     api("org.lwjgl:lwjgl-glfw")
-    api("org.lwjgl:lwjgl-stb")
     api("org.lwjgl:lwjgl-openxr")
+
 
     api("org.lwjgl:lwjgl::natives-windows")
     api("org.lwjgl:lwjgl-opengl::natives-windows")
     api("org.lwjgl:lwjgl-glfw::natives-windows")
-    api("org.lwjgl:lwjgl-stb::natives-windows")
     api("org.lwjgl:lwjgl-openxr::natives-windows")
     api("org.lwjgl:lwjgl-openxr::natives-linux")
 }
