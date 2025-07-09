@@ -6,7 +6,6 @@ import org.lwjgl.PointerBuffer;
 import org.lwjgl.openxr.*;
 import org.lwjgl.system.MemoryStack;
 
-import static org.lwjgl.openxr.XR10.xrStringToPath;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
 public class OpenXRHelper {
@@ -19,16 +18,16 @@ public class OpenXRHelper {
     }
 
     @Nullable
-    public static XrSpaceLocation getXrLocationFromSpace(OpenXRProvider provider,
-                                                         XrSpace xrSpace,
-                                                         MemoryStack stack){
+    public static XrSpaceLocation xrLocationFromSpace(OpenXRProvider provider,
+                                                      XrSpace xrSpace,
+                                                      MemoryStack stack){
         XrSpaceLocation space_location = XrSpaceLocation.calloc(stack).type(XR10.XR_TYPE_SPACE_LOCATION);
 
         provider.checkXRError(
                 XR10.xrLocateSpace(
                         xrSpace,
                         provider.getState().getVrSession().getXrAppSpace(),
-                        provider.xrDisplayTime,
+                        provider.getXrDisplayTime(),
                         space_location
                 ),
                 "xrLocateSpace"

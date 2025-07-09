@@ -30,8 +30,10 @@ public class OpenXRState implements VRState {
     protected final List<XREvent> xrEventsReceived = new ArrayList<>();
 
 
-    protected boolean paused = false;
+
     protected boolean running = false;
+    protected boolean active = false;
+    protected boolean focused = false;
 
     protected boolean initialized = false;
 
@@ -89,6 +91,9 @@ public class OpenXRState implements VRState {
     }
     private void xrStateChanged(XrEventDataSessionStateChanged event) {
         var stateChange = XRSessionStateChange.fromId(event.state());
+        vrProvider.getLogger().logDebug("VR Session State changed to: "+stateChange);
+
+
         switch (stateChange) {
             case READY -> {
                 try (MemoryStack stack = MemoryStack.stackPush()) {
@@ -102,20 +107,24 @@ public class OpenXRState implements VRState {
                             "xrBeginSession", "XRStateChangeREADY"
                     );
                 }
-                this.running = true;
+                running = true;
+                active = true;
                 vrProvider.getLogger().logInfo("OpenXR session is READY");
 
             }
 
             case STOPPING -> {
-                this.running = false;
-                this.paused = false;
+                running = false;
+                active = false;
             }
 
-            case VISIBLE, FOCUSED -> paused = false;
+            case VISIBLE, FOCUSED -> active = true;
 
-            case EXITING, IDLE, SYNCHRONIZED -> paused = true;
+            case EXITING, IDLE, SYNCHRONIZED -> active = false;
         }
+
+        focused = stateChange == XRSessionStateChange.FOCUSED;
+
         vrProvider.onStateChanged(stateChange);
     }
 
@@ -146,5 +155,11 @@ public class OpenXRState implements VRState {
         if(vrInstance != null){
             vrInstance.destroy();
         }
+        xrEventsReceived.clear();
+
+        running = false;
+        active = false;
+        focused = false;
+        initialized = false;
     }
 }

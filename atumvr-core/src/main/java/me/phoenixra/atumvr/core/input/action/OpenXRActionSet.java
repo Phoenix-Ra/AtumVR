@@ -7,6 +7,7 @@ import me.phoenixra.atumvr.core.OpenXRProvider;
 import me.phoenixra.atumvr.core.enums.XRInteractionProfile;
 import me.phoenixra.atumvr.core.init.OpenXRInstance;
 import me.phoenixra.atumvr.core.input.action.types.HapticPulseAction;
+import org.jetbrains.annotations.Nullable;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.openxr.XR10;
 import org.lwjgl.openxr.XrActionSet;
@@ -15,6 +16,7 @@ import org.lwjgl.system.MemoryStack;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 import static org.lwjgl.system.MemoryStack.stackCallocPointer;
 import static org.lwjgl.system.MemoryStack.stackPush;
@@ -37,6 +39,7 @@ public abstract class OpenXRActionSet implements VRActionSet {
     @Getter
     private List<OpenXRAction> actions = new ArrayList<>();
 
+
     public OpenXRActionSet(OpenXRProvider provider,
                            String name,
                            String localizedName,
@@ -50,9 +53,10 @@ public abstract class OpenXRActionSet implements VRActionSet {
     protected abstract List<OpenXRAction> loadActions(OpenXRProvider provider);
 
 
-    public void update() {
+    @Override
+    public void update(@Nullable Consumer<String> listener) {
         for (var action : getActions()) {
-            action.update();
+            action.update(listener);
         }
     }
 

@@ -7,7 +7,10 @@ import me.phoenixra.atumvr.api.misc.pose.VRPoseMutable;
 import me.phoenixra.atumvr.core.OpenXRHelper;
 import me.phoenixra.atumvr.core.OpenXRProvider;
 import org.jetbrains.annotations.NotNull;
-import org.lwjgl.openxr.*;
+import org.lwjgl.openxr.XrPosef;
+import org.lwjgl.openxr.XrSpace;
+import org.lwjgl.openxr.XrSpaceLocation;
+import org.lwjgl.openxr.XrView;
 import org.lwjgl.system.MemoryStack;
 
 public class OpenXRDeviceHMD extends OpenXRDevice implements VRDeviceHMD {
@@ -28,7 +31,7 @@ public class OpenXRDeviceHMD extends OpenXRDevice implements VRDeviceHMD {
     @Override
     public void update() {
         try (MemoryStack stack = MemoryStack.stackPush()) {
-            XrSpaceLocation loc = OpenXRHelper.getXrLocationFromSpace(
+            XrSpaceLocation loc = OpenXRHelper.xrLocationFromSpace(
                     provider,
                     space,
                     stack

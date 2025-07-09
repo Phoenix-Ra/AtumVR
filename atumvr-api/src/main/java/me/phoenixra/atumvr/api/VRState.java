@@ -2,16 +2,20 @@ package me.phoenixra.atumvr.api;
 
 import org.jetbrains.annotations.NotNull;
 
-public interface VRState{
+public interface VRState {
 
 
 
     boolean isInitialized();
 
-    boolean isPaused();
 
     boolean isRunning();
 
+    //If VR session is active
+    boolean isActive();
+
+    //If Focused on this session
+    boolean isFocused();
 
 
 

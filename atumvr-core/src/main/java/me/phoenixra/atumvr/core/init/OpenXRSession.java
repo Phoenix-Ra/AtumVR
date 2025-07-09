@@ -1,14 +1,12 @@
 package me.phoenixra.atumvr.core.init;
 
 import lombok.Getter;
-
 import me.phoenixra.atumvr.core.OpenXRHelper;
 import me.phoenixra.atumvr.core.OpenXRProvider;
 import me.phoenixra.atumvr.core.OpenXRState;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.openxr.*;
 import org.lwjgl.system.MemoryStack;
-
 import org.lwjgl.system.Struct;
 
 import java.nio.FloatBuffer;

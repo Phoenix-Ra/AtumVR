@@ -5,14 +5,16 @@ import me.phoenixra.atumvr.api.misc.pose.VRPoseRecord;
 import me.phoenixra.atumvr.core.OpenXRHelper;
 import me.phoenixra.atumvr.core.OpenXRProvider;
 import me.phoenixra.atumvr.core.enums.XRInputActionType;
-import me.phoenixra.atumvr.core.input.action.OpenXRMultiAction;
 import me.phoenixra.atumvr.core.input.action.OpenXRActionSet;
+import me.phoenixra.atumvr.core.input.action.OpenXRMultiAction;
+import org.jetbrains.annotations.Nullable;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.openxr.*;
 import org.lwjgl.system.MemoryStack;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.function.Consumer;
 
 import static org.lwjgl.system.MemoryStack.stackCallocPointer;
 import static org.lwjgl.system.MemoryUtil.NULL;
@@ -24,10 +26,10 @@ public class PoseMultiAction extends OpenXRMultiAction<VRPoseRecord> {
 
     public PoseMultiAction(OpenXRProvider provider,
                            OpenXRActionSet actionSet,
-                           String name,
+                           String id,
                            String localizedName,
-                           List<OpenXRMultiAction.SubAction<VRPoseRecord>> subActions) {
-        super(provider, actionSet, name, localizedName, XRInputActionType.POSE, subActions);
+                           List<SubAction<VRPoseRecord>> subActions) {
+        super(provider, actionSet, id, localizedName, XRInputActionType.POSE, subActions);
     }
 
     @Override
@@ -55,7 +57,7 @@ public class PoseMultiAction extends OpenXRMultiAction<VRPoseRecord> {
     }
 
     @Override
-    public void update() {
+    public void update(@Nullable Consumer<String> listener) {
         for (SubAction<VRPoseRecord> entry : subActions) {
             try (MemoryStack stack = MemoryStack.stackPush()) {
                 var state = XrActionStatePose.calloc(stack)
@@ -70,7 +72,7 @@ public class PoseMultiAction extends OpenXRMultiAction<VRPoseRecord> {
                         ),
                         "xrGetActionStateFloat"
                 );
-                var loc = OpenXRHelper.getXrLocationFromSpace(
+                var loc = OpenXRHelper.xrLocationFromSpace(
                         provider, xrSpace.get(entry), stack
                 );
                 VRPoseRecord entryState = loc == null

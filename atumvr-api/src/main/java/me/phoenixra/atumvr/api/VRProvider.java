@@ -2,7 +2,7 @@ package me.phoenixra.atumvr.api;
 
 
 import me.phoenixra.atumvr.api.input.VRInputHandler;
-import me.phoenixra.atumvr.api.rendering.RenderContext;
+import me.phoenixra.atumvr.api.rendering.IRenderContext;
 import me.phoenixra.atumvr.api.rendering.VRRenderer;
 import org.jetbrains.annotations.NotNull;
 
@@ -11,9 +11,12 @@ public interface VRProvider {
 
     void initializeVR() throws Throwable;
 
-    void preRender(@NotNull RenderContext context);
-    void render(@NotNull RenderContext context);
-    void postRender(@NotNull RenderContext context);
+    //has to run before preRender and even if rendering currently inactive
+    void syncState();
+
+    void preRender(@NotNull IRenderContext context);
+    void render(@NotNull IRenderContext context);
+    void postRender(@NotNull IRenderContext context);
 
 
     void destroy();

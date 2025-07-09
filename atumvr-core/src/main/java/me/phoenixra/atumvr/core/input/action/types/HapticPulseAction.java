@@ -9,7 +9,6 @@ import me.phoenixra.atumvr.core.enums.XRInteractionProfile;
 import me.phoenixra.atumvr.core.input.OpenXRInputHandler;
 import me.phoenixra.atumvr.core.input.action.OpenXRAction;
 import me.phoenixra.atumvr.core.input.action.OpenXRActionSet;
-
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.PointerBuffer;
@@ -20,6 +19,7 @@ import java.nio.LongBuffer;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 import static org.lwjgl.openxr.XR10.*;
 import static org.lwjgl.system.MemoryUtil.NULL;
@@ -53,7 +53,7 @@ public class HapticPulseAction extends OpenXRAction {
                     .type(XR_TYPE_ACTION_CREATE_INFO)
                     .next(0)
                     .actionType(actionType.getId())
-                    .actionName(stack.UTF8(name))
+                    .actionName(stack.UTF8(id))
                     .localizedActionName(stack.UTF8(localizedName))
                     .countSubactionPaths(2)
                     .subactionPaths(paths);
@@ -65,7 +65,7 @@ public class HapticPulseAction extends OpenXRAction {
     }
 
     @Override
-    public void update() {
+    public void update(@Nullable Consumer<String> listener) {
 
     }
 
@@ -112,7 +112,8 @@ public class HapticPulseAction extends OpenXRAction {
                     .frequency(frequency)
                     .amplitude(amplitude);
 
-            xrApplyHapticFeedback(session, info, XrHapticBaseHeader.create(vib));
+
+            xrApplyHapticFeedback(session, info, XrHapticBaseHeader.create(vib.address()));
         }
     }
 

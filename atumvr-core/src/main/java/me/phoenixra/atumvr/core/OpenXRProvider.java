@@ -1,10 +1,11 @@
 package me.phoenixra.atumvr.core;
 
 import lombok.Getter;
+import lombok.Setter;
 import me.phoenixra.atumvr.api.VRLogger;
 import me.phoenixra.atumvr.api.VRProvider;
 import me.phoenixra.atumvr.api.exceptions.VRException;
-import me.phoenixra.atumvr.api.rendering.RenderContext;
+import me.phoenixra.atumvr.api.rendering.IRenderContext;
 import me.phoenixra.atumvr.api.rendering.VRRenderer;
 import me.phoenixra.atumvr.core.enums.XRActionResult;
 import me.phoenixra.atumvr.core.enums.XRSessionStateChange;
@@ -15,14 +16,17 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL21;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.GL31;
-import org.lwjgl.openxr.*;
+import org.lwjgl.openxr.BDControllerInteraction;
+import org.lwjgl.openxr.EXTHPMixedRealityController;
+import org.lwjgl.openxr.HTCViveCosmosControllerInteraction;
+import org.lwjgl.openxr.XR10;
 import org.lwjgl.system.MemoryStack;
 
 import java.nio.ByteBuffer;
-import java.nio.IntBuffer;
 import java.util.List;
 
-import static org.lwjgl.system.MemoryUtil.*;
+import static org.lwjgl.system.MemoryUtil.memAddress;
+import static org.lwjgl.system.MemoryUtil.memUTF8;
 
 
 public abstract class OpenXRProvider implements VRProvider {
@@ -44,16 +48,17 @@ public abstract class OpenXRProvider implements VRProvider {
 
 
 
-    @Getter
+    @Getter @Setter
     protected long xrDisplayTime;
-
 
 
     public OpenXRProvider(@NotNull String appName,
                           @NotNull VRLogger logger){
         this.appName = appName;
         this.logger = logger;
-        this.state =  createStateHandler();
+        this.state = createStateHandler();
+        this.renderer = createRenderer();
+        this.inputHandler = createInputHandler();
     }
 
 
@@ -75,14 +80,14 @@ public abstract class OpenXRProvider implements VRProvider {
     }
     public List<Integer> getSwapChainFormats(){
         return List.of(
-                // SRGB formats
                 GL21.GL_SRGB8_ALPHA8,
                 GL21.GL_SRGB8,
-                // High-precision
+                // others
+                GL11.GL_RGB10_A2,
                 GL30.GL_RGBA16F,
                 GL30.GL_RGB16F,
+
                 // Fallback
-                GL11.GL_RGB10_A2,
                 GL11.GL_RGBA8,
                 GL31.GL_RGBA8_SNORM
         );
@@ -93,75 +98,36 @@ public abstract class OpenXRProvider implements VRProvider {
         if (state.isInitialized()) {
             throw new VRException("Already initialized!");
         }
-        this.state = new OpenXRState(this);
-        this.renderer = createRenderer();
-        this.inputHandler = createInputHandler();
+
 
         state.init();
 
     }
 
     @Override
-    public void preRender(@NotNull RenderContext context) {
+    public void syncState(){
         state.pollVREvents();
-        try (MemoryStack stack = MemoryStack.stackPush()) {
-            XrFrameState frameState = XrFrameState.calloc(stack).type(XR10.XR_TYPE_FRAME_STATE);
-
-            checkXRError(
-                    XR10.xrWaitFrame(
-                            state.vrSession.getHandle(),
-                            XrFrameWaitInfo.calloc(stack)
-                                    .type(XR10.XR_TYPE_FRAME_WAIT_INFO),
-                            frameState
-                    ),
-                    "xrWaitFrame", ""
-            );
-
-            xrDisplayTime = frameState.predictedDisplayTime();
-
-            checkXRError(
-                    XR10.xrBeginFrame(
-                            state.vrSession.getHandle(),
-                            XrFrameBeginInfo.calloc(stack)
-                                    .type(XR10.XR_TYPE_FRAME_BEGIN_INFO)
-                    ),
-                    "xrBeginFrame", ""
-            );
-
-
-            XrViewState viewState = XrViewState.calloc(stack).type(XR10.XR_TYPE_VIEW_STATE);
-            IntBuffer intBuf = stack.callocInt(1);
-
-            XrViewLocateInfo viewLocateInfo = XrViewLocateInfo.calloc(stack);
-            viewLocateInfo.set(
-                    XR10.XR_TYPE_VIEW_LOCATE_INFO,
-                    0,
-                    XR10.XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO,
-                    frameState.predictedDisplayTime(),
-                    state.getVrSession().getXrAppSpace()
-            );
-
-            checkXRError(
-                    XR10.xrLocateViews(
-                            state.vrSession.getHandle(),
-                            viewLocateInfo, viewState,
-                            intBuf, state.vrSwapChain.getXrViewBuffer()
-                    ),
-                    "xrLocateViews", ""
-            );
-            inputHandler.update();
-
-
-        }
     }
 
     @Override
-    public void render(@NotNull RenderContext context) {
+    public void preRender(@NotNull IRenderContext context) {
+        if(!state.running){
+            return;
+        }
+        renderer.preRender(context);
+        inputHandler.update();
+    }
+
+    @Override
+    public void render(@NotNull IRenderContext context) {
+        if(!state.running){
+            return;
+        }
         renderer.renderFrame(context);
     }
 
     @Override
-    public void postRender(@NotNull RenderContext context) {
+    public void postRender(@NotNull IRenderContext context) {
 
     }
 
@@ -215,12 +181,12 @@ public abstract class OpenXRProvider implements VRProvider {
 
     @Override
     public void destroy() {
-        state.destroy();
         if(renderer != null){
             renderer.destroy();
         }
         if(inputHandler != null){
             inputHandler.destroy();
         }
+        state.destroy();
     }
 }

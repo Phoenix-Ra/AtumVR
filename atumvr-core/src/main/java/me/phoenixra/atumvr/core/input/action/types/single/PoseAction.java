@@ -5,11 +5,14 @@ import me.phoenixra.atumvr.api.misc.pose.VRPoseRecord;
 import me.phoenixra.atumvr.core.OpenXRHelper;
 import me.phoenixra.atumvr.core.OpenXRProvider;
 import me.phoenixra.atumvr.core.enums.XRInputActionType;
-import me.phoenixra.atumvr.core.input.action.OpenXRSingleAction;
 import me.phoenixra.atumvr.core.input.action.OpenXRActionSet;
+import me.phoenixra.atumvr.core.input.action.OpenXRSingleAction;
+import org.jetbrains.annotations.Nullable;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.openxr.*;
 import org.lwjgl.system.MemoryStack;
+
+import java.util.function.Consumer;
 
 import static org.lwjgl.openxr.XR10.XR_NULL_PATH;
 import static org.lwjgl.system.MemoryStack.stackCallocPointer;
@@ -24,9 +27,9 @@ public class PoseAction extends OpenXRSingleAction<VRPoseRecord> {
 
     public PoseAction(OpenXRProvider provider,
                       OpenXRActionSet actionSet,
-                      String name,
+                      String id,
                       String localizedName) {
-        super(provider, actionSet, name, localizedName, XRInputActionType.POSE);
+        super(provider, actionSet, id, localizedName, XRInputActionType.POSE);
         currentState = VRPoseRecord.EMPTY;
 
     }
@@ -54,7 +57,7 @@ public class PoseAction extends OpenXRSingleAction<VRPoseRecord> {
 
 
     @Override
-    public void update() {
+    public void update(@Nullable Consumer<String> listener) {
         try(MemoryStack stack = MemoryStack.stackPush()) {
             var state = XrActionStatePose.calloc(stack)
                     .type(actionType.getStateId());
@@ -71,7 +74,7 @@ public class PoseAction extends OpenXRSingleAction<VRPoseRecord> {
             this.lastChangeTime = System.nanoTime();
             this.active = state.isActive();
 
-            var loc = OpenXRHelper.getXrLocationFromSpace(
+            var loc = OpenXRHelper.xrLocationFromSpace(
                     provider, xrSpace, stack
             );
 
@@ -83,6 +86,7 @@ public class PoseAction extends OpenXRSingleAction<VRPoseRecord> {
                             OpenXRHelper.normalizeXrQuaternion(loc.pose().orientation()),
                             OpenXRHelper.normalizeXrVector(loc.pose().position$())
                     );
+
         }
     }
 }

@@ -13,7 +13,6 @@ import java.util.List;
 
 import static org.lwjgl.openxr.XR10.*;
 import static org.lwjgl.system.MemoryUtil.NULL;
-import static org.lwjgl.system.MemoryUtil.memCalloc;
 
 public class OpenXRSwapChain {
 

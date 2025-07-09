@@ -4,7 +4,6 @@ import lombok.Getter;
 import me.phoenixra.atumvr.api.enums.EyeType;
 import me.phoenixra.atumvr.api.input.device.VRDeviceHMD;
 import me.phoenixra.atumvr.api.rendering.VREyeCamera;
-
 import me.phoenixra.atumvr.core.OpenXRProvider;
 import me.phoenixra.atumvr.core.input.device.OpenXRDeviceHMD;
 import org.joml.Matrix4f;

@@ -3,7 +3,6 @@ package me.phoenixra.atumvr.api.misc.color;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 
-
 import java.util.Objects;
 
 
@@ -93,6 +92,10 @@ public class AtumColorImmutable implements AtumColor {
 
     private double adjust(double channel) {
         return (channel <= 0.03928) ? channel / 12.92 : Math.pow((channel + 0.055) / 1.055, 2.4);
+    }
+
+    public AtumColorMutable asMutable(){
+        return new AtumColorMutable(red, green, blue, alpha);
     }
 
     @Override

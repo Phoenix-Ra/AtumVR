@@ -2,11 +2,12 @@ package me.phoenixra.atumvr.example;
 
 import lombok.Getter;
 import me.phoenixra.atumvr.api.VRLogger;
-import me.phoenixra.atumvr.api.rendering.RenderContext;
+import me.phoenixra.atumvr.api.rendering.IRenderContext;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.util.Scanner;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class ExampleVRApp {
     public static ExampleVRApp appInstance;
@@ -15,6 +16,8 @@ public class ExampleVRApp {
     private final File dataFolder;
 
     public static boolean leftHanded;
+
+    private static final AtomicBoolean restart = new AtomicBoolean(false);
 
     public ExampleVRApp() {
 
@@ -28,8 +31,17 @@ public class ExampleVRApp {
         updateThread.start();
 
         Scanner scanner = new Scanner(System.in);
-        while(!scanner.nextLine().equals("stop")){
-            System.out.println("Use 'stop' to exit");
+        while(true){
+            String cmd = scanner.nextLine();
+            if(cmd.equals("stop")){
+                break;
+            }
+            if(cmd.equals("restart")){
+                if(provider != null){
+                    restart.set(true);
+                }
+            }
+            System.out.println("Use 'stop' or 'restart'");
         }
 
         updateThread.interrupt(); // Stop the update thread
@@ -62,10 +74,16 @@ public class ExampleVRApp {
                 if(Thread.interrupted()){
                     break;
                 }
+                if(restart.get()){
+                    provider.destroy();
+                    init = false;
+                    restart.set(false);
+                    continue;
+                }
                 if(provider.isXrStopping()){
                     break;
                 }
-                RenderContext context = () -> 1;
+                IRenderContext context = () -> 1;
                 provider.preRender(context);
                 provider.render(context);
                 provider.postRender(context);

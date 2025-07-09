@@ -3,7 +3,7 @@ package me.phoenixra.atumvr.core.rendering;
 import lombok.Getter;
 import me.phoenixra.atumvr.api.enums.EyeType;
 import me.phoenixra.atumvr.api.input.device.VRDeviceHMD;
-import me.phoenixra.atumvr.api.rendering.RenderContext;
+import me.phoenixra.atumvr.api.rendering.IRenderContext;
 import me.phoenixra.atumvr.api.rendering.VRRenderer;
 import me.phoenixra.atumvr.api.rendering.VRTexture;
 import me.phoenixra.atumvr.api.utils.GLUtils;
@@ -47,12 +47,14 @@ public abstract class OpenXRRenderer implements VRRenderer {
     protected XrCompositionLayerProjectionView.Buffer projectionLayerViews;
 
 
+    private boolean createdGLContext;
     public OpenXRRenderer(OpenXRProvider vrProvider) {
         this.vrProvider = vrProvider;
 
     }
 
     public abstract void onInit() throws Throwable;
+    protected abstract OpenXRTexture createTexture(int width, int height, int textureId, int index);
 
     @Override
     public void init() throws Throwable{
@@ -63,25 +65,81 @@ public abstract class OpenXRRenderer implements VRRenderer {
     }
 
     @Override
-    public void renderFrame(@NotNull RenderContext context) {
-
+    public void preRender(@NotNull IRenderContext context) {
         prepareXrFrame();
+    }
 
-        GL30.glViewport(0, 0, resolutionWidth, resolutionHeight);
-        GL30.glEnable(GL30.GL_DEPTH_TEST);
+    @Override
+    public void renderFrame(@NotNull IRenderContext context) {
+
+
+        if(createdGLContext) {
+            GL30.glViewport(0, 0, resolutionWidth, resolutionHeight);
+            GL30.glEnable(GL30.GL_DEPTH_TEST);
+        }
 
         getCurrentScene().render(context);
 
         finishXrFrame();
 
-
-        GL30.glFlush();
-        GL30.glFinish();
+        if(createdGLContext) {
+            GL30.glFlush();
+            GL30.glFinish();
+        }
     }
 
 
 
     protected void prepareXrFrame(){
+        try (MemoryStack stack = MemoryStack.stackPush()) {
+            XrFrameState frameState = XrFrameState.calloc(stack).type(XR10.XR_TYPE_FRAME_STATE);
+
+            vrProvider.checkXRError(
+                    XR10.xrWaitFrame(
+                            vrProvider.getState().getVrSession().getHandle(),
+                            XrFrameWaitInfo.calloc(stack)
+                                    .type(XR10.XR_TYPE_FRAME_WAIT_INFO),
+                            frameState
+                    ),
+                    "xrWaitFrame", ""
+            );
+
+            vrProvider.setXrDisplayTime(frameState.predictedDisplayTime());
+
+            vrProvider.checkXRError(
+                    XR10.xrBeginFrame(
+                            vrProvider.getState().getVrSession().getHandle(),
+                            XrFrameBeginInfo.calloc(stack)
+                                    .type(XR10.XR_TYPE_FRAME_BEGIN_INFO)
+                    ),
+                    "xrBeginFrame", ""
+            );
+
+
+            XrViewState viewState = XrViewState.calloc(stack).type(XR10.XR_TYPE_VIEW_STATE);
+            IntBuffer intBuf = stack.callocInt(1);
+
+            XrViewLocateInfo viewLocateInfo = XrViewLocateInfo.calloc(stack);
+            viewLocateInfo.set(
+                    XR10.XR_TYPE_VIEW_LOCATE_INFO,
+                    0,
+                    XR10.XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO,
+                    frameState.predictedDisplayTime(),
+                    vrProvider.getState().getVrSession().getXrAppSpace()
+            );
+
+            vrProvider.checkXRError(
+                    XR10.xrLocateViews(
+                            vrProvider.getState().getVrSession().getHandle(),
+                            viewLocateInfo, viewState,
+                            intBuf, vrProvider.getState().getVrSwapChain().getXrViewBuffer()
+                    ),
+                    "xrLocateViews", ""
+            );
+
+
+        }
+
         XrSwapchain xrSwapchain = vrProvider.getState().getVrSwapChain().getHandle();
         this.projectionLayerViews = XrCompositionLayerProjectionView.calloc(2);
         try (MemoryStack stack = MemoryStack.stackPush()) {
@@ -168,6 +226,7 @@ public abstract class OpenXRRenderer implements VRRenderer {
 
 
     public void setupGLContext() {
+        createdGLContext = true;
         GLFWErrorCallback.createPrint(System.out).set();
 
         if (!glfwInit()) {
@@ -202,6 +261,7 @@ public abstract class OpenXRRenderer implements VRRenderer {
         resolutionHeight = vrProvider.getState().getEyeTexHeight();
     }
 
+
     protected void setupEyes() {
 
         try (MemoryStack stack = MemoryStack.stackPush()) {
@@ -215,7 +275,7 @@ public abstract class OpenXRRenderer implements VRRenderer {
             int imageCount = intBuffer.get(0);
             XrSwapchainImageOpenGLKHR.Buffer swapchainImageBuffer = vrProvider
                     .getState().getVrSwapChain().createImageBuffers(imageCount,
-                    stack);
+                            stack);
 
             error = XR10.xrEnumerateSwapchainImages(vrProvider.getState().getVrSwapChain().getHandle(), intBuffer,
                     XrSwapchainImageBaseHeader.create(swapchainImageBuffer.address(), swapchainImageBuffer.capacity()));
@@ -226,12 +286,13 @@ public abstract class OpenXRRenderer implements VRRenderer {
 
             for (int i = 0; i < imageCount; i++) {
                 XrSwapchainImageOpenGLKHR openxrImage = swapchainImageBuffer.get(i);
-                this.leftFramebuffers[i] = new OpenXRTexture(
+                this.leftFramebuffers[i] = createTexture(
                         resolutionWidth, resolutionHeight,
-                        openxrImage.image(), 0
+                        openxrImage.image(),
+                        0
                 ).init();
                 GLUtils.checkGLError("Left Eye " + i + " framebuffer setup");
-                this.rightFramebuffers[i] = new OpenXRTexture(
+                this.rightFramebuffers[i] = createTexture(
                         resolutionWidth, resolutionHeight,
                         openxrImage.image(),
                         1
@@ -243,7 +304,8 @@ public abstract class OpenXRRenderer implements VRRenderer {
 
     }
 
-    //@TODO Written By AI, has to be tested!!
+
+
     protected void setupHiddenArea(){
         try(MemoryStack stack = MemoryStack.stackPush()) {
             XrSession xrSession = getVrProvider().getState().getVrSession().getHandle();
@@ -317,11 +379,17 @@ public abstract class OpenXRRenderer implements VRRenderer {
 
     @Override
     public VRTexture getTextureLeftEye() {
+        if(leftFramebuffers==null){
+            return null;
+        }
         return leftFramebuffers[swapIndex];
     }
 
     @Override
     public VRTexture getTextureRightEye() {
+        if(rightFramebuffers==null){
+            return null;
+        }
         return rightFramebuffers[swapIndex];
     }
 
@@ -331,13 +399,18 @@ public abstract class OpenXRRenderer implements VRRenderer {
     }
 
 
+    public void reinitBuffers(){
+
+    }
 
     @Override
     public void destroy() {
         getCurrentScene().destroy();
-        glfwFreeCallbacks(windowHandle);
-        glfwDestroyWindow(windowHandle);
+        if(createdGLContext) {
+            glfwFreeCallbacks(windowHandle);
+            glfwDestroyWindow(windowHandle);
 
-        glfwTerminate();
+            glfwTerminate();
+        }
     }
 }

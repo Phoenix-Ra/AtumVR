@@ -1,13 +1,16 @@
 package me.phoenixra.atumvr.api.input.action;
 
+import org.jetbrains.annotations.Nullable;
+
 import java.util.Collection;
+import java.util.function.Consumer;
 
 public interface VRActionSet {
 
 
     void init();
 
-    void update();
+    void update(@Nullable Consumer<String> listener);
 
     void destroy();
 

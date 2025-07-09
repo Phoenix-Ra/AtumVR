@@ -9,7 +9,10 @@ import org.lwjgl.openxr.*;
 import org.lwjgl.system.MemoryStack;
 
 import java.nio.ByteBuffer;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class OpenXRInstance {
     private final static String GRAPHICS_EXTENSION = KHROpenGLEnable.XR_KHR_OPENGL_ENABLE_EXTENSION_NAME;
@@ -46,7 +49,7 @@ public class OpenXRInstance {
 
             // 1) Fill XrApplicationInfo
             var appInfo = XrApplicationInfo.calloc(stack)
-                    .applicationName(stack.UTF8("AtumVRExample"))
+                    .applicationName(stack.UTF8(provider.getAppName()))
                     .applicationVersion(1)
                     .engineName(stack.UTF8("AtumEngine"))
                     .engineVersion(1)

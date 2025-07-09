@@ -28,7 +28,7 @@ public class ExampleCubeHand extends ExampleCube{
                 .getActiveProfileSet();
         if(profileSet != null){
             if(profileSet.getTriggerValue()
-                    .getButtonState(type).pressed()){
+                    .getHandSubaction(type).isPressed()){
                 scale = scale.mul(0.2f, new Vector3f());
             }
         }

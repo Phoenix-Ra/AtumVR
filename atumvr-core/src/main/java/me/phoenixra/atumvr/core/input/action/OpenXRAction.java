@@ -2,13 +2,13 @@ package me.phoenixra.atumvr.core.input.action;
 
 import lombok.Getter;
 import me.phoenixra.atumvr.api.input.action.VRAction;
-
-
 import me.phoenixra.atumvr.core.OpenXRProvider;
 import me.phoenixra.atumvr.core.enums.XRInputActionType;
+import org.jetbrains.annotations.Nullable;
 import org.lwjgl.openxr.XR10;
 import org.lwjgl.openxr.XrAction;
 
+import java.util.function.Consumer;
 
 
 public abstract class OpenXRAction implements VRAction {
@@ -24,7 +24,7 @@ public abstract class OpenXRAction implements VRAction {
     protected final OpenXRActionSet actionSet;
 
     @Getter
-    protected final String name;
+    protected final String id;
     @Getter
     protected final String localizedName;
 
@@ -32,19 +32,19 @@ public abstract class OpenXRAction implements VRAction {
 
     public OpenXRAction(OpenXRProvider provider,
                         OpenXRActionSet actionSet,
-                        String name,
+                        String id,
                         String localizedName,
                         XRInputActionType actionType) {
         this.provider = provider;
         this.actionSet = actionSet;
-        this.name = name;
+        this.id = id;
         this.localizedName = localizedName;
         this.actionType = actionType;
     }
 
     public abstract void init(OpenXRActionSet actionSet);
 
-    public abstract void update();
+    public abstract void update(@Nullable Consumer<String> listener);
 
 
     public void destroy() {

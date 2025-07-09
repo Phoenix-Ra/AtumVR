@@ -1,7 +1,6 @@
 package me.phoenixra.atumvr.core.rendering;
 
 import lombok.Getter;
-
 import me.phoenixra.atumvr.api.rendering.VRTexture;
 import org.lwjgl.opengl.GL30;
 

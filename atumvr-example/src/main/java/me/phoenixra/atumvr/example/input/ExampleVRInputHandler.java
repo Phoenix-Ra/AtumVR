@@ -65,7 +65,7 @@ public class ExampleVRInputHandler extends OpenXRInputHandler {
         if(profileSet == null){
             return;
         }
-        if(profileSet.getTriggerValue().getButtonState(type).pressed()){
+        if(profileSet.getTriggerValue().getHandSubaction(type).isPressed()){
             getDevice(VRDeviceController.getDefaultId(type), VRDeviceController.class)
                     .triggerHapticPulse(
                             160f,

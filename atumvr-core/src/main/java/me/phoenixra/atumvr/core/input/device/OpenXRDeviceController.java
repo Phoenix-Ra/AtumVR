@@ -1,10 +1,8 @@
 package me.phoenixra.atumvr.core.input.device;
 
 import lombok.Getter;
-
 import me.phoenixra.atumvr.api.enums.ControllerType;
 import me.phoenixra.atumvr.api.input.device.VRDeviceController;
-
 import me.phoenixra.atumvr.api.misc.pose.VRPose;
 import me.phoenixra.atumvr.api.misc.pose.VRPoseMutable;
 import me.phoenixra.atumvr.core.OpenXRProvider;

@@ -2,14 +2,11 @@ package me.phoenixra.atumvr.core.rendering;
 
 import lombok.Getter;
 import me.phoenixra.atumvr.api.enums.EyeType;
-import me.phoenixra.atumvr.api.rendering.RenderContext;
-import me.phoenixra.atumvr.api.rendering.VREyeCamera;
+import me.phoenixra.atumvr.api.rendering.IRenderContext;
 import me.phoenixra.atumvr.api.rendering.VRScene;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.system.MemoryStack;
-
-import java.nio.FloatBuffer;
 
 public abstract class OpenXRScene implements VRScene {
 
@@ -45,7 +42,7 @@ public abstract class OpenXRScene implements VRScene {
     }
 
     @Override
-    public void render(@NotNull RenderContext context) {
+    public void render(@NotNull IRenderContext context) {
         try(MemoryStack stack = MemoryStack.stackPush()) {
             //stack not used here but necessary for some OpenGL operations,
             // so its pushed then auto-popped together with OpenGL staff
