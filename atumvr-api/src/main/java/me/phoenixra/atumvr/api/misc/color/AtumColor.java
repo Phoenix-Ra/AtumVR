@@ -265,7 +265,7 @@ public interface AtumColor {
      *
      * @return the integer representation of this color
      */
-    default int toInt() {
+    default int asInt() {
         return (getRedInt() << 16)
                 | (getGreenInt() << 8)
                 | getBlueInt()
@@ -282,7 +282,7 @@ public interface AtumColor {
      * @param withAlpha {@code true} to include alpha; {@code false} otherwise
      * @return the hexadecimal string representation of this color
      */
-    default @NotNull String toHex(boolean withAlpha) {
+    default @NotNull String asHex(boolean withAlpha) {
         if (withAlpha) {
             return String.format(
                     "#%02x%02x%02x%02x",
@@ -349,6 +349,17 @@ public interface AtumColor {
     }
 
     /**
+     * Creates a mutable color instance from a packed int.
+     *
+     * @param color      either 0xAARRGGBB (if hasAlpha==true) or 0xRRGGBB (if hasAlpha==false)
+     * @param hasAlpha if true, top 8 bits of rgb are treated as alpha; otherwise alpha is set to 255
+     * @return a new {@link AtumColorMutable} instance
+     */
+    static @NotNull AtumColorMutable mutable(int color, boolean hasAlpha) {
+        return new AtumColorMutable(color, hasAlpha);
+    }
+
+    /**
      * Creates a mutable color instance from a hexadecimal string.
      *
      * @param hex a hexadecimal string representing the color (e.g. "#RRGGBB" or "#RRGGBBAA")
@@ -390,6 +401,17 @@ public interface AtumColor {
      */
     static @NotNull AtumColorImmutable immutable(int red, int green, int blue, int alpha) {
         return new AtumColorImmutable(red, green, blue, alpha);
+    }
+
+    /**
+     * Creates an immutable color instance from a packed int.
+     *
+     * @param color      either 0xAARRGGBB (if hasAlpha==true) or 0xRRGGBB (if hasAlpha==false)
+     * @param hasAlpha if true, top 8 bits of rgb are treated as alpha; otherwise alpha is set to 255
+     * @return a new {@link AtumColorImmutable} instance
+     */
+    static @NotNull AtumColorImmutable immutable(int color, boolean hasAlpha) {
+        return new AtumColorImmutable(color, hasAlpha);
     }
 
     /**

@@ -42,6 +42,17 @@ public class AtumColorImmutable implements AtumColor {
         this.alphaInt = floatToInt(this.alpha);
     }
 
+    public AtumColorImmutable(int color, boolean hasAlpha) {
+        this(
+                (color >> 16) & 0xFF,
+                (color >> 8)  & 0xFF,
+                color        & 0xFF,
+                hasAlpha
+                        ? ((color >> 24) & 0xFF)
+                        : 0xFF
+        );
+    }
+
 
     @Override
     public @NotNull AtumColorImmutable blend(@NotNull AtumColor other, float ratio) {

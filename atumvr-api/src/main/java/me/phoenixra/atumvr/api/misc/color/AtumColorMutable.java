@@ -26,6 +26,22 @@ public class AtumColorMutable implements AtumColor {
         setRGBA(red, green, blue, alpha);
     }
 
+    public AtumColorMutable(int color, boolean hasAlpha) {
+        if (hasAlpha) {
+            int a = (color >> 24) & 0xFF;
+            int r = (color >> 16) & 0xFF;
+            int g = (color >>  8) & 0xFF;
+            int b =  color        & 0xFF;
+            setRGBA(r, g, b, a);
+        } else {
+            int r = (color >> 16) & 0xFF;
+            int g = (color >>  8) & 0xFF;
+            int b =  color        & 0xFF;
+            setRGBA(r, g, b, 255);
+        }
+    }
+
+
 
     public void setRGBA(int red, int green, int blue, int alpha){
         this.red = red / 255f;
