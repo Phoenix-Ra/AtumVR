@@ -1,9 +1,9 @@
 # AtumVR
 
-Library that simplifies VR game development in Java. It can be used either:
+Library that simplifies VR development in Java. It can be used either:
 
-- directly in a Java-based game, or
-- to add VR support to an existing game via a mod (when the game/modding platform allows it).
+- directly in a Java-based game/app, or
+- to add VR support to an existing game/app via a mod (when the game/modding platform allows it).
 
 AtumVR uses **LWJGL** to access native VR APIs and currently supports **OpenXR only**.
 
