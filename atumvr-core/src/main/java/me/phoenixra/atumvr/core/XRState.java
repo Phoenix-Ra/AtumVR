@@ -4,10 +4,10 @@ import lombok.Getter;
 import me.phoenixra.atumvr.api.VRState;
 import me.phoenixra.atumvr.core.enums.XREvent;
 import me.phoenixra.atumvr.core.enums.XRSessionStateChange;
-import me.phoenixra.atumvr.core.init.OpenXRInstance;
-import me.phoenixra.atumvr.core.init.OpenXRSession;
-import me.phoenixra.atumvr.core.init.OpenXRSwapChain;
-import me.phoenixra.atumvr.core.init.OpenXRSystem;
+import me.phoenixra.atumvr.core.init.XRInstance;
+import me.phoenixra.atumvr.core.init.XRSession;
+import me.phoenixra.atumvr.core.init.XRSwapChain;
+import me.phoenixra.atumvr.core.init.XRSystem;
 import org.lwjgl.openxr.*;
 import org.lwjgl.system.MemoryStack;
 
@@ -17,13 +17,13 @@ import java.util.List;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
 @Getter
-public class OpenXRState implements VRState {
-    private final OpenXRProvider vrProvider;
+public class XRState implements VRState {
+    private final XRProvider vrProvider;
 
-    protected OpenXRInstance vrInstance;
-    protected OpenXRSystem vrSystem;
-    protected OpenXRSession vrSession;
-    protected OpenXRSwapChain vrSwapChain;
+    protected XRInstance vrInstance;
+    protected XRSystem vrSystem;
+    protected XRSession vrSession;
+    protected XRSwapChain vrSwapChain;
 
 
 
@@ -31,22 +31,22 @@ public class OpenXRState implements VRState {
 
 
 
-    protected boolean running = false;
+    protected boolean ready = false;
     protected boolean active = false;
     protected boolean focused = false;
 
     protected boolean initialized = false;
 
-    public OpenXRState(OpenXRProvider vrProvider){
+    public XRState(XRProvider vrProvider){
         this.vrProvider = vrProvider;
 
     }
 
     public void init() throws Throwable{
-        vrInstance = new OpenXRInstance(this);
-        vrSystem = new OpenXRSystem(this);
-        vrSession = new OpenXRSession(this);
-        vrSwapChain = new OpenXRSwapChain(this);
+        vrInstance = new XRInstance(this);
+        vrSystem = new XRSystem(this);
+        vrSession = new XRSession(this);
+        vrSwapChain = new XRSwapChain(this);
 
         vrInstance.init();
         vrSystem.init();
@@ -54,7 +54,7 @@ public class OpenXRState implements VRState {
 
         vrSwapChain.init();
 
-        while (!running){
+        while (!ready){
             vrProvider.getLogger().logInfo("Waiting for OpenXR session to start...");
             pollVREvents();
         }
@@ -107,14 +107,14 @@ public class OpenXRState implements VRState {
                             "xrBeginSession", "XRStateChangeREADY"
                     );
                 }
-                running = true;
-                active = true;
+                ready = true;
+                active = true; //for convenience
                 vrProvider.getLogger().logInfo("OpenXR session is READY");
 
             }
 
             case STOPPING -> {
-                running = false;
+                ready = false;
                 active = false;
             }
 
@@ -157,7 +157,7 @@ public class OpenXRState implements VRState {
         }
         xrEventsReceived.clear();
 
-        running = false;
+        ready = false;
         active = false;
         focused = false;
         initialized = false;

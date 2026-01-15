@@ -1,12 +1,14 @@
 package me.phoenixra.atumvr.core.input.action.profileset.types;
 
 import lombok.Getter;
+import me.phoenixra.atumvr.api.enums.ControllerType;
+import me.phoenixra.atumvr.api.input.action.ActionIdentifier;
 import me.phoenixra.atumvr.api.input.action.VRActionDataButton;
 import me.phoenixra.atumvr.api.input.action.VRActionDataVec2;
-import me.phoenixra.atumvr.core.OpenXRProvider;
+import me.phoenixra.atumvr.core.XRProvider;
 import me.phoenixra.atumvr.core.enums.XRInteractionProfile;
-import me.phoenixra.atumvr.core.input.action.OpenXRAction;
-import me.phoenixra.atumvr.core.input.action.profileset.OpenXRProfileSet;
+import me.phoenixra.atumvr.core.input.action.XRAction;
+import me.phoenixra.atumvr.core.input.action.profileset.XRProfileSet;
 import me.phoenixra.atumvr.core.input.action.types.multi.BoolButtonMultiAction;
 import me.phoenixra.atumvr.core.input.action.types.multi.FloatButtonMultiAction;
 import me.phoenixra.atumvr.core.input.action.types.multi.Vec2MultiAction;
@@ -15,36 +17,36 @@ import org.joml.Vector2f;
 
 import java.util.*;
 
-import static me.phoenixra.atumvr.core.input.action.OpenXRAction.LEFT_HAND_PATH;
-import static me.phoenixra.atumvr.core.input.action.OpenXRAction.RIGHT_HAND_PATH;
+import static me.phoenixra.atumvr.core.input.action.XRAction.LEFT_HAND_PATH;
+import static me.phoenixra.atumvr.core.input.action.XRAction.RIGHT_HAND_PATH;
 
 @Getter
-public class ViveSet extends OpenXRProfileSet {
+public class ViveSet extends XRProfileSet {
     private static final XRInteractionProfile PROFILE = XRInteractionProfile.VIVE;
 
-    public static final String BUTTON_SYSTEM_LEFT = "button.system.left";
-    public static final String BUTTON_SYSTEM_RIGHT = "button.system.right";
+    public static final ActionIdentifier BUTTON_SYSTEM_LEFT = new ActionIdentifier("button.system.left", ControllerType.LEFT);;
+    public static final ActionIdentifier BUTTON_SYSTEM_RIGHT = new ActionIdentifier("button.system.right", ControllerType.RIGHT);
 
-    public static final String BUTTON_MENU_LEFT = "button.menu.left";
-    public static final String BUTTON_MENU_RIGHT = "button.menu.right";
+    public static final ActionIdentifier BUTTON_MENU_LEFT = new ActionIdentifier("button.menu.left", ControllerType.LEFT);;
+    public static final ActionIdentifier BUTTON_MENU_RIGHT = new ActionIdentifier("button.menu.right", ControllerType.RIGHT);
 
-    public static final String BUTTON_GRIP_LEFT = "button.grip.left";
-    public static final String BUTTON_GRIP_RIGHT = "button.grip.right";
+    public static final ActionIdentifier BUTTON_GRIP_LEFT = new ActionIdentifier("button.grip.left", ControllerType.LEFT);;
+    public static final ActionIdentifier BUTTON_GRIP_RIGHT = new ActionIdentifier("button.grip.right", ControllerType.RIGHT);
 
-    public static final String BUTTON_TRIGGER_LEFT = "button.trigger.left";
-    public static final String BUTTON_TRIGGER_RIGHT = "button.trigger.right";
-    public static final String BUTTON_TRIGGER_CLICK_LEFT = "button.trigger.click.left";
-    public static final String BUTTON_TRIGGER_CLICK_RIGHT = "button.trigger.click.right";
-
-
-    public static final String BUTTON_TRACKPAD_LEFT = "button.trackpad.left";
-    public static final String BUTTON_TRACKPAD_RIGHT = "button.trackpad.right";
-    public static final String BUTTON_TRACKPAD_TOUCH_LEFT = "button.trackpad.touch.left";
-    public static final String BUTTON_TRACKPAD_TOUCH_RIGHT = "button.trackpad.touch.right";
+    public static final ActionIdentifier BUTTON_TRIGGER_LEFT = new ActionIdentifier("button.trigger.left", ControllerType.LEFT);;
+    public static final ActionIdentifier BUTTON_TRIGGER_RIGHT = new ActionIdentifier("button.trigger.right", ControllerType.RIGHT);
+    public static final ActionIdentifier BUTTON_TRIGGER_CLICK_LEFT = new ActionIdentifier("button.trigger.click.left", ControllerType.LEFT);;
+    public static final ActionIdentifier BUTTON_TRIGGER_CLICK_RIGHT = new ActionIdentifier("button.trigger.click.right", ControllerType.RIGHT);
 
 
-    public static final String VEC2_TRACKPAD_LEFT = "vec2.trackpad.left";
-    public static final String VEC2_TRACKPAD_RIGHT = "vec2.trackpad.right";
+    public static final ActionIdentifier BUTTON_TRACKPAD_LEFT = new ActionIdentifier("button.trackpad.left", ControllerType.LEFT);;
+    public static final ActionIdentifier BUTTON_TRACKPAD_RIGHT = new ActionIdentifier("button.trackpad.right", ControllerType.RIGHT);
+    public static final ActionIdentifier BUTTON_TRACKPAD_TOUCH_LEFT = new ActionIdentifier("button.trackpad.touch.left", ControllerType.LEFT);;
+    public static final ActionIdentifier BUTTON_TRACKPAD_TOUCH_RIGHT = new ActionIdentifier("button.trackpad.touch.right", ControllerType.RIGHT);
+
+
+    public static final ActionIdentifier VEC2_TRACKPAD_LEFT = new ActionIdentifier("vec2.trackpad.left", ControllerType.LEFT);;
+    public static final ActionIdentifier VEC2_TRACKPAD_RIGHT = new ActionIdentifier("vec2.trackpad.right", ControllerType.RIGHT);
 
 
     // System & Menu Buttons
@@ -67,19 +69,19 @@ public class ViveSet extends OpenXRProfileSet {
     private Map<String, VRActionDataButton> buttonMap;
     private Map<String, VRActionDataVec2> vec2Map;
 
-    public ViveSet(OpenXRProvider provider) {
+    public ViveSet(XRProvider provider) {
         super(provider, "vive", "Vive Controller", 0);
     }
 
     @Override
-    protected List<OpenXRAction> loadActions(OpenXRProvider provider) {
+    protected List<XRAction> loadActions(XRProvider provider) {
 
 
         // -------- SYSTEM & MENU BUTTONS --------
         systemButton = new BoolButtonMultiAction(
                 provider,
                 this,
-                "button.system",
+                new ActionIdentifier("button.system"),
                 "System Button",
                 List.of(
                         new BoolButtonMultiAction.SubActionBoolButton(
@@ -98,7 +100,7 @@ public class ViveSet extends OpenXRProfileSet {
         menuButton = new BoolButtonMultiAction(
                 provider,
                 this,
-                "button.menu",
+                new ActionIdentifier("button.menu"),
                 "Menu Button",
                 List.of(
                         new BoolButtonMultiAction.SubActionBoolButton(
@@ -118,7 +120,7 @@ public class ViveSet extends OpenXRProfileSet {
         gripButton = new BoolButtonMultiAction(
                 provider,
                 this,
-                "button.grip",
+                new ActionIdentifier("button.grip"),
                 "Grip Button",
                 List.of(
                         new BoolButtonMultiAction.SubActionBoolButton(
@@ -138,7 +140,7 @@ public class ViveSet extends OpenXRProfileSet {
         triggerValue = new FloatButtonMultiAction(
                 provider,
                 this,
-                "trigger.button",
+                new ActionIdentifier("trigger.button"),
                 "Trigger Value",
                 0.7f,   // click threshold
                 0.65f,  // release threshold
@@ -159,7 +161,7 @@ public class ViveSet extends OpenXRProfileSet {
         triggerButton = new BoolButtonMultiAction(
                 provider,
                 this,
-                "trigger.button.click",
+                new ActionIdentifier("trigger.button.click"),
                 "Trigger Button",
                 List.of(
                         new BoolButtonMultiAction.SubActionBoolButton(
@@ -179,7 +181,7 @@ public class ViveSet extends OpenXRProfileSet {
         trackpad = new Vec2MultiAction(
                 provider,
                 this,
-                "vec2.trackpad",
+                new ActionIdentifier("vec2.trackpad"),
                 "Trackpad",
                 List.of(
                         new Vec2MultiAction.SubActionVec2(
@@ -198,7 +200,7 @@ public class ViveSet extends OpenXRProfileSet {
         trackpadTouch = new BoolButtonMultiAction(
                 provider,
                 this,
-                "button.trackpad.touch",
+                new ActionIdentifier("button.trackpad.touch"),
                 "Trackpad Touch",
                 List.of(
                         new BoolButtonMultiAction.SubActionBoolButton(
@@ -217,7 +219,7 @@ public class ViveSet extends OpenXRProfileSet {
         trackpadButton = new BoolButtonMultiAction(
                 provider,
                 this,
-                "button.trackpad",
+                new ActionIdentifier("button.trackpad"),
                 "Trackpad Button",
                 List.of(
                         new BoolButtonMultiAction.SubActionBoolButton(
@@ -245,14 +247,14 @@ public class ViveSet extends OpenXRProfileSet {
 
         buttonMap = new LinkedHashMap<>();
         for(var entry : listButton){
-            buttonMap.put(entry.getId(), entry);
+            buttonMap.put(entry.getId().getValue(), entry);
         }
 
         List<VRActionDataVec2> listVec2 = new ArrayList<>(trackpad.getSubActionsAsVec2());
 
         vec2Map = new LinkedHashMap<>();
         for(var entry : listVec2){
-            vec2Map.put(entry.getId(), entry);
+            vec2Map.put(entry.getId().getValue(), entry);
         }
 
         return List.of(

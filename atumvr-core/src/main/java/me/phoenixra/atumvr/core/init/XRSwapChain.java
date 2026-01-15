@@ -2,7 +2,7 @@ package me.phoenixra.atumvr.core.init;
 
 import lombok.Getter;
 import me.phoenixra.atumvr.api.VRLogger;
-import me.phoenixra.atumvr.core.OpenXRState;
+import me.phoenixra.atumvr.core.XRState;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.openxr.*;
 import org.lwjgl.system.MemoryStack;
@@ -14,13 +14,13 @@ import java.util.List;
 import static org.lwjgl.openxr.XR10.*;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
-public class OpenXRSwapChain {
+public class XRSwapChain {
 
 
     private static final int VIEW_TYPE = XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO;
 
 
-    private final OpenXRState xrState;
+    private final XRState xrState;
     private final VRLogger LOG;
     private final List<Integer> desiredSwapChainFormats;
 
@@ -34,7 +34,7 @@ public class OpenXRSwapChain {
     @Getter
     private int eyeMaxWidth, eyeMaxHeight;
 
-    public OpenXRSwapChain(OpenXRState xrState) {
+    public XRSwapChain(XRState xrState) {
         this.xrState = xrState;
         LOG = xrState.getVrProvider().getLogger();
         desiredSwapChainFormats = xrState.getVrProvider().getSwapChainFormats();

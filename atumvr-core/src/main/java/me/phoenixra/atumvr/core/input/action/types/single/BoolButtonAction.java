@@ -1,11 +1,12 @@
 package me.phoenixra.atumvr.core.input.action.types.single;
 
+import me.phoenixra.atumvr.api.input.action.ActionIdentifier;
 import me.phoenixra.atumvr.api.input.action.VRActionDataButton;
-import me.phoenixra.atumvr.core.OpenXRProvider;
+import me.phoenixra.atumvr.core.XRProvider;
 import me.phoenixra.atumvr.core.enums.XRInputActionType;
 import me.phoenixra.atumvr.core.enums.XRInteractionProfile;
-import me.phoenixra.atumvr.core.input.action.OpenXRActionSet;
-import me.phoenixra.atumvr.core.input.action.OpenXRSingleAction;
+import me.phoenixra.atumvr.core.input.action.XRActionSet;
+import me.phoenixra.atumvr.core.input.action.XRSingleAction;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.openxr.XR10;
@@ -15,19 +16,19 @@ import org.lwjgl.system.MemoryStack;
 import java.util.List;
 import java.util.function.Consumer;
 
-public class BoolButtonAction extends OpenXRSingleAction<Boolean> implements VRActionDataButton {
+public class BoolButtonAction extends XRSingleAction<Boolean> implements VRActionDataButton {
 
 
-    public BoolButtonAction(OpenXRProvider provider,
-                            OpenXRActionSet actionSet,
-                            String id,
+    public BoolButtonAction(XRProvider provider,
+                            XRActionSet actionSet,
+                            ActionIdentifier id,
                             String localizedName) {
         super(provider, actionSet, id, localizedName, XRInputActionType.BOOLEAN);
         currentState = false;
     }
 
     @Override
-    protected void onInit(OpenXRActionSet actionSet, MemoryStack stack) {
+    protected void onInit(XRActionSet actionSet, MemoryStack stack) {
 
     }
     @Override
@@ -49,7 +50,7 @@ public class BoolButtonAction extends OpenXRSingleAction<Boolean> implements VRA
             this.lastChangeTime = state.lastChangeTime();
             this.active = state.isActive();
             if(listener != null && changed){
-                listener.accept(id);
+                listener.accept(id.getValue());
             }
         }
     }
@@ -69,10 +70,6 @@ public class BoolButtonAction extends OpenXRSingleAction<Boolean> implements VRA
         return this.lastChangeTime;
     }
 
-    @Override
-    public String getId() {
-        return id;
-    }
 
     @Override
     public BoolButtonAction putDefaultBindings(@NotNull List<XRInteractionProfile> profiles, @Nullable String source) {

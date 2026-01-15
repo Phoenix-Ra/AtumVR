@@ -1,12 +1,14 @@
 package me.phoenixra.atumvr.core.input.action.profileset.types;
 
 import lombok.Getter;
+import me.phoenixra.atumvr.api.enums.ControllerType;
+import me.phoenixra.atumvr.api.input.action.ActionIdentifier;
 import me.phoenixra.atumvr.api.input.action.VRActionDataButton;
 import me.phoenixra.atumvr.api.input.action.VRActionDataVec2;
-import me.phoenixra.atumvr.core.OpenXRProvider;
+import me.phoenixra.atumvr.core.XRProvider;
 import me.phoenixra.atumvr.core.enums.XRInteractionProfile;
-import me.phoenixra.atumvr.core.input.action.OpenXRAction;
-import me.phoenixra.atumvr.core.input.action.profileset.OpenXRProfileSet;
+import me.phoenixra.atumvr.core.input.action.XRAction;
+import me.phoenixra.atumvr.core.input.action.profileset.XRProfileSet;
 import me.phoenixra.atumvr.core.input.action.types.multi.BoolButtonMultiAction;
 import me.phoenixra.atumvr.core.input.action.types.multi.FloatButtonMultiAction;
 import me.phoenixra.atumvr.core.input.action.types.multi.Vec2MultiAction;
@@ -15,36 +17,36 @@ import org.joml.Vector2f;
 
 import java.util.*;
 
-import static me.phoenixra.atumvr.core.input.action.OpenXRAction.LEFT_HAND_PATH;
-import static me.phoenixra.atumvr.core.input.action.OpenXRAction.RIGHT_HAND_PATH;
+import static me.phoenixra.atumvr.core.input.action.XRAction.LEFT_HAND_PATH;
+import static me.phoenixra.atumvr.core.input.action.XRAction.RIGHT_HAND_PATH;
 
 @Getter
-public class WindowsMotionSet extends OpenXRProfileSet {
+public class WindowsMotionSet extends XRProfileSet {
     private static final XRInteractionProfile PROFILE = XRInteractionProfile.WINDOWS_MOTION;
 
-    public static final String BUTTON_MENU_LEFT = "button.menu.left";
-    public static final String BUTTON_MENU_RIGHT = "button.menu.right";
+    public static final ActionIdentifier BUTTON_MENU_LEFT = new ActionIdentifier("button.menu.left", ControllerType.LEFT);
+    public static final ActionIdentifier BUTTON_MENU_RIGHT = new ActionIdentifier("button.menu.right", ControllerType.RIGHT);
 
-    public static final String BUTTON_GRIP_LEFT = "button.grip.left";
-    public static final String BUTTON_GRIP_RIGHT = "button.grip.right";
+    public static final ActionIdentifier BUTTON_GRIP_LEFT = new ActionIdentifier("button.grip.left", ControllerType.LEFT);
+    public static final ActionIdentifier BUTTON_GRIP_RIGHT = new ActionIdentifier("button.grip.right", ControllerType.RIGHT);
 
-    public static final String BUTTON_TRIGGER_LEFT = "button.trigger.left";
-    public static final String BUTTON_TRIGGER_RIGHT = "button.trigger.right";
+    public static final ActionIdentifier BUTTON_TRIGGER_LEFT = new ActionIdentifier("button.trigger.left", ControllerType.LEFT);
+    public static final ActionIdentifier BUTTON_TRIGGER_RIGHT = new ActionIdentifier("button.trigger.right", ControllerType.RIGHT);
 
-    public static final String BUTTON_THUMBSTICK_LEFT = "button.thumbstick.left";
-    public static final String BUTTON_THUMBSTICK_RIGHT = "button.thumbstick.right";
+    public static final ActionIdentifier BUTTON_THUMBSTICK_LEFT = new ActionIdentifier("button.thumbstick.left", ControllerType.LEFT);
+    public static final ActionIdentifier BUTTON_THUMBSTICK_RIGHT = new ActionIdentifier("button.thumbstick.right", ControllerType.RIGHT);
 
-    public static final String BUTTON_TRACKPAD_LEFT = "button.trackpad.touch.left";
-    public static final String BUTTON_TRACKPAD_RIGHT = "button.trackpad.touch.right";
-    public static final String BUTTON_TRACKPAD_TOUCH_LEFT = "button.trackpad.touch.left";
-    public static final String BUTTON_TRACKPAD_TOUCH_RIGHT = "button.trackpad.touch.right";
+    public static final ActionIdentifier BUTTON_TRACKPAD_LEFT = new ActionIdentifier("button.trackpad.touch.left", ControllerType.LEFT);
+    public static final ActionIdentifier BUTTON_TRACKPAD_RIGHT = new ActionIdentifier("button.trackpad.touch.right", ControllerType.RIGHT);
+    public static final ActionIdentifier BUTTON_TRACKPAD_TOUCH_LEFT = new ActionIdentifier("button.trackpad.touch.left", ControllerType.LEFT);
+    public static final ActionIdentifier BUTTON_TRACKPAD_TOUCH_RIGHT = new ActionIdentifier("button.trackpad.touch.right", ControllerType.RIGHT);
 
 
-    public static final String VEC2_THUMBSTICK_LEFT = "vec2.thumbstick.left";
-    public static final String VEC2_THUMBSTICK_RIGHT = "vec2.thumbstick.right";
+    public static final ActionIdentifier VEC2_THUMBSTICK_LEFT = new ActionIdentifier("vec2.thumbstick.left", ControllerType.LEFT);
+    public static final ActionIdentifier VEC2_THUMBSTICK_RIGHT = new ActionIdentifier("vec2.thumbstick.right", ControllerType.RIGHT);
 
-    public static final String VEC2_TRACKPAD_LEFT = "vec2.trackpad.left";
-    public static final String VEC2_TRACKPAD_RIGHT = "vec2.trackpad.right";
+    public static final ActionIdentifier VEC2_TRACKPAD_LEFT = new ActionIdentifier("vec2.trackpad.left", ControllerType.LEFT);
+    public static final ActionIdentifier VEC2_TRACKPAD_RIGHT = new ActionIdentifier("vec2.trackpad.right", ControllerType.RIGHT);
 
 
     // Menu button
@@ -70,18 +72,18 @@ public class WindowsMotionSet extends OpenXRProfileSet {
     private Map<String, VRActionDataVec2> vec2Map;
 
 
-    public WindowsMotionSet(OpenXRProvider provider) {
+    public WindowsMotionSet(XRProvider provider) {
         super(provider, "windows_motion", "Windows Motion Controller", 0);
     }
 
     @Override
-    protected List<OpenXRAction> loadActions(OpenXRProvider provider) {
+    protected List<XRAction> loadActions(XRProvider provider) {
 
 
         // -------- MENU BUTTON --------
         menuButton = new BoolButtonMultiAction(
                 provider, this,
-                "button.menu", "Menu Button",
+                new ActionIdentifier("button.menu"), "Menu Button",
                 List.of(
                         new BoolButtonMultiAction.SubActionBoolButton(
                                 BUTTON_MENU_LEFT,
@@ -99,7 +101,7 @@ public class WindowsMotionSet extends OpenXRProfileSet {
         // -------- GRIP --------
         gripButton = new BoolButtonMultiAction(
                 provider, this,
-                "button.grip", "Grip Button",
+                new ActionIdentifier("button.grip"), "Grip Button",
                 List.of(
                         new BoolButtonMultiAction.SubActionBoolButton(
                                 BUTTON_GRIP_LEFT,
@@ -117,7 +119,7 @@ public class WindowsMotionSet extends OpenXRProfileSet {
         // -------- TRIGGER BUTTON --------
         triggerValue = new FloatButtonMultiAction(
                 provider, this,
-                "button.trigger", "Trigger Value",
+                new ActionIdentifier("button.trigger"), "Trigger Value",
                 0.7f,
                 0.65f,
                 List.of(
@@ -137,7 +139,7 @@ public class WindowsMotionSet extends OpenXRProfileSet {
         // -------- THUMB STICK --------
         thumbStick = new Vec2MultiAction(
                 provider, this,
-                "vec2.thumbstick", "Thumbstick",
+                new ActionIdentifier("vec2.thumbstick"), "Thumbstick",
                 List.of(
                         new Vec2MultiAction.SubActionVec2(
                                 VEC2_THUMBSTICK_LEFT,
@@ -154,7 +156,7 @@ public class WindowsMotionSet extends OpenXRProfileSet {
 
         thumbStickButton = new BoolButtonMultiAction(
                 provider, this,
-                "button.thumbstick", "Thumbstick Button",
+                new ActionIdentifier("button.thumbstick"), "Thumbstick Button",
                 List.of(
                         new BoolButtonMultiAction.SubActionBoolButton(
                                 BUTTON_THUMBSTICK_LEFT,
@@ -172,7 +174,7 @@ public class WindowsMotionSet extends OpenXRProfileSet {
         // -------- TRACKPAD --------
         trackpad = new Vec2MultiAction(
                 provider, this,
-                "vec2.trackpad", "Trackpad",
+                new ActionIdentifier("vec2.trackpad"), "Trackpad",
                 List.of(
                         new Vec2MultiAction.SubActionVec2(
                                 VEC2_TRACKPAD_LEFT,
@@ -189,7 +191,7 @@ public class WindowsMotionSet extends OpenXRProfileSet {
 
         trackpadTouch = new BoolButtonMultiAction(
                 provider, this,
-                "button.trackpad.touch", "Trackpad Touch",
+                new ActionIdentifier("button.trackpad.touch"), "Trackpad Touch",
                 List.of(
                         new BoolButtonMultiAction.SubActionBoolButton(
                                 BUTTON_TRACKPAD_TOUCH_LEFT,
@@ -206,7 +208,7 @@ public class WindowsMotionSet extends OpenXRProfileSet {
 
         trackpadButton = new BoolButtonMultiAction(
                 provider, this,
-                "button.trackpad", "Trackpad Button",
+                new ActionIdentifier("button.trackpad"), "Trackpad Button",
                 List.of(
                         new BoolButtonMultiAction.SubActionBoolButton(
                                 BUTTON_TRACKPAD_LEFT,
@@ -231,7 +233,7 @@ public class WindowsMotionSet extends OpenXRProfileSet {
 
         buttonMap = new LinkedHashMap<>();
         for(var entry : listButton){
-            buttonMap.put(entry.getId(), entry);
+            buttonMap.put(entry.getId().getValue(), entry);
         }
 
         List<VRActionDataVec2> listVec2 = new ArrayList<>();
@@ -240,7 +242,7 @@ public class WindowsMotionSet extends OpenXRProfileSet {
 
         vec2Map = new LinkedHashMap<>();
         for(var entry : listVec2){
-            vec2Map.put(entry.getId(), entry);
+            vec2Map.put(entry.getId().getValue(), entry);
         }
 
         return List.of(

@@ -1,9 +1,10 @@
 package me.phoenixra.atumvr.core.input.action.types.multi;
 
-import me.phoenixra.atumvr.core.OpenXRProvider;
+import me.phoenixra.atumvr.api.input.action.ActionIdentifier;
+import me.phoenixra.atumvr.core.XRProvider;
 import me.phoenixra.atumvr.core.enums.XRInputActionType;
-import me.phoenixra.atumvr.core.input.action.OpenXRActionSet;
-import me.phoenixra.atumvr.core.input.action.OpenXRMultiAction;
+import me.phoenixra.atumvr.core.input.action.XRActionSet;
+import me.phoenixra.atumvr.core.input.action.XRMultiAction;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.openxr.XR10;
 import org.lwjgl.openxr.XrActionStateFloat;
@@ -12,14 +13,14 @@ import org.lwjgl.system.MemoryStack;
 import java.util.List;
 import java.util.function.Consumer;
 
-public class FloatMultiAction extends OpenXRMultiAction<Float> {
+public class FloatMultiAction extends XRMultiAction<Float> {
 
 
 
 
-    public FloatMultiAction(OpenXRProvider provider,
-                            OpenXRActionSet actionSet,
-                            String id,
+    public FloatMultiAction(XRProvider provider,
+                            XRActionSet actionSet,
+                            ActionIdentifier id,
                             String localizedName,
                             List<SubAction<Float>> subActions) {
         super(provider, actionSet, id, localizedName, XRInputActionType.FLOAT, subActions);
@@ -27,7 +28,7 @@ public class FloatMultiAction extends OpenXRMultiAction<Float> {
 
 
     @Override
-    protected void onInit(OpenXRActionSet actionSet, MemoryStack stack) {
+    protected void onInit(XRActionSet actionSet, MemoryStack stack) {
 
     }
 
@@ -56,7 +57,7 @@ public class FloatMultiAction extends OpenXRMultiAction<Float> {
                 );
                 if(listener != null
                         && state.changedSinceLastSync()){
-                    listener.accept(entry.getId());
+                    listener.accept(entry.getId().getValue());
                 }
             }
         }

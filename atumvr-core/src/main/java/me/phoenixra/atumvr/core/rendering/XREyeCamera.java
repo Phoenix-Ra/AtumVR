@@ -4,16 +4,16 @@ import lombok.Getter;
 import me.phoenixra.atumvr.api.enums.EyeType;
 import me.phoenixra.atumvr.api.input.device.VRDeviceHMD;
 import me.phoenixra.atumvr.api.rendering.VREyeCamera;
-import me.phoenixra.atumvr.core.OpenXRProvider;
-import me.phoenixra.atumvr.core.input.device.OpenXRDeviceHMD;
+import me.phoenixra.atumvr.core.XRProvider;
+import me.phoenixra.atumvr.core.input.device.XRDeviceHMD;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 import org.lwjgl.openxr.XrFovf;
 import org.lwjgl.openxr.XrPosef;
 
-public class OpenXREyeCamera implements VREyeCamera {
-    private final OpenXRProvider vrProvider;
+public class XREyeCamera implements VREyeCamera {
+    private final XRProvider vrProvider;
 
 
 
@@ -24,13 +24,13 @@ public class OpenXREyeCamera implements VREyeCamera {
     protected Matrix4f projectionMatrix = new Matrix4f();
 
 
-    public OpenXREyeCamera(OpenXRProvider vrProvider) {
+    public XREyeCamera(XRProvider vrProvider) {
         this.vrProvider = vrProvider;
     }
 
     public void updateViewMatrix(EyeType eyeType) {
         XrPosef p = vrProvider.getInputHandler()
-                .getDevice(VRDeviceHMD.ID, OpenXRDeviceHMD.class)
+                .getDevice(VRDeviceHMD.ID, XRDeviceHMD.class)
                 .getXrView(eyeType).pose();
         Quaternionf q = new Quaternionf(
                 p.orientation().x(),
@@ -53,7 +53,7 @@ public class OpenXREyeCamera implements VREyeCamera {
     public void updateProjectionMatrix(EyeType eyeType,
                                        float nearClip, float farClip) {
         XrFovf fov = vrProvider.getInputHandler()
-                .getDevice(VRDeviceHMD.ID, OpenXRDeviceHMD.class)
+                .getDevice(VRDeviceHMD.ID, XRDeviceHMD.class)
                 .getXrView(eyeType).fov();
 
         projectionMatrix =  new Matrix4f()

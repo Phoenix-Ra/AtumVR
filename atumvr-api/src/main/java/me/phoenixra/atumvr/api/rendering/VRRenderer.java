@@ -8,7 +8,19 @@ public interface VRRenderer {
 
     void init() throws Throwable;
 
-    void preRender(@NotNull IRenderContext context);
+    /**
+     * Prepare the frame.
+     * <p>
+     *     Waits for the next frame from the VR runtime to become available
+     *     then begin the frame and allocate memory for frame related data
+     *     linked with VR runtime
+     * </p>
+     * <p>
+     *     Has to be called at the beginning of {@link VRProvider#startFrame}
+     * </p>
+     */
+    void prepareFrame();
+
     void renderFrame(@NotNull IRenderContext context);
 
     void destroy();

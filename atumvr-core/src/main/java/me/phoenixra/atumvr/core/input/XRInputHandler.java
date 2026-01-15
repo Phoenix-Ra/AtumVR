@@ -6,11 +6,11 @@ import me.phoenixra.atumconfig.api.tuples.PairRecord;
 import me.phoenixra.atumvr.api.exceptions.VRException;
 import me.phoenixra.atumvr.api.input.VRInputHandler;
 import me.phoenixra.atumvr.api.input.device.VRDevice;
-import me.phoenixra.atumvr.core.OpenXRProvider;
+import me.phoenixra.atumvr.core.XRProvider;
 import me.phoenixra.atumvr.core.enums.XRInteractionProfile;
-import me.phoenixra.atumvr.core.input.action.OpenXRAction;
-import me.phoenixra.atumvr.core.input.action.OpenXRActionSet;
-import me.phoenixra.atumvr.core.input.device.OpenXRDevice;
+import me.phoenixra.atumvr.core.input.action.XRAction;
+import me.phoenixra.atumvr.core.input.action.XRActionSet;
+import me.phoenixra.atumvr.core.input.device.XRDevice;
 import org.lwjgl.openxr.*;
 import org.lwjgl.system.MemoryStack;
 
@@ -23,25 +23,25 @@ import static org.lwjgl.system.MemoryStack.*;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
 
-public abstract class OpenXRInputHandler implements VRInputHandler {
+public abstract class XRInputHandler implements VRInputHandler {
     @Getter
-    private final OpenXRProvider vrProvider;
+    private final XRProvider vrProvider;
 
 
     private final HashMap<String, Long> paths = new HashMap<>();
 
-    private final Map<String, OpenXRActionSet> actionSets = new LinkedHashMap<>();
-    private final Map<String, OpenXRDevice> devices = new LinkedHashMap<>();
+    private final Map<String, XRActionSet> actionSets = new LinkedHashMap<>();
+    private final Map<String, XRDevice> devices = new LinkedHashMap<>();
 
     @Getter @Setter
     private Consumer<String> actionListener;
 
-    public OpenXRInputHandler(OpenXRProvider provider){
+    public XRInputHandler(XRProvider provider){
         this.vrProvider = provider;
     }
 
-    protected abstract List<? extends OpenXRActionSet> generateActionSets(MemoryStack stack);
-    protected abstract List<? extends OpenXRDevice> generateDevices(MemoryStack stack);
+    protected abstract List<? extends XRActionSet> generateActionSets(MemoryStack stack);
+    protected abstract List<? extends XRDevice> generateDevices(MemoryStack stack);
 
 
     @Override
@@ -56,11 +56,11 @@ public abstract class OpenXRInputHandler implements VRInputHandler {
             //LOAD ACTION SETS
             actionSets.clear();
             var loadedActionSets = generateActionSets(stack);
-            loadedActionSets.forEach(OpenXRActionSet::init);
+            loadedActionSets.forEach(XRActionSet::init);
 
             long[] actionSetsArray = new long[loadedActionSets.size()];
             int i = 0;
-            for(OpenXRActionSet entry : loadedActionSets){
+            for(XRActionSet entry : loadedActionSets){
                 actionSets.put(entry.getName(), entry);
                 actionSetsArray[i] = entry.getHandle().address();
                 i++;
@@ -83,7 +83,7 @@ public abstract class OpenXRInputHandler implements VRInputHandler {
 
             //LOAD DEVICES
             devices.clear();
-            for(OpenXRDevice entry : generateDevices(stack)){
+            for(XRDevice entry : generateDevices(stack)){
                 devices.put(entry.getId(), entry);
             }
 
@@ -103,7 +103,7 @@ public abstract class OpenXRInputHandler implements VRInputHandler {
             XrActiveActionSet.Buffer toUpdate = XrActiveActionSet
                     .calloc(actionSets.size(), stack);
             int i = 0;
-            for(OpenXRActionSet actionSet : actionSets.values()) {
+            for(XRActionSet actionSet : actionSets.values()) {
                 toUpdate.get(i).set(actionSet.getHandle(), XR_NULL_PATH);
                 i++;
             }
@@ -120,10 +120,10 @@ public abstract class OpenXRInputHandler implements VRInputHandler {
 
         }
 
-        for (OpenXRActionSet entry : actionSets.values()) {
+        for (XRActionSet entry : actionSets.values()) {
             entry.update(actionListener);
         }
-        for (OpenXRDevice entry : devices.values()) {
+        for (XRDevice entry : devices.values()) {
             entry.update();
         }
 
@@ -136,8 +136,8 @@ public abstract class OpenXRInputHandler implements VRInputHandler {
         List<XRInteractionProfile> supportedProfiles = XRInteractionProfile.getSupported(vrProvider);
 
         for (XRInteractionProfile profile : supportedProfiles) {
-            List<PairRecord<OpenXRAction, String>> bindingsSet = new ArrayList<>();
-            for(OpenXRActionSet actionSet : actionSets.values()){
+            List<PairRecord<XRAction, String>> bindingsSet = new ArrayList<>();
+            for(XRActionSet actionSet : actionSets.values()){
                 var binds = actionSet.getDefaultBindings(profile);
                 if(binds == null || binds.isEmpty()) continue;
                 bindingsSet.addAll(binds);
@@ -172,26 +172,26 @@ public abstract class OpenXRInputHandler implements VRInputHandler {
         }
     };
 
-    public Collection<? extends OpenXRActionSet> getActionSets(){
+    public Collection<? extends XRActionSet> getActionSets(){
         return actionSets.values();
     }
 
     @Override
-    public Collection<? extends OpenXRDevice> getDevices() {
+    public Collection<? extends XRDevice> getDevices() {
         return devices.values();
     }
 
     @Override
-    public OpenXRDevice getDevice(String id) {
+    public XRDevice getDevice(String id) {
         return devices.get(id);
     }
 
     @Override
     public void registerDevice(VRDevice device) {
-        if(!(device instanceof OpenXRDevice openXRDevice)){
+        if(!(device instanceof XRDevice xrDevice)){
             throw new VRException("Cannot register device that is not instanceof OpenXRDevice");
         }
-        devices.put(device.getId(),openXRDevice);
+        devices.put(device.getId(),xrDevice);
     }
 
 
@@ -215,7 +215,7 @@ public abstract class OpenXRInputHandler implements VRInputHandler {
 
     @Override
     public void destroy() {
-        actionSets.values().forEach(OpenXRActionSet::destroy);
+        actionSets.values().forEach(XRActionSet::destroy);
         actionSets.clear();
         devices.clear();
     }

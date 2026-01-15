@@ -2,13 +2,14 @@ package me.phoenixra.atumvr.core.input.action.types.multi;
 
 import lombok.Getter;
 import me.phoenixra.atumvr.api.enums.ControllerType;
+import me.phoenixra.atumvr.api.input.action.ActionIdentifier;
 import me.phoenixra.atumvr.api.input.action.VRActionDataVec2;
-import me.phoenixra.atumvr.core.OpenXRHelper;
-import me.phoenixra.atumvr.core.OpenXRProvider;
+import me.phoenixra.atumvr.core.XRHelper;
+import me.phoenixra.atumvr.core.XRProvider;
 import me.phoenixra.atumvr.core.enums.XRInputActionType;
 import me.phoenixra.atumvr.core.enums.XRInteractionProfile;
-import me.phoenixra.atumvr.core.input.action.OpenXRActionSet;
-import me.phoenixra.atumvr.core.input.action.OpenXRMultiAction;
+import me.phoenixra.atumvr.core.input.action.XRActionSet;
+import me.phoenixra.atumvr.core.input.action.XRMultiAction;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector2f;
@@ -20,15 +21,15 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
 
-public class Vec2MultiAction extends OpenXRMultiAction<Vector2f> {
+public class Vec2MultiAction extends XRMultiAction<Vector2f> {
 
 
     @Getter
     private final List<SubActionVec2> subActionsAsVec2;
 
-    public Vec2MultiAction(OpenXRProvider provider,
-                           OpenXRActionSet actionSet,
-                           String id,
+    public Vec2MultiAction(XRProvider provider,
+                           XRActionSet actionSet,
+                           ActionIdentifier id,
                            String localizedName,
                            List<SubActionVec2> subActions) {
         super(provider, actionSet, id, localizedName, XRInputActionType.VECTOR2F, subActions);
@@ -36,7 +37,7 @@ public class Vec2MultiAction extends OpenXRMultiAction<Vector2f> {
     }
 
     @Override
-    protected void onInit(OpenXRActionSet actionSet, MemoryStack stack) {
+    protected void onInit(XRActionSet actionSet, MemoryStack stack) {
 
     }
 
@@ -57,14 +58,14 @@ public class Vec2MultiAction extends OpenXRMultiAction<Vector2f> {
                         "xrGetActionStateFloat"
                 );
                 entry.update(
-                        OpenXRHelper.normalizeXrVector(state.currentState()),
+                        XRHelper.normalizeXrVector(state.currentState()),
                         state.lastChangeTime(),
                         state.changedSinceLastSync(),
                         state.isActive()
                 );
                 if(listener != null
                         && state.changedSinceLastSync()){
-                    listener.accept(entry.getId());
+                    listener.accept(entry.getId().getValue());
                 }
             }
         }
@@ -80,7 +81,7 @@ public class Vec2MultiAction extends OpenXRMultiAction<Vector2f> {
     public static class SubActionVec2 extends SubAction<Vector2f> implements VRActionDataVec2 {
 
 
-        public SubActionVec2(String id, String path, Vector2f initialState) {
+        public SubActionVec2(ActionIdentifier id, String path, Vector2f initialState) {
             super(id, path, initialState);
         }
 

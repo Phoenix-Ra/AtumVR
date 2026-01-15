@@ -3,10 +3,11 @@ package me.phoenixra.atumvr.core.input.action;
 import lombok.Getter;
 import lombok.Setter;
 import me.phoenixra.atumvr.api.enums.ControllerType;
-import me.phoenixra.atumvr.core.OpenXRProvider;
+import me.phoenixra.atumvr.api.input.action.ActionIdentifier;
+import me.phoenixra.atumvr.core.XRProvider;
 import me.phoenixra.atumvr.core.enums.XRInputActionType;
 import me.phoenixra.atumvr.core.enums.XRInteractionProfile;
-import me.phoenixra.atumvr.core.input.OpenXRInputHandler;
+import me.phoenixra.atumvr.core.input.XRInputHandler;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.PointerBuffer;
@@ -26,7 +27,7 @@ import static org.lwjgl.system.MemoryStack.stackPush;
 import static org.lwjgl.system.MemoryUtil.NULL;
 import static org.lwjgl.system.MemoryUtil.memUTF8;
 
-public abstract class OpenXRMultiAction<T> extends OpenXRAction {
+public abstract class XRMultiAction<T> extends XRAction {
 
     protected static final XrActionStateGetInfo getInfo = XrActionStateGetInfo.calloc()
             .type(XR10.XR_TYPE_ACTION_STATE_GET_INFO);
@@ -36,20 +37,20 @@ public abstract class OpenXRMultiAction<T> extends OpenXRAction {
     protected final List<? extends SubAction<T>> subActions;
 
 
-    public OpenXRMultiAction(OpenXRProvider provider,
-                             OpenXRActionSet actionSet,
-                             String id, String localizedName,
-                             XRInputActionType actionType,
-                             List<? extends SubAction<T>> subActions) {
+    public XRMultiAction(XRProvider provider,
+                         XRActionSet actionSet,
+                         ActionIdentifier id, String localizedName,
+                         XRInputActionType actionType,
+                         List<? extends SubAction<T>> subActions) {
         super(provider, actionSet, id, localizedName, actionType);
         this.subActions = Collections.unmodifiableList(subActions);
     }
 
-    protected abstract void onInit(OpenXRActionSet actionSet,
+    protected abstract void onInit(XRActionSet actionSet,
                                    MemoryStack stack);
 
-    public void init(OpenXRActionSet actionSet) {
-        OpenXRInputHandler inputHandler = provider.getInputHandler();
+    public void init(XRActionSet actionSet) {
+        XRInputHandler inputHandler = provider.getInputHandler();
         try (var stack = stackPush()) {
             var subactionPaths = stack.callocLong(subActions.size());
 
@@ -63,7 +64,7 @@ public abstract class OpenXRMultiAction<T> extends OpenXRAction {
             XrActionCreateInfo actionCreateInfo = XrActionCreateInfo.calloc(stack).set(
                     XR10.XR_TYPE_ACTION_CREATE_INFO,
                     NULL,
-                    memUTF8(this.id),
+                    memUTF8(this.id.getValue()),
                     actionType.getId(),
                     subActions.size(),
                     subactionPaths,
@@ -94,7 +95,7 @@ public abstract class OpenXRMultiAction<T> extends OpenXRAction {
         protected Map<XRInteractionProfile, String> defaultBindings = new LinkedHashMap<>();
 
         @Getter
-        private final String id;
+        private final ActionIdentifier id;
 
         protected String pathName;
         @Setter
@@ -105,7 +106,7 @@ public abstract class OpenXRMultiAction<T> extends OpenXRAction {
         protected boolean changed = false;
         protected boolean active = false;
 
-        public SubAction(String id, String path, T initialState){
+        public SubAction(ActionIdentifier id, String path, T initialState){
             this.id = id;
             this.pathName = path;
             this.currentState = initialState;

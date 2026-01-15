@@ -2,8 +2,8 @@ package me.phoenixra.atumvr.core.init;
 
 import lombok.Getter;
 import me.phoenixra.atumvr.api.exceptions.VRException;
-import me.phoenixra.atumvr.core.OpenXRProvider;
-import me.phoenixra.atumvr.core.OpenXRState;
+import me.phoenixra.atumvr.core.XRProvider;
+import me.phoenixra.atumvr.core.XRState;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.openxr.*;
 import org.lwjgl.system.MemoryStack;
@@ -14,9 +14,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class OpenXRInstance {
+public class XRInstance {
     private final static String GRAPHICS_EXTENSION = KHROpenGLEnable.XR_KHR_OPENGL_ENABLE_EXTENSION_NAME;
-    private final OpenXRState xrState;
+    private final XRState xrState;
     @Getter
     protected XrInstance handle;
 
@@ -32,14 +32,14 @@ public class OpenXRInstance {
 
     private XrDebugUtilsMessengerEXT debugMessenger;
 
-    public OpenXRInstance(OpenXRState xrState){
+    public XRInstance(XRState xrState){
         this.xrState = xrState;
         this.xrEventBuffer = XrEventDataBuffer.calloc();
     }
 
     public void init() {
         try (MemoryStack stack = MemoryStack.stackPush()) {
-            OpenXRProvider provider = this.xrState.getVrProvider();
+            XRProvider provider = this.xrState.getVrProvider();
 
 
 
@@ -93,7 +93,7 @@ public class OpenXRInstance {
         }
     }
 
-    private PointerBuffer setupExtensions(OpenXRProvider provider, MemoryStack stack){
+    private PointerBuffer setupExtensions(XRProvider provider, MemoryStack stack){
 
 
         // 1) Enumerate available instance extensions
@@ -150,7 +150,7 @@ public class OpenXRInstance {
         return enabledExtensions;
     }
 
-    private void setupDebugMessenger(OpenXRProvider provider, MemoryStack stack) {
+    private void setupDebugMessenger(XRProvider provider, MemoryStack stack) {
         var createInfo = XrDebugUtilsMessengerCreateInfoEXT
                 .calloc(stack)
                 .type$Default()  // XR_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT :contentReference[oaicite:0]{index=0}

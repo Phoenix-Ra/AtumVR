@@ -8,7 +8,7 @@ import org.lwjgl.system.MemoryStack;
 
 import static org.lwjgl.system.MemoryUtil.NULL;
 
-public class OpenXRHelper {
+public class XRHelper {
 
     public static XrPosef getPoseIdentity(MemoryStack stack){
         return XrPosef
@@ -18,7 +18,7 @@ public class OpenXRHelper {
     }
 
     @Nullable
-    public static XrSpaceLocation xrLocationFromSpace(OpenXRProvider provider,
+    public static XrSpaceLocation xrLocationFromSpace(XRProvider provider,
                                                       XrSpace xrSpace,
                                                       MemoryStack stack){
         XrSpaceLocation space_location = XrSpaceLocation.calloc(stack).type(XR10.XR_TYPE_SPACE_LOCATION);
@@ -40,7 +40,7 @@ public class OpenXRHelper {
         }
         return null;
     }
-    public static XrSpace createReferenceSpace(OpenXRState state,
+    public static XrSpace createReferenceSpace(XRState state,
                                                int spaceType,
                                                XrPosef identityPose,
                                                MemoryStack stack) {

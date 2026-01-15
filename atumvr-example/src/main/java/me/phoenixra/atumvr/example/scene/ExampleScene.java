@@ -1,10 +1,8 @@
 package me.phoenixra.atumvr.example.scene;
 
-import me.phoenixra.atumvr.api.VRProvider;
 import me.phoenixra.atumvr.api.enums.EyeType;
-import me.phoenixra.atumvr.core.OpenXRProvider;
-import me.phoenixra.atumvr.core.rendering.OpenXRRenderer;
-import me.phoenixra.atumvr.core.rendering.OpenXRScene;
+import me.phoenixra.atumvr.core.rendering.XRRenderer;
+import me.phoenixra.atumvr.core.rendering.XRScene;
 import me.phoenixra.atumvr.example.ExampleVRProvider;
 import me.phoenixra.atumvr.example.rendering.ExampleVRRenderer;
 import me.phoenixra.atumvr.example.texture.StbTexture;
@@ -17,7 +15,7 @@ import org.lwjgl.system.MemoryStack;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ExampleScene extends OpenXRScene {
+public class ExampleScene extends XRScene {
 
     private VRShaderProgram shaderProgram;
 
@@ -25,7 +23,7 @@ public class ExampleScene extends OpenXRScene {
     private ExampleCube floorCube;
 
     private float timer;
-    public ExampleScene(@NotNull OpenXRRenderer vrRenderer) {
+    public ExampleScene(@NotNull XRRenderer vrRenderer) {
         super(vrRenderer);
     }
 

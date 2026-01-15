@@ -11,5 +11,5 @@ public interface VRActionDataButton {
 
     long getButtonLastChangeTime();
 
-    String getId();
+    ActionIdentifier getId();
 }

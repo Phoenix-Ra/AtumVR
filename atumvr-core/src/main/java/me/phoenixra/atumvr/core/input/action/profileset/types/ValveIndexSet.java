@@ -1,12 +1,14 @@
 package me.phoenixra.atumvr.core.input.action.profileset.types;
 
 import lombok.Getter;
+import me.phoenixra.atumvr.api.enums.ControllerType;
+import me.phoenixra.atumvr.api.input.action.ActionIdentifier;
 import me.phoenixra.atumvr.api.input.action.VRActionDataButton;
 import me.phoenixra.atumvr.api.input.action.VRActionDataVec2;
-import me.phoenixra.atumvr.core.OpenXRProvider;
+import me.phoenixra.atumvr.core.XRProvider;
 import me.phoenixra.atumvr.core.enums.XRInteractionProfile;
-import me.phoenixra.atumvr.core.input.action.OpenXRAction;
-import me.phoenixra.atumvr.core.input.action.profileset.OpenXRProfileSet;
+import me.phoenixra.atumvr.core.input.action.XRAction;
+import me.phoenixra.atumvr.core.input.action.profileset.XRProfileSet;
 import me.phoenixra.atumvr.core.input.action.types.multi.BoolButtonMultiAction;
 import me.phoenixra.atumvr.core.input.action.types.multi.FloatButtonMultiAction;
 import me.phoenixra.atumvr.core.input.action.types.multi.Vec2MultiAction;
@@ -15,65 +17,67 @@ import org.joml.Vector2f;
 
 import java.util.*;
 
-import static me.phoenixra.atumvr.core.input.action.OpenXRAction.LEFT_HAND_PATH;
-import static me.phoenixra.atumvr.core.input.action.OpenXRAction.RIGHT_HAND_PATH;
+import static me.phoenixra.atumvr.core.input.action.XRAction.LEFT_HAND_PATH;
+import static me.phoenixra.atumvr.core.input.action.XRAction.RIGHT_HAND_PATH;
 
 @Getter
-public class ValveIndexSet extends OpenXRProfileSet {
+public class ValveIndexSet extends XRProfileSet {
     private static final XRInteractionProfile PROFILE = XRInteractionProfile.VALVE_INDEX;
 
     //----------BUTTON----------
-    public static final String BUTTON_SYSTEM_LEFT = "button.system.left";
-    public static final String BUTTON_SYSTEM_RIGHT = "button.system.right";
-    public static final String BUTTON_SYSTEM_TOUCH_LEFT = "button.system.touch.left";
-    public static final String BUTTON_SYSTEM_TOUCH_RIGHT = "button.system.touch.right";
+    public static final ActionIdentifier BUTTON_SYSTEM_LEFT = new ActionIdentifier("button.system.left", ControllerType.LEFT);
+    public static final ActionIdentifier BUTTON_SYSTEM_RIGHT = new ActionIdentifier("button.system.right", ControllerType.RIGHT);
+    public static final ActionIdentifier BUTTON_SYSTEM_TOUCH_LEFT = new ActionIdentifier("button.system.touch.left", ControllerType.LEFT);
+    public static final ActionIdentifier BUTTON_SYSTEM_TOUCH_RIGHT = new ActionIdentifier("button.system.touch.right", ControllerType.RIGHT);
 
 
-    public static final String BUTTON_A_LEFT = "button.a.left";
-    public static final String BUTTON_A_RIGHT = "button.a.right";
-    public static final String BUTTON_A_TOUCH_LEFT = "button.a.touch.left";
-    public static final String BUTTON_A_TOUCH_RIGHT = "button.a.touch.right";
+    public static final ActionIdentifier BUTTON_A_LEFT = new ActionIdentifier("button.a.left", ControllerType.LEFT);
+    public static final ActionIdentifier BUTTON_A_RIGHT = new ActionIdentifier("button.a.right", ControllerType.RIGHT);
+    public static final ActionIdentifier BUTTON_A_TOUCH_LEFT = new ActionIdentifier("button.a.touch.left", ControllerType.LEFT);
+    public static final ActionIdentifier BUTTON_A_TOUCH_RIGHT = new ActionIdentifier("button.a.touch.right", ControllerType.RIGHT);
 
 
-    public static final String BUTTON_B_LEFT = "button.b.left";
-    public static final String BUTTON_B_RIGHT = "button.b.right";
-    public static final String BUTTON_B_TOUCH_LEFT = "button.b.touch.left";
-    public static final String BUTTON_B_TOUCH_RIGHT = "button.b.touch.right";
+    public static final ActionIdentifier BUTTON_B_LEFT = new ActionIdentifier("button.b.left", ControllerType.LEFT);
+    public static final ActionIdentifier BUTTON_B_RIGHT = new ActionIdentifier("button.b.right", ControllerType.RIGHT);
+    public static final ActionIdentifier BUTTON_B_TOUCH_LEFT = new ActionIdentifier("button.b.touch.left", ControllerType.LEFT);
+    public static final ActionIdentifier BUTTON_B_TOUCH_RIGHT = new ActionIdentifier("button.b.touch.right", ControllerType.RIGHT);
 
 
-    public static final String BUTTON_GRIP_LEFT = "button.grip.left";
-    public static final String BUTTON_GRIP_RIGHT = "button.grip.right";
-    public static final String BUTTON_GRIP_FORCE_LEFT = "button.grip.force.left";
-    public static final String BUTTON_GRIP_FORCE_RIGHT = "button.grip.force.right";
+    public static final ActionIdentifier BUTTON_GRIP_LEFT = new ActionIdentifier("button.grip.left", ControllerType.LEFT);
+    public static final ActionIdentifier BUTTON_GRIP_RIGHT = new ActionIdentifier("button.grip.right", ControllerType.RIGHT);
+    public static final ActionIdentifier BUTTON_GRIP_FORCE_LEFT = new ActionIdentifier("button.grip.force.left", ControllerType.LEFT);;
+    public static final ActionIdentifier BUTTON_GRIP_FORCE_RIGHT = new ActionIdentifier("button.grip.force.right", ControllerType.RIGHT);
 
 
 
-    public static final String BUTTON_TRIGGER_LEFT = "button.trigger.left";
-    public static final String BUTTON_TRIGGER_RIGHT = "button.trigger.right";
-    public static final String BUTTON_TRIGGER_CLICK_LEFT = "button.trigger.click.left";
-    public static final String BUTTON_TRIGGER_CLICK_RIGHT = "button.trigger.click.right";
-    public static final String BUTTON_TRIGGER_TOUCH_LEFT = "button.trigger.touch.left";
-    public static final String BUTTON_TRIGGER_TOUCH_RIGHT = "button.trigger.touch.right";
+    public static final ActionIdentifier BUTTON_TRIGGER_LEFT = new ActionIdentifier("button.trigger.left", ControllerType.LEFT);
+    public static final ActionIdentifier BUTTON_TRIGGER_RIGHT = new ActionIdentifier("button.trigger.right", ControllerType.RIGHT);
+    public static final ActionIdentifier BUTTON_TRIGGER_CLICK_LEFT = new ActionIdentifier("button.trigger.click.left", ControllerType.LEFT);
+    public static final ActionIdentifier BUTTON_TRIGGER_CLICK_RIGHT = new ActionIdentifier("button.trigger.click.right", ControllerType.RIGHT);
+    public static final ActionIdentifier BUTTON_TRIGGER_TOUCH_LEFT = new ActionIdentifier("button.trigger.touch.left", ControllerType.LEFT);
+    public static final ActionIdentifier BUTTON_TRIGGER_TOUCH_RIGHT = new ActionIdentifier("button.trigger.touch.right", ControllerType.RIGHT);
 
-    public static final String BUTTON_THUMBSTICK_LEFT = "button.thumbstick.left";
-    public static final String BUTTON_THUMBSTICK_RIGHT = "button.thumbstick.right";
-    public static final String BUTTON_THUMBSTICK_TOUCH_LEFT = "button.thumbstick.touch.left";
-    public static final String BUTTON_THUMBSTICK_TOUCH_RIGHT = "button.thumbstick.touch.right";
+    public static final ActionIdentifier BUTTON_THUMBSTICK_LEFT = new ActionIdentifier("button.thumbstick.left", ControllerType.LEFT);
+    public static final ActionIdentifier BUTTON_THUMBSTICK_RIGHT = new ActionIdentifier("button.thumbstick.right", ControllerType.RIGHT);
+    public static final ActionIdentifier BUTTON_THUMBSTICK_TOUCH_LEFT = new ActionIdentifier("button.thumbstick.touch.left", ControllerType.LEFT);
+    public static final ActionIdentifier BUTTON_THUMBSTICK_TOUCH_RIGHT = new ActionIdentifier("button.thumbstick.touch.right", ControllerType.RIGHT);
 
 
-    public static final String BUTTON_TRACKPAD_TOUCH_LEFT = "button.trackpad.touch.left";
-    public static final String BUTTON_TRACKPAD_TOUCH_RIGHT = "button.trackpad.touch.right";
-    public static final String BUTTON_TRACKPAD_FORCE_LEFT = "button.trackpad.force.left";
-    public static final String BUTTON_TRACKPAD_FORCE_RIGHT = "button.trackpad.force.right";
+    public static final ActionIdentifier BUTTON_TRACKPAD_TOUCH_LEFT = new ActionIdentifier("button.trackpad.touch.left", ControllerType.LEFT);
+    public static final ActionIdentifier BUTTON_TRACKPAD_TOUCH_RIGHT = new ActionIdentifier("button.trackpad.touch.right", ControllerType.RIGHT);
+    public static final ActionIdentifier BUTTON_TRACKPAD_FORCE_LEFT = new ActionIdentifier("button.trackpad.force.left", ControllerType.LEFT);
+    public static final ActionIdentifier BUTTON_TRACKPAD_FORCE_RIGHT = new ActionIdentifier("button.trackpad.force.right", ControllerType.RIGHT);
 
 
     //----------VEC2----------
-    public static final String VEC2_THUMBSTICK_LEFT = "vec2.thumbstick.left";
-    public static final String VEC2_THUMBSTICK_RIGHT = "vec2.thumbstick.right";
+    public static final ActionIdentifier VEC2_THUMBSTICK_LEFT = new ActionIdentifier("vec2.thumbstick.left", ControllerType.LEFT);
+    public static final ActionIdentifier VEC2_THUMBSTICK_RIGHT = new ActionIdentifier("vec2.thumbstick.right", ControllerType.RIGHT);
 
 
-    public static final String VEC2_TRACKPAD_LEFT = "vec2.trackpad.left";
-    public static final String VEC2_TRACKPAD_RIGHT = "vec2.trackpad.right";
+    public static final ActionIdentifier VEC2_TRACKPAD_LEFT = new ActionIdentifier("vec2.trackpad.left", ControllerType.LEFT);
+    public static final ActionIdentifier VEC2_TRACKPAD_RIGHT = new ActionIdentifier("vec2.trackpad.right", ControllerType.RIGHT);
+
+
     // System Buttons
     private BoolButtonMultiAction systemButton;
     private BoolButtonMultiAction systemButtonTouch;
@@ -109,19 +113,19 @@ public class ValveIndexSet extends OpenXRProfileSet {
     private Map<String, VRActionDataButton> buttonMap;
     private Map<String, VRActionDataVec2> vec2Map;
 
-    public ValveIndexSet(OpenXRProvider provider) {
+    public ValveIndexSet(XRProvider provider) {
         super(provider, "valve_index", "Valve Index", 0);
     }
 
     @Override
-    protected List<OpenXRAction> loadActions(OpenXRProvider provider) {
+    protected List<XRAction> loadActions(XRProvider provider) {
 
 
         // -------- SYSTEM BUTTONS --------
         systemButton = new BoolButtonMultiAction(
                 provider,
                 this,
-                "button.system", "System button",
+                new ActionIdentifier("button.system"), "System button",
                 List.of(
                         new BoolButtonMultiAction.SubActionBoolButton(
                                 BUTTON_SYSTEM_LEFT,
@@ -140,7 +144,7 @@ public class ValveIndexSet extends OpenXRProfileSet {
         systemButtonTouch = new BoolButtonMultiAction(
                 provider,
                 this,
-                "button.system.touch", "System button touch",
+                new ActionIdentifier("button.system.touch"), "System button touch",
                 List.of(
                         new BoolButtonMultiAction.SubActionBoolButton(
                                 BUTTON_SYSTEM_TOUCH_LEFT,
@@ -161,7 +165,7 @@ public class ValveIndexSet extends OpenXRProfileSet {
         buttonA = new BoolButtonMultiAction(
                 provider,
                 this,
-                "button.primary", "Primary Button",
+                new ActionIdentifier("button.primary"), "Primary Button",
                 List.of(
                         new BoolButtonMultiAction.SubActionBoolButton(
                                 BUTTON_A_LEFT,
@@ -180,7 +184,7 @@ public class ValveIndexSet extends OpenXRProfileSet {
         buttonTouchA = new BoolButtonMultiAction(
                 provider,
                 this,
-                "button.a.touch", "'A' Button Touch",
+                new ActionIdentifier("button.a.touch"), "'A' Button Touch",
                 List.of(
                         new BoolButtonMultiAction.SubActionBoolButton(
                                 BUTTON_A_TOUCH_LEFT,
@@ -201,7 +205,7 @@ public class ValveIndexSet extends OpenXRProfileSet {
         buttonB = new BoolButtonMultiAction(
                 provider,
                 this,
-                "button.b", "'B' Button",
+                new ActionIdentifier("button.b"), "'B' Button",
                 List.of(
                         new BoolButtonMultiAction.SubActionBoolButton(
                                 BUTTON_B_LEFT,
@@ -220,7 +224,7 @@ public class ValveIndexSet extends OpenXRProfileSet {
         buttonTouchB = new BoolButtonMultiAction(
                 provider,
                 this,
-                "button.b.touch", "B Button Touch",
+                new ActionIdentifier("button.b.touch"), "B Button Touch",
                 List.of(
                         new BoolButtonMultiAction.SubActionBoolButton(
                                 BUTTON_B_TOUCH_LEFT,
@@ -240,7 +244,7 @@ public class ValveIndexSet extends OpenXRProfileSet {
         gripValue = new FloatButtonMultiAction(
                 provider,
                 this,
-                "button.grip",
+                new ActionIdentifier("button.grip"),
                 "Grip Value",
                 0.9f,
                 0.85f,
@@ -262,7 +266,7 @@ public class ValveIndexSet extends OpenXRProfileSet {
         gripForce = new FloatButtonMultiAction(
                 provider,
                 this,
-                "button.grip.force",
+                new ActionIdentifier("button.grip.force"),
                 "Grip Force button",
                 0.9f,
                 0.85f,
@@ -286,7 +290,7 @@ public class ValveIndexSet extends OpenXRProfileSet {
         triggerValue = new FloatButtonMultiAction(
                 provider,
                 this,
-                "button.trigger",
+                new ActionIdentifier("button.trigger"),
                 "Trigger Value",
                 0.7f,
                 0.65f,
@@ -308,7 +312,7 @@ public class ValveIndexSet extends OpenXRProfileSet {
         triggerButton = new BoolButtonMultiAction(
                 provider,
                 this,
-                "button.trigger.click", "Trigger Button",
+                new ActionIdentifier("button.trigger.click"), "Trigger Button",
                 List.of(
                         new BoolButtonMultiAction.SubActionBoolButton(
                                 BUTTON_TRIGGER_CLICK_LEFT,
@@ -327,7 +331,7 @@ public class ValveIndexSet extends OpenXRProfileSet {
         triggerButtonTouch = new BoolButtonMultiAction(
                 provider,
                 this,
-                "button.trigger.touch", "Trigger Button Touch",
+                new ActionIdentifier("button.trigger.touch"), "Trigger Button Touch",
                 List.of(
                         new BoolButtonMultiAction.SubActionBoolButton(
                                 BUTTON_TRIGGER_TOUCH_LEFT,
@@ -350,7 +354,7 @@ public class ValveIndexSet extends OpenXRProfileSet {
         thumbStick = new Vec2MultiAction(
                 provider,
                 this,
-                "vec2.thumbstick", "Thumbstick",
+                new ActionIdentifier("vec2.thumbstick"), "Thumbstick",
                 List.of(
                         new Vec2MultiAction.SubActionVec2(
                                 VEC2_THUMBSTICK_LEFT,
@@ -369,7 +373,7 @@ public class ValveIndexSet extends OpenXRProfileSet {
         thumbStickButton = new BoolButtonMultiAction(
                 provider,
                 this,
-                "button.thumbstick", "ThumbStick Button",
+                new ActionIdentifier("button.thumbstick"), "ThumbStick Button",
                 List.of(
                         new BoolButtonMultiAction.SubActionBoolButton(
                                 BUTTON_THUMBSTICK_LEFT,
@@ -388,7 +392,7 @@ public class ValveIndexSet extends OpenXRProfileSet {
         thumbStickButtonTouch = new BoolButtonMultiAction(
                 provider,
                 this,
-                "button.thumbstick.touch", "ThumbStick Button Touch",
+                new ActionIdentifier("button.thumbstick.touch"), "ThumbStick Button Touch",
                 List.of(
                         new BoolButtonMultiAction.SubActionBoolButton(
                                 BUTTON_THUMBSTICK_TOUCH_LEFT,
@@ -409,7 +413,7 @@ public class ValveIndexSet extends OpenXRProfileSet {
         trackpad = new Vec2MultiAction(
                 provider,
                 this,
-                "vec2.trackpad", "Trackpad",
+                new ActionIdentifier("vec2.trackpad"), "Trackpad",
                 List.of(
                         new Vec2MultiAction.SubActionVec2(
                                 VEC2_TRACKPAD_LEFT,
@@ -428,7 +432,7 @@ public class ValveIndexSet extends OpenXRProfileSet {
         trackpadTouch = new BoolButtonMultiAction(
                 provider,
                 this,
-                "button.trackpad.touch", "Trackpad Touch",
+                new ActionIdentifier("button.trackpad.touch"), "Trackpad Touch",
                 List.of(
                         new BoolButtonMultiAction.SubActionBoolButton(
                                 BUTTON_TRACKPAD_TOUCH_LEFT,
@@ -447,7 +451,7 @@ public class ValveIndexSet extends OpenXRProfileSet {
         trackpadForce = new FloatButtonMultiAction(
                 provider,
                 this,
-                "button.trackpad.force",
+                new ActionIdentifier("button.trackpad.force"),
                 "Trackpad Force button",
                 0.3f,
                 0.1f,
@@ -486,7 +490,7 @@ public class ValveIndexSet extends OpenXRProfileSet {
 
         buttonMap = new LinkedHashMap<>();
         for(var entry : listButton){
-            buttonMap.put(entry.getId(), entry);
+            buttonMap.put(entry.getId().getValue(), entry);
         }
 
         List<VRActionDataVec2> listVec2 = new ArrayList<>();
@@ -495,7 +499,7 @@ public class ValveIndexSet extends OpenXRProfileSet {
 
         vec2Map = new LinkedHashMap<>();
         for(var entry : listVec2){
-            vec2Map.put(entry.getId(), entry);
+            vec2Map.put(entry.getId().getValue(), entry);
         }
 
 

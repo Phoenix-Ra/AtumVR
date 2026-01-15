@@ -2,23 +2,23 @@ package me.phoenixra.atumvr.example.rendering;
 
 
 import me.phoenixra.atumvr.api.rendering.VRScene;
-import me.phoenixra.atumvr.core.OpenXRProvider;
-import me.phoenixra.atumvr.core.rendering.OpenXRRenderer;
-import me.phoenixra.atumvr.core.rendering.OpenXRTexture;
+import me.phoenixra.atumvr.core.XRProvider;
+import me.phoenixra.atumvr.core.rendering.XRRenderer;
+import me.phoenixra.atumvr.core.rendering.XRTexture;
 import me.phoenixra.atumvr.example.ExampleVRProvider;
 import me.phoenixra.atumvr.example.scene.ExampleScene;
 import org.jetbrains.annotations.NotNull;
 
-public class ExampleVRRenderer extends OpenXRRenderer {
+public class ExampleVRRenderer extends XRRenderer {
     private VRScene vrScene;
-    public ExampleVRRenderer(OpenXRProvider provider) {
+    public ExampleVRRenderer(XRProvider provider) {
         super(provider);
         vrScene = new ExampleScene(this);
     }
 
     @Override
-    protected OpenXRTexture createTexture(int width, int height, int textureId, int index) {
-        return new OpenXRTexture(width, height, textureId, index);
+    protected XRTexture createTexture(int width, int height, int textureId, int index) {
+        return new XRTexture(width, height, textureId, index);
     }
 
     @Override

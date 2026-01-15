@@ -1,9 +1,9 @@
 package me.phoenixra.atumvr.core.enums;
 
 import lombok.Getter;
-import me.phoenixra.atumvr.core.OpenXRProvider;
-import me.phoenixra.atumvr.core.init.OpenXRInstance;
-import me.phoenixra.atumvr.core.input.action.profileset.OpenXRProfileSet;
+import me.phoenixra.atumvr.core.XRProvider;
+import me.phoenixra.atumvr.core.init.XRInstance;
+import me.phoenixra.atumvr.core.input.action.profileset.XRProfileSet;
 import me.phoenixra.atumvr.core.input.action.profileset.types.*;
 
 import java.util.ArrayList;
@@ -35,9 +35,9 @@ public enum XRInteractionProfile {
         return values.get(path);
     }
 
-    public static List<XRInteractionProfile> getSupported(OpenXRProvider provider){
+    public static List<XRInteractionProfile> getSupported(XRProvider provider){
         List<XRInteractionProfile> list = new ArrayList<>();
-        OpenXRInstance instance = provider.getState().getVrInstance();
+        XRInstance instance = provider.getState().getVrInstance();
 
         list.add(OCULUS_TOUCH);
         list.add(XRInteractionProfile.VALVE_INDEX);
@@ -54,8 +54,8 @@ public enum XRInteractionProfile {
         return list;
     }
 
-    public static List<OpenXRProfileSet> getSupportedProfileSets(OpenXRProvider provider){
-        var out = new ArrayList<OpenXRProfileSet>();
+    public static List<XRProfileSet> getSupportedProfileSets(XRProvider provider){
+        var out = new ArrayList<XRProfileSet>();
         var supported = getSupported(provider);
         if(supported.contains(VALVE_INDEX)) out.add(new ValveIndexSet(provider));
 

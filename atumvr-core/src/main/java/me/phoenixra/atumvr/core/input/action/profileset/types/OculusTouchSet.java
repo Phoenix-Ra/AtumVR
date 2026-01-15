@@ -1,12 +1,14 @@
 package me.phoenixra.atumvr.core.input.action.profileset.types;
 
 import lombok.Getter;
+import me.phoenixra.atumvr.api.enums.ControllerType;
+import me.phoenixra.atumvr.api.input.action.ActionIdentifier;
 import me.phoenixra.atumvr.api.input.action.VRActionDataButton;
 import me.phoenixra.atumvr.api.input.action.VRActionDataVec2;
-import me.phoenixra.atumvr.core.OpenXRProvider;
+import me.phoenixra.atumvr.core.XRProvider;
 import me.phoenixra.atumvr.core.enums.XRInteractionProfile;
-import me.phoenixra.atumvr.core.input.action.OpenXRAction;
-import me.phoenixra.atumvr.core.input.action.profileset.OpenXRProfileSet;
+import me.phoenixra.atumvr.core.input.action.XRAction;
+import me.phoenixra.atumvr.core.input.action.profileset.XRProfileSet;
 import me.phoenixra.atumvr.core.input.action.types.multi.BoolButtonMultiAction;
 import me.phoenixra.atumvr.core.input.action.types.multi.FloatButtonMultiAction;
 import me.phoenixra.atumvr.core.input.action.types.multi.Vec2MultiAction;
@@ -16,48 +18,48 @@ import org.joml.Vector2f;
 
 import java.util.*;
 
-import static me.phoenixra.atumvr.core.input.action.OpenXRAction.LEFT_HAND_PATH;
-import static me.phoenixra.atumvr.core.input.action.OpenXRAction.RIGHT_HAND_PATH;
+import static me.phoenixra.atumvr.core.input.action.XRAction.LEFT_HAND_PATH;
+import static me.phoenixra.atumvr.core.input.action.XRAction.RIGHT_HAND_PATH;
 
 @Getter
-public class OculusTouchSet extends OpenXRProfileSet {
+public class OculusTouchSet extends XRProfileSet {
     private static final XRInteractionProfile PROFILE = XRInteractionProfile.OCULUS_TOUCH;
 
-    public static final String BUTTON_MENU = "button.menu";
-    public static final String BUTTON_SYSTEM = "button.system";
+    public static final ActionIdentifier BUTTON_MENU = new ActionIdentifier("button.menu", ControllerType.LEFT);
+    public static final ActionIdentifier BUTTON_SYSTEM = new ActionIdentifier("button.system", ControllerType.RIGHT);
 
-    public static final String BUTTON_X = "button.x";
-    public static final String BUTTON_A = "button.a";
-    public static final String BUTTON_X_TOUCH = "button.x.touch";
-    public static final String BUTTON_A_TOUCH = "button.a.touch";
-
-
-    public static final String BUTTON_Y = "button.y";
-    public static final String BUTTON_B = "button.b";
-    public static final String BUTTON_Y_TOUCH = "button.y.touch";
-    public static final String BUTTON_B_TOUCH = "button.b.touch";
+    public static final ActionIdentifier BUTTON_X = new ActionIdentifier("button.x", ControllerType.LEFT);
+    public static final ActionIdentifier BUTTON_A = new ActionIdentifier("button.a", ControllerType.RIGHT);
+    public static final ActionIdentifier BUTTON_X_TOUCH = new ActionIdentifier("button.x.touch", ControllerType.LEFT);
+    public static final ActionIdentifier BUTTON_A_TOUCH = new ActionIdentifier("button.a.touch", ControllerType.RIGHT);
 
 
-    public static final String BUTTON_GRIP_LEFT = "button.grip.left";
-    public static final String BUTTON_GRIP_RIGHT = "button.grip.right";
-
-    public static final String BUTTON_TRIGGER_LEFT = "button.trigger.left";
-    public static final String BUTTON_TRIGGER_RIGHT = "button.trigger.right";
-    public static final String BUTTON_TRIGGER_TOUCH_LEFT = "button.trigger.touch.left";
-    public static final String BUTTON_TRIGGER_TOUCH_RIGHT = "button.trigger.touch.right";
+    public static final ActionIdentifier BUTTON_Y = new ActionIdentifier("button.y", ControllerType.LEFT);
+    public static final ActionIdentifier BUTTON_B = new ActionIdentifier("button.b", ControllerType.RIGHT);
+    public static final ActionIdentifier BUTTON_Y_TOUCH = new ActionIdentifier("button.y.touch", ControllerType.LEFT);
+    public static final ActionIdentifier BUTTON_B_TOUCH = new ActionIdentifier("button.b.touch", ControllerType.RIGHT);
 
 
-    public static final String BUTTON_THUMBSTICK_LEFT = "button.thumbstick.left";
-    public static final String BUTTON_THUMBSTICK_RIGHT = "button.thumbstick.right";
-    public static final String BUTTON_THUMBSTICK_TOUCH_LEFT = "button.thumbstick.touch.left";
-    public static final String BUTTON_THUMBSTICK_TOUCH_RIGHT = "button.thumbstick.touch.right";
+    public static final ActionIdentifier BUTTON_GRIP_LEFT = new ActionIdentifier("button.grip.left", ControllerType.LEFT);
+    public static final ActionIdentifier BUTTON_GRIP_RIGHT = new ActionIdentifier("button.grip.right", ControllerType.RIGHT);
 
-    public static final String BUTTON_THUMBREST_TOUCH_LEFT = "button.thumbrest.touch.left";
-    public static final String BUTTON_THUMBREST_TOUCH_RIGHT = "button.thumbrest.touch.right";
+    public static final ActionIdentifier BUTTON_TRIGGER_LEFT = new ActionIdentifier("button.trigger.left", ControllerType.LEFT);
+    public static final ActionIdentifier BUTTON_TRIGGER_RIGHT = new ActionIdentifier("button.trigger.right", ControllerType.RIGHT);
+    public static final ActionIdentifier BUTTON_TRIGGER_TOUCH_LEFT = new ActionIdentifier("button.trigger.touch.left", ControllerType.LEFT);
+    public static final ActionIdentifier BUTTON_TRIGGER_TOUCH_RIGHT = new ActionIdentifier("button.trigger.touch.right", ControllerType.RIGHT);
 
 
-    public static final String VEC2_THUMBSTICK_LEFT = "vec2.thumbstick.left";
-    public static final String VEC2_THUMBSTICK_RIGHT = "vec2.thumbstick.right";
+    public static final ActionIdentifier BUTTON_THUMBSTICK_LEFT = new ActionIdentifier("button.thumbstick.left", ControllerType.LEFT);
+    public static final ActionIdentifier BUTTON_THUMBSTICK_RIGHT = new ActionIdentifier("button.thumbstick.right", ControllerType.RIGHT);
+    public static final ActionIdentifier BUTTON_THUMBSTICK_TOUCH_LEFT = new ActionIdentifier("button.thumbstick.touch.left", ControllerType.LEFT);
+    public static final ActionIdentifier BUTTON_THUMBSTICK_TOUCH_RIGHT = new ActionIdentifier("button.thumbstick.touch.right", ControllerType.RIGHT);
+
+    public static final ActionIdentifier BUTTON_THUMBREST_TOUCH_LEFT = new ActionIdentifier("button.thumbrest.touch.left", ControllerType.LEFT);
+    public static final ActionIdentifier BUTTON_THUMBREST_TOUCH_RIGHT = new ActionIdentifier("button.thumbrest.touch.right", ControllerType.RIGHT);
+
+
+    public static final ActionIdentifier VEC2_THUMBSTICK_LEFT = new ActionIdentifier("vec2.thumbstick.left", ControllerType.LEFT);
+    public static final ActionIdentifier VEC2_THUMBSTICK_RIGHT = new ActionIdentifier("vec2.thumbstick.right", ControllerType.RIGHT);
 
 
     // Single-hand only buttons
@@ -87,12 +89,12 @@ public class OculusTouchSet extends OpenXRProfileSet {
     private Map<String, VRActionDataButton> buttonMap;
     private Map<String, VRActionDataVec2> vec2Map;
 
-    public OculusTouchSet(OpenXRProvider provider) {
+    public OculusTouchSet(XRProvider provider) {
         super(provider, "oculus_touch", "Oculus Touch Controller", 0);
     }
 
     @Override
-    protected List<OpenXRAction> loadActions(OpenXRProvider provider) {
+    protected List<XRAction> loadActions(XRProvider provider) {
 
 
         // -------- MENU & SYSTEM BUTTONS --------
@@ -109,7 +111,7 @@ public class OculusTouchSet extends OpenXRProfileSet {
         // -------- PRIMARY BUTTONS (X/A) --------
         primaryButton = new BoolButtonMultiAction(
                 provider, this,
-                "button.primary", "Primary Button",
+                new ActionIdentifier("button.primary"), "Primary Button",
                 List.of(
                         new BoolButtonMultiAction.SubActionBoolButton(
                                 BUTTON_X,
@@ -125,7 +127,7 @@ public class OculusTouchSet extends OpenXRProfileSet {
         );
         primaryButtonTouch = new BoolButtonMultiAction(
                 provider, this,
-                "button.primary.touch", "Primary Button Touch",
+                new ActionIdentifier("button.primary.touch"), "Primary Button Touch",
                 List.of(
                         new BoolButtonMultiAction.SubActionBoolButton(
                                 BUTTON_X_TOUCH,
@@ -142,7 +144,7 @@ public class OculusTouchSet extends OpenXRProfileSet {
         // -------- SECONDARY (Y/B) --------
         secondaryButton = new BoolButtonMultiAction(
                 provider, this,
-                "button.secondary", "Secondary Button",
+                new ActionIdentifier("button.secondary"), "Secondary Button",
                 List.of(
                         new BoolButtonMultiAction.SubActionBoolButton(
                                 BUTTON_Y,
@@ -158,7 +160,7 @@ public class OculusTouchSet extends OpenXRProfileSet {
         );
         secondaryButtonTouch = new BoolButtonMultiAction(
                 provider, this,
-                "button.secondary.touch", "Secondary Button Touch",
+                new ActionIdentifier("button.secondary.touch"), "Secondary Button Touch",
                 List.of(
                         new BoolButtonMultiAction.SubActionBoolButton(
                                 BUTTON_Y_TOUCH,
@@ -176,7 +178,7 @@ public class OculusTouchSet extends OpenXRProfileSet {
         // -------- GRIP --------
         gripValue = new FloatButtonMultiAction(
                 provider, this,
-                "button.grip", "Grip Value",
+                new ActionIdentifier("button.grip"), "Grip Value",
                 0.9f,   // press
                 0.85f,  // release
                 List.of(
@@ -196,7 +198,7 @@ public class OculusTouchSet extends OpenXRProfileSet {
         // -------- TRIGGER BUTTON --------
         triggerValue = new FloatButtonMultiAction(
                 provider, this,
-                "button.trigger", "Trigger Value",
+                new ActionIdentifier("button.trigger"), "Trigger Value",
                 0.7f,   // press
                 0.65f,  // release
                 List.of(
@@ -214,7 +216,7 @@ public class OculusTouchSet extends OpenXRProfileSet {
         );
         triggerTouch = new BoolButtonMultiAction(
                 provider, this,
-                "button.trigger.touch", "Trigger Touch",
+                new ActionIdentifier("button.trigger.touch"), "Trigger Touch",
                 List.of(
                         new BoolButtonMultiAction.SubActionBoolButton(
                                 BUTTON_TRIGGER_TOUCH_LEFT,
@@ -232,7 +234,7 @@ public class OculusTouchSet extends OpenXRProfileSet {
         // -------- THUMB STICK --------
         thumbStick = new Vec2MultiAction(
                 provider, this,
-                "vec2.thumbstick", "Thumbstick",
+                new ActionIdentifier("vec2.thumbstick"), "Thumbstick",
                 List.of(
                         new Vec2MultiAction.SubActionVec2(
                                 VEC2_THUMBSTICK_LEFT,
@@ -248,7 +250,7 @@ public class OculusTouchSet extends OpenXRProfileSet {
         );
         thumbStickButton = new BoolButtonMultiAction(
                 provider, this,
-                "button.thumbstick", "Thumbstick Button",
+                new ActionIdentifier("button.thumbstick"), "Thumbstick Button",
                 List.of(
                         new BoolButtonMultiAction.SubActionBoolButton(
                                 BUTTON_THUMBSTICK_LEFT,
@@ -264,7 +266,7 @@ public class OculusTouchSet extends OpenXRProfileSet {
         );
         thumbStickTouch = new BoolButtonMultiAction(
                 provider, this,
-                "button.thumbstick.touch", "Thumbstick Touch",
+                new ActionIdentifier("button.thumbstick.touch"), "Thumbstick Touch",
                 List.of(
                         new BoolButtonMultiAction.SubActionBoolButton(
                                 BUTTON_THUMBSTICK_TOUCH_LEFT,
@@ -282,7 +284,7 @@ public class OculusTouchSet extends OpenXRProfileSet {
         // -------- THUMB REST --------
         thumbRestTouch = new BoolButtonMultiAction(
                 provider, this,
-                "button.thumbrest.touch", "Thumbrest Touch",
+                new ActionIdentifier("button.thumbrest.touch"), "Thumbrest Touch",
                 List.of(
                         new BoolButtonMultiAction.SubActionBoolButton(
                                 BUTTON_THUMBREST_TOUCH_LEFT,
@@ -313,14 +315,14 @@ public class OculusTouchSet extends OpenXRProfileSet {
 
         buttonMap = new LinkedHashMap<>();
         for(var entry : listButton){
-            buttonMap.put(entry.getId(), entry);
+            buttonMap.put(entry.getId().getValue(), entry);
         }
 
         List<VRActionDataVec2> listVec2 = new ArrayList<>(thumbStick.getSubActionsAsVec2());
 
         vec2Map = new LinkedHashMap<>();
         for(var entry : listVec2){
-            vec2Map.put(entry.getId(), entry);
+            vec2Map.put(entry.getId().getValue(), entry);
         }
 
         return List.of(

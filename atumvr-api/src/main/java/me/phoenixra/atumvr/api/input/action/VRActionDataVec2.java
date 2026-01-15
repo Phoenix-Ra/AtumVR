@@ -14,5 +14,5 @@ public interface VRActionDataVec2 {
     long getLastChangeTime();
 
 
-    String getId();
+    ActionIdentifier getId();
 }

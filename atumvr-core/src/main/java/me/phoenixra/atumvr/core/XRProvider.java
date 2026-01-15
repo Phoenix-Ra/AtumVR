@@ -9,17 +9,14 @@ import me.phoenixra.atumvr.api.rendering.IRenderContext;
 import me.phoenixra.atumvr.api.rendering.VRRenderer;
 import me.phoenixra.atumvr.core.enums.XRActionResult;
 import me.phoenixra.atumvr.core.enums.XRSessionStateChange;
-import me.phoenixra.atumvr.core.input.OpenXRInputHandler;
+import me.phoenixra.atumvr.core.input.XRInputHandler;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL21;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.GL31;
-import org.lwjgl.openxr.BDControllerInteraction;
-import org.lwjgl.openxr.EXTHPMixedRealityController;
-import org.lwjgl.openxr.HTCViveCosmosControllerInteraction;
-import org.lwjgl.openxr.XR10;
+import org.lwjgl.openxr.*;
 import org.lwjgl.system.MemoryStack;
 
 import java.nio.ByteBuffer;
@@ -29,7 +26,7 @@ import static org.lwjgl.system.MemoryUtil.memAddress;
 import static org.lwjgl.system.MemoryUtil.memUTF8;
 
 
-public abstract class OpenXRProvider implements VRProvider {
+public abstract class XRProvider implements VRProvider {
 
     @Getter
     private final String appName;
@@ -38,10 +35,10 @@ public abstract class OpenXRProvider implements VRProvider {
     private final VRLogger logger;
 
     @Getter
-    protected OpenXRState state;
+    protected XRState state;
 
     @Getter
-    protected OpenXRInputHandler inputHandler;
+    protected XRInputHandler inputHandler;
 
     @Getter
     protected VRRenderer renderer;
@@ -52,8 +49,8 @@ public abstract class OpenXRProvider implements VRProvider {
     protected long xrDisplayTime;
 
 
-    public OpenXRProvider(@NotNull String appName,
-                          @NotNull VRLogger logger){
+    public XRProvider(@NotNull String appName,
+                      @NotNull VRLogger logger){
         this.appName = appName;
         this.logger = logger;
         this.state = createStateHandler();
@@ -62,9 +59,9 @@ public abstract class OpenXRProvider implements VRProvider {
     }
 
 
-    public abstract @Nullable OpenXRState createStateHandler();
+    public abstract @Nullable XRState createStateHandler();
 
-    public abstract @Nullable OpenXRInputHandler createInputHandler();
+    public abstract @Nullable XRInputHandler createInputHandler();
 
     public abstract @NotNull VRRenderer createRenderer();
 
@@ -106,28 +103,31 @@ public abstract class OpenXRProvider implements VRProvider {
 
     @Override
     public void syncState(){
+        if(!state.isReady() || !state.isInitialized()){
+            return;
+        }
         state.pollVREvents();
     }
 
     @Override
-    public void preRender(@NotNull IRenderContext context) {
-        if(!state.running){
+    public void startFrame() {
+        if(!state.isReady()){
             return;
         }
-        renderer.preRender(context);
+        renderer.prepareFrame();
         inputHandler.update();
     }
 
     @Override
     public void render(@NotNull IRenderContext context) {
-        if(!state.running){
+        if(!state.isReady()){
             return;
         }
         renderer.renderFrame(context);
     }
 
     @Override
-    public void postRender(@NotNull IRenderContext context) {
+    public void postRender() {
 
     }
 

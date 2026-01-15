@@ -1,12 +1,14 @@
 package me.phoenixra.atumvr.core.input.action.profileset.types;
 
 import lombok.Getter;
+import me.phoenixra.atumvr.api.enums.ControllerType;
+import me.phoenixra.atumvr.api.input.action.ActionIdentifier;
 import me.phoenixra.atumvr.api.input.action.VRActionDataButton;
 import me.phoenixra.atumvr.api.input.action.VRActionDataVec2;
-import me.phoenixra.atumvr.core.OpenXRProvider;
+import me.phoenixra.atumvr.core.XRProvider;
 import me.phoenixra.atumvr.core.enums.XRInteractionProfile;
-import me.phoenixra.atumvr.core.input.action.OpenXRAction;
-import me.phoenixra.atumvr.core.input.action.profileset.OpenXRProfileSet;
+import me.phoenixra.atumvr.core.input.action.XRAction;
+import me.phoenixra.atumvr.core.input.action.profileset.XRProfileSet;
 import me.phoenixra.atumvr.core.input.action.types.multi.BoolButtonMultiAction;
 import me.phoenixra.atumvr.core.input.action.types.multi.FloatButtonMultiAction;
 import me.phoenixra.atumvr.core.input.action.types.multi.Vec2MultiAction;
@@ -16,42 +18,42 @@ import org.joml.Vector2f;
 
 import java.util.*;
 
-import static me.phoenixra.atumvr.core.input.action.OpenXRAction.LEFT_HAND_PATH;
-import static me.phoenixra.atumvr.core.input.action.OpenXRAction.RIGHT_HAND_PATH;
+import static me.phoenixra.atumvr.core.input.action.XRAction.LEFT_HAND_PATH;
+import static me.phoenixra.atumvr.core.input.action.XRAction.RIGHT_HAND_PATH;
 
 @Getter
-public class ViveCosmosSet extends OpenXRProfileSet {
+public class ViveCosmosSet extends XRProfileSet {
     private static final XRInteractionProfile PROFILE = XRInteractionProfile.VIVE_COSMOS;
 
-    public static final String BUTTON_MENU = "button.menu";
-    public static final String BUTTON_SYSTEM = "button.system";
+    public static final ActionIdentifier BUTTON_MENU = new ActionIdentifier("button.menu", ControllerType.LEFT);;
+    public static final ActionIdentifier BUTTON_SYSTEM = new ActionIdentifier("button.system", ControllerType.RIGHT);
 
-    public static final String BUTTON_X = "button.x";
-    public static final String BUTTON_A = "button.a";
+    public static final ActionIdentifier BUTTON_X = new ActionIdentifier("button.x", ControllerType.LEFT);;
+    public static final ActionIdentifier BUTTON_A = new ActionIdentifier("button.a", ControllerType.RIGHT);
 
-    public static final String BUTTON_Y = "button.y";
-    public static final String BUTTON_B = "button.b";
+    public static final ActionIdentifier BUTTON_Y = new ActionIdentifier("button.y", ControllerType.LEFT);;
+    public static final ActionIdentifier BUTTON_B = new ActionIdentifier("button.b", ControllerType.RIGHT);
 
-    public static final String BUTTON_SHOULDER_LEFT = "button.shoulder.left";
-    public static final String BUTTON_SHOULDER_RIGHT = "button.shoulder.right";
-
-
-    public static final String BUTTON_GRIP_LEFT = "button.grip.left";
-    public static final String BUTTON_GRIP_RIGHT = "button.grip.right";
-
-    public static final String BUTTON_TRIGGER_LEFT = "button.trigger.left";
-    public static final String BUTTON_TRIGGER_RIGHT = "button.trigger.right";
-    public static final String BUTTON_TRIGGER_CLICK_LEFT = "button.trigger.click.left";
-    public static final String BUTTON_TRIGGER_CLICK_RIGHT = "button.trigger.click.right";
-
-    public static final String BUTTON_THUMBSTICK_LEFT = "button.thumbstick.left";
-    public static final String BUTTON_THUMBSTICK_RIGHT = "button.thumbstick.right";
-    public static final String BUTTON_THUMBSTICK_TOUCH_LEFT = "button.thumbstick.touch.left";
-    public static final String BUTTON_THUMBSTICK_TOUCH_RIGHT = "button.thumbstick.touch.right";
+    public static final ActionIdentifier BUTTON_SHOULDER_LEFT = new ActionIdentifier("button.shoulder.left", ControllerType.LEFT);
+    public static final ActionIdentifier BUTTON_SHOULDER_RIGHT = new ActionIdentifier("button.shoulder.right", ControllerType.RIGHT);
 
 
-    public static final String VEC2_THUMBSTICK_LEFT = "vec2.thumbstick.left";
-    public static final String VEC2_THUMBSTICK_RIGHT = "vec2.thumbstick.right";
+    public static final ActionIdentifier BUTTON_GRIP_LEFT = new ActionIdentifier("button.grip.left", ControllerType.LEFT);
+    public static final ActionIdentifier BUTTON_GRIP_RIGHT = new ActionIdentifier("button.grip.right", ControllerType.RIGHT);
+
+    public static final ActionIdentifier BUTTON_TRIGGER_LEFT = new ActionIdentifier("button.trigger.left", ControllerType.LEFT);
+    public static final ActionIdentifier BUTTON_TRIGGER_RIGHT = new ActionIdentifier("button.trigger.right", ControllerType.RIGHT);
+    public static final ActionIdentifier BUTTON_TRIGGER_CLICK_LEFT = new ActionIdentifier("button.trigger.click.left", ControllerType.LEFT);
+    public static final ActionIdentifier BUTTON_TRIGGER_CLICK_RIGHT = new ActionIdentifier("button.trigger.click.right", ControllerType.RIGHT);
+
+    public static final ActionIdentifier BUTTON_THUMBSTICK_LEFT = new ActionIdentifier("button.thumbstick.left", ControllerType.LEFT);
+    public static final ActionIdentifier BUTTON_THUMBSTICK_RIGHT = new ActionIdentifier("button.thumbstick.right", ControllerType.RIGHT);
+    public static final ActionIdentifier BUTTON_THUMBSTICK_TOUCH_LEFT = new ActionIdentifier("button.thumbstick.touch.left", ControllerType.LEFT);
+    public static final ActionIdentifier BUTTON_THUMBSTICK_TOUCH_RIGHT = new ActionIdentifier("button.thumbstick.touch.right", ControllerType.RIGHT);
+
+
+    public static final ActionIdentifier VEC2_THUMBSTICK_LEFT = new ActionIdentifier("vec2.thumbstick.left", ControllerType.LEFT);
+    public static final ActionIdentifier VEC2_THUMBSTICK_RIGHT = new ActionIdentifier("vec2.thumbstick.right", ControllerType.RIGHT);
 
     // Single-hand only buttons
     private BoolButtonAction menuButton;
@@ -78,12 +80,12 @@ public class ViveCosmosSet extends OpenXRProfileSet {
     private Map<String, VRActionDataButton> buttonMap;
     private Map<String, VRActionDataVec2> vec2Map;
 
-    public ViveCosmosSet(OpenXRProvider provider) {
+    public ViveCosmosSet(XRProvider provider) {
         super(provider, "vive_cosmos", "Vive Cosmos Controller", 0);
     }
 
     @Override
-    protected List<OpenXRAction> loadActions(OpenXRProvider provider) {
+    protected List<XRAction> loadActions(XRProvider provider) {
 
 
         // -------- SINGLE-HAND BUTTONS --------
@@ -100,7 +102,7 @@ public class ViveCosmosSet extends OpenXRProfileSet {
         // -------- PRIMARY & SECONDARY --------
         primaryButton = new BoolButtonMultiAction(
                 provider, this,
-                "button.primary", "Primary Button",
+                new ActionIdentifier("button.primary"), "Primary Button",
                 List.of(
                         new BoolButtonMultiAction.SubActionBoolButton(
                                 BUTTON_X,
@@ -117,7 +119,7 @@ public class ViveCosmosSet extends OpenXRProfileSet {
 
         secondaryButton = new BoolButtonMultiAction(
                 provider, this,
-                "button.secondary", "Secondary Button",
+                new ActionIdentifier("button.secondary"), "Secondary Button",
                 List.of(
                         new BoolButtonMultiAction.SubActionBoolButton(
                                 BUTTON_Y,
@@ -135,7 +137,7 @@ public class ViveCosmosSet extends OpenXRProfileSet {
         // -------- SHOULDER & GRIP --------
         shoulderButton = new BoolButtonMultiAction(
                 provider, this,
-                "button.shoulder", "Shoulder Button",
+                new ActionIdentifier("button.shoulder"), "Shoulder Button",
                 List.of(
                         new BoolButtonMultiAction.SubActionBoolButton(
                                 BUTTON_SHOULDER_LEFT,
@@ -152,7 +154,7 @@ public class ViveCosmosSet extends OpenXRProfileSet {
 
         gripButton = new BoolButtonMultiAction(
                 provider, this,
-                "button.grip", "Grip Button",
+                new ActionIdentifier("button.grip"), "Grip Button",
                 List.of(
                         new BoolButtonMultiAction.SubActionBoolButton(
                                 BUTTON_GRIP_LEFT,
@@ -170,7 +172,7 @@ public class ViveCosmosSet extends OpenXRProfileSet {
         // -------- TRIGGER BUTTON --------
         triggerValue = new FloatButtonMultiAction(
                 provider, this,
-                "button.trigger", "Trigger Value",
+                new ActionIdentifier("button.trigger"), "Trigger Value",
                 0.7f,   // press threshold
                 0.65f,  // release threshold
                 List.of(
@@ -189,7 +191,7 @@ public class ViveCosmosSet extends OpenXRProfileSet {
 
         triggerButton = new BoolButtonMultiAction(
                 provider, this,
-                "button.trigger.click", "Trigger Button",
+                new ActionIdentifier("button.trigger.click"), "Trigger Button",
                 List.of(
                         new BoolButtonMultiAction.SubActionBoolButton(
                                 BUTTON_TRIGGER_CLICK_LEFT,
@@ -207,7 +209,7 @@ public class ViveCosmosSet extends OpenXRProfileSet {
         // -------- THUMB STICK --------
         thumbStick = new Vec2MultiAction(
                 provider, this,
-                "vec2.thumbstick", "Thumbstick",
+                new ActionIdentifier("vec2.thumbstick"), "Thumbstick",
                 List.of(
                         new Vec2MultiAction.SubActionVec2(
                                 VEC2_THUMBSTICK_LEFT,
@@ -224,7 +226,7 @@ public class ViveCosmosSet extends OpenXRProfileSet {
 
         thumbStickButton = new BoolButtonMultiAction(
                 provider, this,
-                "button.thumbstick", "Thumbstick Button",
+                new ActionIdentifier("button.thumbstick"), "Thumbstick Button",
                 List.of(
                         new BoolButtonMultiAction.SubActionBoolButton(
                                 BUTTON_THUMBSTICK_LEFT,
@@ -241,7 +243,7 @@ public class ViveCosmosSet extends OpenXRProfileSet {
 
         thumbStickTouch = new BoolButtonMultiAction(
                 provider, this,
-                "button.thumbstick.touch", "Thumbstick Touch",
+                new ActionIdentifier("button.thumbstick.touch"), "Thumbstick Touch",
                 List.of(
                         new BoolButtonMultiAction.SubActionBoolButton(
                                 BUTTON_THUMBSTICK_TOUCH_LEFT,
@@ -272,14 +274,14 @@ public class ViveCosmosSet extends OpenXRProfileSet {
 
         buttonMap = new LinkedHashMap<>();
         for(var entry : listButton){
-            buttonMap.put(entry.getId(), entry);
+            buttonMap.put(entry.getId().getValue(), entry);
         }
 
         List<VRActionDataVec2> listVec2 = new ArrayList<>(thumbStick.getSubActionsAsVec2());
 
         vec2Map = new LinkedHashMap<>();
         for(var entry : listVec2){
-            vec2Map.put(entry.getId(), entry);
+            vec2Map.put(entry.getId().getValue(), entry);
         }
 
         return List.of(

@@ -1,9 +1,9 @@
 package me.phoenixra.atumvr.core.input.action.profileset;
 
 import lombok.Getter;
-import me.phoenixra.atumvr.core.OpenXRProvider;
+import me.phoenixra.atumvr.core.XRProvider;
 import me.phoenixra.atumvr.core.enums.XRInteractionProfile;
-import me.phoenixra.atumvr.core.input.action.OpenXRActionSet;
+import me.phoenixra.atumvr.core.input.action.XRActionSet;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -13,18 +13,18 @@ public class ProfileSetHolder {
     @Getter
     private final SharedActionSet sharedSet;
 
-    private OpenXRProfileSet lastActive;
+    private XRProfileSet lastActive;
 
-    private final Map<XRInteractionProfile, OpenXRProfileSet> profileSetMap = new HashMap<>();
+    private final Map<XRInteractionProfile, XRProfileSet> profileSetMap = new HashMap<>();
 
-    public ProfileSetHolder(OpenXRProvider provider){
+    public ProfileSetHolder(XRProvider provider){
         this(new SharedActionSet(provider),
                         XRInteractionProfile.getSupportedProfileSets(provider)
         );
     }
 
     public ProfileSetHolder(@NotNull SharedActionSet sharedSet,
-                            @NotNull List<OpenXRProfileSet> profileSets){
+                            @NotNull List<XRProfileSet> profileSets){
         this.sharedSet = sharedSet;
         for(var entry : profileSets){
             profileSetMap.put(entry.getType(), entry);
@@ -36,7 +36,7 @@ public class ProfileSetHolder {
      *
      * @return null if unrecognizable profile or controllers weren't connected yet
      */
-    public @Nullable OpenXRProfileSet getActiveProfileSet(){
+    public @Nullable XRProfileSet getActiveProfileSet(){
         if(lastActive != null && lastActive.isProfileActive()){
             return lastActive;
         }
@@ -49,15 +49,15 @@ public class ProfileSetHolder {
         return lastActive;
     }
 
-    public @Nullable OpenXRProfileSet getProfileSet(XRInteractionProfile type){
+    public @Nullable XRProfileSet getProfileSet(XRInteractionProfile type){
         return profileSetMap.get(type);
     }
 
-    public Collection<OpenXRProfileSet> getProfileSets(){
+    public Collection<XRProfileSet> getProfileSets(){
         return profileSetMap.values();
     }
-    public List<? extends OpenXRActionSet> getAllSets(){
-        var list = new ArrayList<OpenXRActionSet>();
+    public List<? extends XRActionSet> getAllSets(){
+        var list = new ArrayList<XRActionSet>();
         list.add(sharedSet);
         list.addAll(profileSetMap.values());
         return list;

@@ -4,13 +4,13 @@ import lombok.Getter;
 import me.phoenixra.atumvr.api.input.device.VRDevice;
 import me.phoenixra.atumvr.api.misc.pose.VRPose;
 import me.phoenixra.atumvr.api.misc.pose.VRPoseMutable;
-import me.phoenixra.atumvr.core.OpenXRProvider;
+import me.phoenixra.atumvr.core.XRProvider;
 import org.jetbrains.annotations.NotNull;
 
 
-public abstract class OpenXRDevice implements VRDevice {
+public abstract class XRDevice implements VRDevice {
     @Getter
-    protected final OpenXRProvider provider;
+    protected final XRProvider provider;
     @Getter
     private final String id;
 
@@ -21,7 +21,7 @@ public abstract class OpenXRDevice implements VRDevice {
     protected boolean active;
 
 
-    public OpenXRDevice(OpenXRProvider provider, String id){
+    public XRDevice(XRProvider provider, String id){
         this.provider = provider;
         this.id = id;
     }

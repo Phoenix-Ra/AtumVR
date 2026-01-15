@@ -5,7 +5,7 @@ import me.phoenixra.atumvr.api.rendering.VRTexture;
 import org.lwjgl.opengl.GL30;
 
 @Getter
-public class OpenXRTexture implements VRTexture {
+public class XRTexture implements VRTexture {
     protected final int textureId;
     protected int textureIndex;
     protected int frameBufferId;
@@ -13,7 +13,7 @@ public class OpenXRTexture implements VRTexture {
     protected final int width;
     protected final int height;
 
-    public OpenXRTexture(int width, int height, int textureId, int index){
+    public XRTexture(int width, int height, int textureId, int index){
         this.width = width;
         this.height = height;
 
@@ -23,7 +23,7 @@ public class OpenXRTexture implements VRTexture {
 
     }
 
-    public OpenXRTexture init(){
+    public XRTexture init(){
         frameBufferId = GL30.glGenFramebuffers();
 
         GL30.glBindFramebuffer(GL30.GL_FRAMEBUFFER, this.frameBufferId);

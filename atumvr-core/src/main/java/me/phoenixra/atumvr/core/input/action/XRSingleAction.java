@@ -1,7 +1,8 @@
 package me.phoenixra.atumvr.core.input.action;
 
 import lombok.Getter;
-import me.phoenixra.atumvr.core.OpenXRProvider;
+import me.phoenixra.atumvr.api.input.action.ActionIdentifier;
+import me.phoenixra.atumvr.core.XRProvider;
 import me.phoenixra.atumvr.core.enums.XRInputActionType;
 import me.phoenixra.atumvr.core.enums.XRInteractionProfile;
 import org.jetbrains.annotations.NotNull;
@@ -23,7 +24,7 @@ import static org.lwjgl.system.MemoryUtil.NULL;
 import static org.lwjgl.system.MemoryUtil.memUTF8;
 
 @Getter
-public abstract class OpenXRSingleAction<T> extends OpenXRAction {
+public abstract class XRSingleAction<T> extends XRAction {
 
     protected static final XrActionStateGetInfo getInfo = XrActionStateGetInfo.calloc()
             .type(XR10.XR_TYPE_ACTION_STATE_GET_INFO);
@@ -37,24 +38,24 @@ public abstract class OpenXRSingleAction<T> extends OpenXRAction {
     protected boolean changed;
     protected boolean active;
 
-    public OpenXRSingleAction(OpenXRProvider provider,
-                              OpenXRActionSet actionSet,
-                              String id, String localizedName,
-                              XRInputActionType actionType) {
+    public XRSingleAction(XRProvider provider,
+                          XRActionSet actionSet,
+                          ActionIdentifier id, String localizedName,
+                          XRInputActionType actionType) {
         super(provider, actionSet, id, localizedName, actionType);
     }
 
-    protected abstract void onInit(OpenXRActionSet actionSet,
+    protected abstract void onInit(XRActionSet actionSet,
                                    MemoryStack stack);
 
     @Override
-    public void init(OpenXRActionSet actionSet) {
+    public void init(XRActionSet actionSet) {
 
         try (var stack = stackPush()) {
             XrActionCreateInfo actionCreateInfo = XrActionCreateInfo.calloc(stack).set(
                     XR10.XR_TYPE_ACTION_CREATE_INFO,
                     NULL,
-                    memUTF8(this.id),
+                    memUTF8(this.id.getValue()),
                     actionType.getId(),
                     0,
                     null,
@@ -76,13 +77,13 @@ public abstract class OpenXRSingleAction<T> extends OpenXRAction {
     }
 
 
-    public OpenXRSingleAction<T> putDefaultBindings(@NotNull XRInteractionProfile profile,
-                                                    @Nullable String source){
+    public XRSingleAction<T> putDefaultBindings(@NotNull XRInteractionProfile profile,
+                                                @Nullable String source){
         defaultBindings.put(profile, source);
         return this;
     }
-    public OpenXRSingleAction<T> putDefaultBindings(@NotNull List<XRInteractionProfile> profiles,
-                                                    @Nullable String source){
+    public XRSingleAction<T> putDefaultBindings(@NotNull List<XRInteractionProfile> profiles,
+                                                @Nullable String source){
         for(XRInteractionProfile profile : profiles){
             defaultBindings.put(profile, source);
         }

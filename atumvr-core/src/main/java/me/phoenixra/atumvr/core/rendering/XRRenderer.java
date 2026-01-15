@@ -7,8 +7,8 @@ import me.phoenixra.atumvr.api.rendering.IRenderContext;
 import me.phoenixra.atumvr.api.rendering.VRRenderer;
 import me.phoenixra.atumvr.api.rendering.VRTexture;
 import me.phoenixra.atumvr.api.utils.GLUtils;
-import me.phoenixra.atumvr.core.OpenXRProvider;
-import me.phoenixra.atumvr.core.input.device.OpenXRDeviceHMD;
+import me.phoenixra.atumvr.core.XRProvider;
+import me.phoenixra.atumvr.core.input.device.XRDeviceHMD;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.glfw.GLFWErrorCallback;
@@ -23,9 +23,9 @@ import java.util.HashMap;
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
 
-public abstract class OpenXRRenderer implements VRRenderer {
+public abstract class XRRenderer implements VRRenderer {
     @Getter
-    protected OpenXRProvider vrProvider;
+    protected XRProvider vrProvider;
 
 
     @Getter
@@ -41,20 +41,20 @@ public abstract class OpenXRRenderer implements VRRenderer {
 
     protected int swapIndex;
 
-    protected OpenXRTexture[] leftFramebuffers;
-    protected OpenXRTexture[] rightFramebuffers;
+    protected XRTexture[] leftFramebuffers;
+    protected XRTexture[] rightFramebuffers;
 
     protected XrCompositionLayerProjectionView.Buffer projectionLayerViews;
 
 
     private boolean createdGLContext;
-    public OpenXRRenderer(OpenXRProvider vrProvider) {
+    public XRRenderer(XRProvider vrProvider) {
         this.vrProvider = vrProvider;
 
     }
 
     public abstract void onInit() throws Throwable;
-    protected abstract OpenXRTexture createTexture(int width, int height, int textureId, int index);
+    protected abstract XRTexture createTexture(int width, int height, int textureId, int index);
 
     @Override
     public void init() throws Throwable{
@@ -65,7 +65,7 @@ public abstract class OpenXRRenderer implements VRRenderer {
     }
 
     @Override
-    public void preRender(@NotNull IRenderContext context) {
+    public void prepareFrame() {
         prepareXrFrame();
     }
 
@@ -124,7 +124,7 @@ public abstract class OpenXRRenderer implements VRRenderer {
                     XR10.XR_TYPE_VIEW_LOCATE_INFO,
                     0,
                     XR10.XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO,
-                    frameState.predictedDisplayTime(),
+                    vrProvider.getXrDisplayTime(),
                     vrProvider.getState().getVrSession().getXrAppSpace()
             );
 
@@ -139,6 +139,7 @@ public abstract class OpenXRRenderer implements VRRenderer {
 
 
         }
+
 
         XrSwapchain xrSwapchain = vrProvider.getState().getVrSwapChain().getHandle();
         this.projectionLayerViews = XrCompositionLayerProjectionView.calloc(2);
@@ -172,7 +173,7 @@ public abstract class OpenXRRenderer implements VRRenderer {
             for (EyeType eyeType : EyeType.values()) {
                 int index = eyeType.getIndex();
                 XrView xrView = vrProvider.getInputHandler()
-                        .getDevice(VRDeviceHMD.ID, OpenXRDeviceHMD.class)
+                        .getDevice(VRDeviceHMD.ID, XRDeviceHMD.class)
                         .getXrView(eyeType);
                 XrSwapchainSubImage subImage = this.projectionLayerViews.get(index)
                         .type(XR10.XR_TYPE_COMPOSITION_LAYER_PROJECTION_VIEW)
@@ -281,8 +282,8 @@ public abstract class OpenXRRenderer implements VRRenderer {
                     XrSwapchainImageBaseHeader.create(swapchainImageBuffer.address(), swapchainImageBuffer.capacity()));
             vrProvider.checkXRError(error, "xrEnumerateSwapchainImages", "get images");
 
-            this.leftFramebuffers = new OpenXRTexture[imageCount];
-            this.rightFramebuffers = new OpenXRTexture[imageCount];
+            this.leftFramebuffers = new XRTexture[imageCount];
+            this.rightFramebuffers = new XRTexture[imageCount];
 
             for (int i = 0; i < imageCount; i++) {
                 XrSwapchainImageOpenGLKHR openxrImage = swapchainImageBuffer.get(i);

@@ -4,8 +4,8 @@ import me.phoenixra.atumvr.api.enums.EyeType;
 import me.phoenixra.atumvr.api.input.device.VRDeviceHMD;
 import me.phoenixra.atumvr.api.misc.pose.VRPose;
 import me.phoenixra.atumvr.api.misc.pose.VRPoseMutable;
-import me.phoenixra.atumvr.core.OpenXRHelper;
-import me.phoenixra.atumvr.core.OpenXRProvider;
+import me.phoenixra.atumvr.core.XRHelper;
+import me.phoenixra.atumvr.core.XRProvider;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.openxr.XrPosef;
 import org.lwjgl.openxr.XrSpace;
@@ -13,7 +13,7 @@ import org.lwjgl.openxr.XrSpaceLocation;
 import org.lwjgl.openxr.XrView;
 import org.lwjgl.system.MemoryStack;
 
-public class OpenXRDeviceHMD extends OpenXRDevice implements VRDeviceHMD {
+public class XRDeviceHMD extends XRDevice implements VRDeviceHMD {
 
     private final VRPoseMutable eyeLeftPose = new VRPoseMutable();
 
@@ -21,7 +21,7 @@ public class OpenXRDeviceHMD extends OpenXRDevice implements VRDeviceHMD {
 
     private final XrSpace space;
 
-    public OpenXRDeviceHMD(OpenXRProvider provider) {
+    public XRDeviceHMD(XRProvider provider) {
         super(provider, ID);
         space = provider.getState().getVrSession().getXrViewSpace();
     }
@@ -31,7 +31,7 @@ public class OpenXRDeviceHMD extends OpenXRDevice implements VRDeviceHMD {
     @Override
     public void update() {
         try (MemoryStack stack = MemoryStack.stackPush()) {
-            XrSpaceLocation loc = OpenXRHelper.xrLocationFromSpace(
+            XrSpaceLocation loc = XRHelper.xrLocationFromSpace(
                     provider,
                     space,
                     stack
@@ -41,25 +41,25 @@ public class OpenXRDeviceHMD extends OpenXRDevice implements VRDeviceHMD {
 
             if (active) {
                 pose.update(
-                        OpenXRHelper.normalizeXrPose(loc.pose()),
-                        OpenXRHelper.normalizeXrQuaternion(loc.pose().orientation()),
-                        OpenXRHelper.normalizeXrVector(loc.pose().position$())
+                        XRHelper.normalizeXrPose(loc.pose()),
+                        XRHelper.normalizeXrQuaternion(loc.pose().orientation()),
+                        XRHelper.normalizeXrVector(loc.pose().position$())
                 );
             }
         }
 
         XrPosef eyePose = getXrView(EyeType.LEFT).pose();
         eyeLeftPose.update(
-                OpenXRHelper.normalizeXrPose(eyePose),
-                OpenXRHelper.normalizeXrQuaternion(eyePose.orientation()),
-                OpenXRHelper.normalizeXrVector(eyePose.position$())
+                XRHelper.normalizeXrPose(eyePose),
+                XRHelper.normalizeXrQuaternion(eyePose.orientation()),
+                XRHelper.normalizeXrVector(eyePose.position$())
         );
 
         eyePose = getXrView(EyeType.RIGHT).pose();
         eyeRightPose.update(
-                OpenXRHelper.normalizeXrPose(eyePose),
-                OpenXRHelper.normalizeXrQuaternion(eyePose.orientation()),
-                OpenXRHelper.normalizeXrVector(eyePose.position$())
+                XRHelper.normalizeXrPose(eyePose),
+                XRHelper.normalizeXrQuaternion(eyePose.orientation()),
+                XRHelper.normalizeXrVector(eyePose.position$())
         );
     }
 

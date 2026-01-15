@@ -5,6 +5,9 @@ import me.phoenixra.atumconfig.api.ConfigLogger;
 import org.jetbrains.annotations.NotNull;
 
 
+/**
+ * Logger used by {@link VRProvider} and associated objects
+ */
 public interface VRLogger extends ConfigLogger {
     /**
      * VR logger with no output
@@ -50,6 +53,13 @@ public interface VRLogger extends ConfigLogger {
     void logDebug(@NotNull String msg);
 
 
+    /**
+     * Set if debug
+     *
+     * @param flag true/false
+     *
+     * @return this instance
+     */
     @NotNull
     VRLogger setDebug(boolean flag);
 

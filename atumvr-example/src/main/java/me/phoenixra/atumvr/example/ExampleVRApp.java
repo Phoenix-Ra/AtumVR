@@ -83,10 +83,11 @@ public class ExampleVRApp {
                 if(provider.isXrStopping()){
                     break;
                 }
+
                 IRenderContext context = () -> 1;
-                provider.preRender(context);
+                provider.startFrame();
                 provider.render(context);
-                provider.postRender(context);
+                provider.postRender();
 
             } while (true);
         });

@@ -2,12 +2,13 @@ package me.phoenixra.atumvr.core.input.action.types.multi;
 
 import lombok.Getter;
 import me.phoenixra.atumvr.api.enums.ControllerType;
+import me.phoenixra.atumvr.api.input.action.ActionIdentifier;
 import me.phoenixra.atumvr.api.input.action.VRActionDataButton;
-import me.phoenixra.atumvr.core.OpenXRProvider;
+import me.phoenixra.atumvr.core.XRProvider;
 import me.phoenixra.atumvr.core.enums.XRInputActionType;
 import me.phoenixra.atumvr.core.enums.XRInteractionProfile;
-import me.phoenixra.atumvr.core.input.action.OpenXRActionSet;
-import me.phoenixra.atumvr.core.input.action.OpenXRMultiAction;
+import me.phoenixra.atumvr.core.input.action.XRActionSet;
+import me.phoenixra.atumvr.core.input.action.XRMultiAction;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.openxr.XR10;
@@ -18,7 +19,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
 
-public class FloatButtonMultiAction extends OpenXRMultiAction<Float> {
+public class FloatButtonMultiAction extends XRMultiAction<Float> {
 
 
     @Getter
@@ -30,13 +31,13 @@ public class FloatButtonMultiAction extends OpenXRMultiAction<Float> {
     @Getter
     private final List<SubActionFloatButton> subActionsAsButton;
 
-    public FloatButtonMultiAction(OpenXRProvider provider,
-                            OpenXRActionSet actionSet,
-                            String id,
-                            String localizedName,
-                            float pressThreshold,
-                            float releaseThreshold,
-                            List<SubActionFloatButton> subActions) {
+    public FloatButtonMultiAction(XRProvider provider,
+                                  XRActionSet actionSet,
+                                  ActionIdentifier id,
+                                  String localizedName,
+                                  float pressThreshold,
+                                  float releaseThreshold,
+                                  List<SubActionFloatButton> subActions) {
         super(provider, actionSet, id, localizedName, XRInputActionType.FLOAT, subActions);
         this.pressThreshold = pressThreshold;
         this.releaseThreshold = releaseThreshold;
@@ -45,7 +46,7 @@ public class FloatButtonMultiAction extends OpenXRMultiAction<Float> {
     }
 
     @Override
-    protected void onInit(OpenXRActionSet actionSet, MemoryStack stack) {
+    protected void onInit(XRActionSet actionSet, MemoryStack stack) {
 
     }
 
@@ -92,7 +93,7 @@ public class FloatButtonMultiAction extends OpenXRMultiAction<Float> {
                 );
                 if(listener != null
                         && entry.buttonChanged){
-                    listener.accept(entry.getId());
+                    listener.accept(entry.getId().getValue());
                 }
             }
         }
@@ -110,7 +111,7 @@ public class FloatButtonMultiAction extends OpenXRMultiAction<Float> {
         protected boolean buttonChanged;
         protected long buttonLastChangeTime;
 
-        public SubActionFloatButton(String id, String path, Float initialState) {
+        public SubActionFloatButton(ActionIdentifier id, String path, Float initialState) {
             super(id, path, initialState);
         }
 

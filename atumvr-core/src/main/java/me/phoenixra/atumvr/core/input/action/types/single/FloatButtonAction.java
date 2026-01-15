@@ -1,11 +1,12 @@
 package me.phoenixra.atumvr.core.input.action.types.single;
 
 import lombok.Getter;
+import me.phoenixra.atumvr.api.input.action.ActionIdentifier;
 import me.phoenixra.atumvr.api.input.action.VRActionDataButton;
-import me.phoenixra.atumvr.core.OpenXRProvider;
+import me.phoenixra.atumvr.core.XRProvider;
 import me.phoenixra.atumvr.core.enums.XRInputActionType;
-import me.phoenixra.atumvr.core.input.action.OpenXRActionSet;
-import me.phoenixra.atumvr.core.input.action.OpenXRSingleAction;
+import me.phoenixra.atumvr.core.input.action.XRActionSet;
+import me.phoenixra.atumvr.core.input.action.XRSingleAction;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.openxr.XR10;
 import org.lwjgl.openxr.XrActionStateFloat;
@@ -14,7 +15,7 @@ import org.lwjgl.system.MemoryStack;
 import java.util.function.Consumer;
 
 @Getter
-public class FloatButtonAction extends OpenXRSingleAction<Float> implements VRActionDataButton {
+public class FloatButtonAction extends XRSingleAction<Float> implements VRActionDataButton {
 
 
     private boolean pressed;
@@ -25,12 +26,12 @@ public class FloatButtonAction extends OpenXRSingleAction<Float> implements VRAc
     private final float releaseThreshold;
 
 
-    public FloatButtonAction(OpenXRProvider provider,
-                       OpenXRActionSet actionSet,
-                       String id,
-                       String localizedName,
-                       float pressThreshold,
-                       float releaseThreshold) {
+    public FloatButtonAction(XRProvider provider,
+                             XRActionSet actionSet,
+                             ActionIdentifier id,
+                             String localizedName,
+                             float pressThreshold,
+                             float releaseThreshold) {
         super(provider, actionSet, id, localizedName, XRInputActionType.FLOAT);
         this.currentState = 0f;
         this.pressThreshold = pressThreshold;
@@ -40,7 +41,7 @@ public class FloatButtonAction extends OpenXRSingleAction<Float> implements VRAc
 
 
     @Override
-    protected void onInit(OpenXRActionSet actionSet, MemoryStack stack) {
+    protected void onInit(XRActionSet actionSet, MemoryStack stack) {
 
     }
     @Override
@@ -83,13 +84,9 @@ public class FloatButtonAction extends OpenXRSingleAction<Float> implements VRAc
             this.active = state.isActive();
 
             if(listener != null && buttonChanged){
-                listener.accept(id);
+                listener.accept(id.getValue());
             }
         }
     }
 
-    @Override
-    public String getId() {
-        return id;
-    }
 }

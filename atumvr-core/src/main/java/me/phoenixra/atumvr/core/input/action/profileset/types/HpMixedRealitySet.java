@@ -1,12 +1,14 @@
 package me.phoenixra.atumvr.core.input.action.profileset.types;
 
 import lombok.Getter;
+import me.phoenixra.atumvr.api.enums.ControllerType;
+import me.phoenixra.atumvr.api.input.action.ActionIdentifier;
 import me.phoenixra.atumvr.api.input.action.VRActionDataButton;
 import me.phoenixra.atumvr.api.input.action.VRActionDataVec2;
-import me.phoenixra.atumvr.core.OpenXRProvider;
+import me.phoenixra.atumvr.core.XRProvider;
 import me.phoenixra.atumvr.core.enums.XRInteractionProfile;
-import me.phoenixra.atumvr.core.input.action.OpenXRAction;
-import me.phoenixra.atumvr.core.input.action.profileset.OpenXRProfileSet;
+import me.phoenixra.atumvr.core.input.action.XRAction;
+import me.phoenixra.atumvr.core.input.action.profileset.XRProfileSet;
 import me.phoenixra.atumvr.core.input.action.types.multi.BoolButtonMultiAction;
 import me.phoenixra.atumvr.core.input.action.types.multi.FloatButtonMultiAction;
 import me.phoenixra.atumvr.core.input.action.types.multi.Vec2MultiAction;
@@ -15,35 +17,35 @@ import org.joml.Vector2f;
 
 import java.util.*;
 
-import static me.phoenixra.atumvr.core.input.action.OpenXRAction.LEFT_HAND_PATH;
-import static me.phoenixra.atumvr.core.input.action.OpenXRAction.RIGHT_HAND_PATH;
+import static me.phoenixra.atumvr.core.input.action.XRAction.LEFT_HAND_PATH;
+import static me.phoenixra.atumvr.core.input.action.XRAction.RIGHT_HAND_PATH;
 
 @Getter
-public class HpMixedRealitySet extends OpenXRProfileSet {
+public class HpMixedRealitySet extends XRProfileSet {
     private static final XRInteractionProfile PROFILE = XRInteractionProfile.HP_MIXED_REALITY;
 
 
-    public static final String BUTTON_MENU_LEFT = "button.menu.left";
-    public static final String BUTTON_MENU_RIGHT = "button.menu.right";
+    public static final ActionIdentifier BUTTON_MENU_LEFT = new ActionIdentifier("button.menu.left", ControllerType.LEFT);
+    public static final ActionIdentifier BUTTON_MENU_RIGHT = new ActionIdentifier("button.menu.right", ControllerType.RIGHT);
 
-    public static final String BUTTON_X = "button.x";
-    public static final String BUTTON_A = "button.a";
+    public static final ActionIdentifier BUTTON_X = new ActionIdentifier("button.x", ControllerType.LEFT);
+    public static final ActionIdentifier BUTTON_A = new ActionIdentifier("button.a", ControllerType.RIGHT);
 
-    public static final String BUTTON_Y = "button.y";
-    public static final String BUTTON_B = "button.b";
+    public static final ActionIdentifier BUTTON_Y = new ActionIdentifier("button.y", ControllerType.LEFT);
+    public static final ActionIdentifier BUTTON_B = new ActionIdentifier("button.b", ControllerType.RIGHT);
 
-    public static final String BUTTON_GRIP_LEFT = "button.grip.left";
-    public static final String BUTTON_GRIP_RIGHT = "button.grip.right";
+    public static final ActionIdentifier BUTTON_GRIP_LEFT = new ActionIdentifier("button.grip.left", ControllerType.LEFT);
+    public static final ActionIdentifier BUTTON_GRIP_RIGHT = new ActionIdentifier("button.grip.right", ControllerType.RIGHT);
 
-    public static final String BUTTON_TRIGGER_LEFT = "button.trigger.left";
-    public static final String BUTTON_TRIGGER_RIGHT = "button.trigger.right";
+    public static final ActionIdentifier BUTTON_TRIGGER_LEFT = new ActionIdentifier("button.trigger.left", ControllerType.LEFT);
+    public static final ActionIdentifier BUTTON_TRIGGER_RIGHT = new ActionIdentifier("button.trigger.right", ControllerType.RIGHT);
 
-    public static final String BUTTON_THUMBSTICK_LEFT = "button.thumbstick.left";
-    public static final String BUTTON_THUMBSTICK_RIGHT = "button.thumbstick.right";
+    public static final ActionIdentifier BUTTON_THUMBSTICK_LEFT = new ActionIdentifier("button.thumbstick.left", ControllerType.LEFT);
+    public static final ActionIdentifier BUTTON_THUMBSTICK_RIGHT = new ActionIdentifier("button.thumbstick.right", ControllerType.RIGHT);
 
 
-    public static final String VEC2_THUMBSTICK_LEFT = "vec2.thumbstick.left";
-    public static final String VEC2_THUMBSTICK_RIGHT = "vec2.thumbstick.right";
+    public static final ActionIdentifier VEC2_THUMBSTICK_LEFT = new ActionIdentifier("vec2.thumbstick.left", ControllerType.LEFT);
+    public static final ActionIdentifier VEC2_THUMBSTICK_RIGHT = new ActionIdentifier("vec2.thumbstick.right", ControllerType.RIGHT);
 
 
     // Menu button (shared)
@@ -68,17 +70,17 @@ public class HpMixedRealitySet extends OpenXRProfileSet {
     private Map<String, VRActionDataButton> buttonMap;
     private Map<String, VRActionDataVec2> vec2Map;
 
-    public HpMixedRealitySet(OpenXRProvider provider) {
+    public HpMixedRealitySet(XRProvider provider) {
         super(provider, "hp_mixed_reality", "HP Mixed Reality Controller", 0);
     }
 
     @Override
-    protected List<OpenXRAction> loadActions(OpenXRProvider provider) {
+    protected List<XRAction> loadActions(XRProvider provider) {
 
         // -------- MENU BUTTON --------
         menuButton = new BoolButtonMultiAction(
                 provider, this,
-                "button.menu", "Menu Button",
+                new ActionIdentifier("button.menu"), "Menu Button",
                 List.of(
                         new BoolButtonMultiAction.SubActionBoolButton(
                                 BUTTON_MENU_LEFT,
@@ -96,7 +98,7 @@ public class HpMixedRealitySet extends OpenXRProfileSet {
         // -------- PRIMARY & SECONDARY BUTTONS --------
         primaryButton = new BoolButtonMultiAction(
                 provider, this,
-                "button.primary", "Primary Button",
+                new ActionIdentifier("button.primary"), "Primary Button",
                 List.of(
                         new BoolButtonMultiAction.SubActionBoolButton(
                                 BUTTON_X,
@@ -113,7 +115,7 @@ public class HpMixedRealitySet extends OpenXRProfileSet {
 
         secondaryButton = new BoolButtonMultiAction(
                 provider, this,
-                "button.secondary", "Secondary Button",
+                new ActionIdentifier("button.secondary"), "Secondary Button",
                 List.of(
                         new BoolButtonMultiAction.SubActionBoolButton(
                                 BUTTON_Y,
@@ -131,7 +133,7 @@ public class HpMixedRealitySet extends OpenXRProfileSet {
         // -------- GRIP --------
         gripValue = new FloatButtonMultiAction(
                 provider, this,
-                "button.grip", "Grip Value",
+                new ActionIdentifier("button.grip"), "Grip Value",
                 0.9f,   // press threshold
                 0.85f,  // release threshold
                 List.of(
@@ -149,7 +151,7 @@ public class HpMixedRealitySet extends OpenXRProfileSet {
         // -------- TRIGGER BUTTON --------
         triggerValue = new FloatButtonMultiAction(
                 provider, this,
-                "button.trigger", "Trigger Value",
+                new ActionIdentifier("button.trigger"), "Trigger Value",
                 0.7f,   // press threshold
                 0.65f,  // release threshold
                 List.of(
@@ -169,7 +171,7 @@ public class HpMixedRealitySet extends OpenXRProfileSet {
         // -------- THUMB STICK --------
         thumbStick = new Vec2MultiAction(
                 provider, this,
-                "vec2.thumbstick", "Thumbstick",
+                new ActionIdentifier("vec2.thumbstick"), "Thumbstick",
                 List.of(
                         new Vec2MultiAction.SubActionVec2(
                                 VEC2_THUMBSTICK_LEFT,
@@ -186,7 +188,7 @@ public class HpMixedRealitySet extends OpenXRProfileSet {
 
         thumbStickButton = new BoolButtonMultiAction(
                 provider, this,
-                "button.thumbstick", "Thumbstick Button",
+                new ActionIdentifier("button.thumbstick"), "Thumbstick Button",
                 List.of(
                         new BoolButtonMultiAction.SubActionBoolButton(
                                 BUTTON_THUMBSTICK_LEFT,
@@ -211,14 +213,14 @@ public class HpMixedRealitySet extends OpenXRProfileSet {
 
         buttonMap = new LinkedHashMap<>();
         for(var entry : listButton){
-            buttonMap.put(entry.getId(), entry);
+            buttonMap.put(entry.getId().getValue(), entry);
         }
 
         List<VRActionDataVec2> listVec2 = new ArrayList<>(thumbStick.getSubActionsAsVec2());
 
         vec2Map = new LinkedHashMap<>();
         for(var entry : listVec2){
-            vec2Map.put(entry.getId(), entry);
+            vec2Map.put(entry.getId().getValue(), entry);
         }
 
         return List.of(

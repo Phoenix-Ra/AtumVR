@@ -8,19 +8,19 @@ import org.jetbrains.annotations.NotNull;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.system.MemoryStack;
 
-public abstract class OpenXRScene implements VRScene {
+public abstract class XRScene implements VRScene {
 
     @Getter
-    private OpenXRRenderer vrRenderer;
+    private XRRenderer vrRenderer;
 
 
 
     @Getter
-    protected OpenXREyeCamera rightEyeCamera;
+    protected XREyeCamera rightEyeCamera;
     @Getter
-    protected OpenXREyeCamera leftEyeCamera;
+    protected XREyeCamera leftEyeCamera;
 
-    public OpenXRScene(OpenXRRenderer vrRenderer) {
+    public XRScene(XRRenderer vrRenderer) {
         this.vrRenderer = vrRenderer;
 
     }
@@ -31,10 +31,10 @@ public abstract class OpenXRScene implements VRScene {
 
     @Override
     public void init() {
-        leftEyeCamera = new OpenXREyeCamera(
+        leftEyeCamera = new XREyeCamera(
                 vrRenderer.getVrProvider()
         );
-        rightEyeCamera = new OpenXREyeCamera(
+        rightEyeCamera = new XREyeCamera(
                 vrRenderer.getVrProvider()
         );
         setupMvp();

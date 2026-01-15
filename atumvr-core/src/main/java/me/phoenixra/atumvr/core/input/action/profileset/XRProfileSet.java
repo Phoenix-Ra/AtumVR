@@ -3,18 +3,18 @@ package me.phoenixra.atumvr.core.input.action.profileset;
 import me.phoenixra.atumvr.api.enums.ControllerType;
 import me.phoenixra.atumvr.api.input.action.VRActionDataButton;
 import me.phoenixra.atumvr.api.input.action.VRActionDataVec2;
-import me.phoenixra.atumvr.core.OpenXRProvider;
+import me.phoenixra.atumvr.core.XRProvider;
 import me.phoenixra.atumvr.core.enums.XRInteractionProfile;
-import me.phoenixra.atumvr.core.input.action.OpenXRActionSet;
+import me.phoenixra.atumvr.core.input.action.XRActionSet;
 import me.phoenixra.atumvr.core.input.action.types.multi.FloatButtonMultiAction;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 
-public abstract class OpenXRProfileSet extends OpenXRActionSet {
+public abstract class XRProfileSet extends XRActionSet {
 
-    public OpenXRProfileSet(OpenXRProvider provider, String name, String localizedName, int priority) {
+    public XRProfileSet(XRProvider provider, String name, String localizedName, int priority) {
         super(provider, name, localizedName, priority);
     }
 

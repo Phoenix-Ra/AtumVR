@@ -1,12 +1,13 @@
 package me.phoenixra.atumvr.core.input.action.types.single;
 
 import lombok.Getter;
+import me.phoenixra.atumvr.api.input.action.ActionIdentifier;
 import me.phoenixra.atumvr.api.misc.pose.VRPoseRecord;
-import me.phoenixra.atumvr.core.OpenXRHelper;
-import me.phoenixra.atumvr.core.OpenXRProvider;
+import me.phoenixra.atumvr.core.XRHelper;
+import me.phoenixra.atumvr.core.XRProvider;
 import me.phoenixra.atumvr.core.enums.XRInputActionType;
-import me.phoenixra.atumvr.core.input.action.OpenXRActionSet;
-import me.phoenixra.atumvr.core.input.action.OpenXRSingleAction;
+import me.phoenixra.atumvr.core.input.action.XRActionSet;
+import me.phoenixra.atumvr.core.input.action.XRSingleAction;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.openxr.*;
@@ -18,23 +19,23 @@ import static org.lwjgl.openxr.XR10.XR_NULL_PATH;
 import static org.lwjgl.system.MemoryStack.stackCallocPointer;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
-public class PoseAction extends OpenXRSingleAction<VRPoseRecord> {
+public class PoseAction extends XRSingleAction<VRPoseRecord> {
 
 
 
     @Getter
     private XrSpace xrSpace;
 
-    public PoseAction(OpenXRProvider provider,
-                      OpenXRActionSet actionSet,
-                      String id,
+    public PoseAction(XRProvider provider,
+                      XRActionSet actionSet,
+                      ActionIdentifier id,
                       String localizedName) {
         super(provider, actionSet, id, localizedName, XRInputActionType.POSE);
         currentState = VRPoseRecord.EMPTY;
 
     }
     @Override
-    protected void onInit(OpenXRActionSet actionSet, MemoryStack stack) {
+    protected void onInit(XRActionSet actionSet, MemoryStack stack) {
         XrSession xrSession = provider.getState().getVrSession().getHandle();
         XrActionSpaceCreateInfo action_space_info = XrActionSpaceCreateInfo
                 .calloc(stack).set(
@@ -42,7 +43,7 @@ public class PoseAction extends OpenXRSingleAction<VRPoseRecord> {
                         NULL,
                         handle,
                         XR_NULL_PATH,
-                        OpenXRHelper.getPoseIdentity(stack)
+                        XRHelper.getPoseIdentity(stack)
                 );
         PointerBuffer pp = stackCallocPointer(1);
         provider.checkXRError(
@@ -74,7 +75,7 @@ public class PoseAction extends OpenXRSingleAction<VRPoseRecord> {
             this.lastChangeTime = System.nanoTime();
             this.active = state.isActive();
 
-            var loc = OpenXRHelper.xrLocationFromSpace(
+            var loc = XRHelper.xrLocationFromSpace(
                     provider, xrSpace, stack
             );
 
@@ -82,9 +83,9 @@ public class PoseAction extends OpenXRSingleAction<VRPoseRecord> {
                     ? VRPoseRecord.EMPTY
                     :
                     new VRPoseRecord(
-                            OpenXRHelper.normalizeXrPose(loc.pose()),
-                            OpenXRHelper.normalizeXrQuaternion(loc.pose().orientation()),
-                            OpenXRHelper.normalizeXrVector(loc.pose().position$())
+                            XRHelper.normalizeXrPose(loc.pose()),
+                            XRHelper.normalizeXrQuaternion(loc.pose().orientation()),
+                            XRHelper.normalizeXrVector(loc.pose().position$())
                     );
 
         }

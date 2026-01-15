@@ -2,12 +2,13 @@ package me.phoenixra.atumvr.core.input.action.types.multi;
 
 import lombok.Getter;
 import me.phoenixra.atumvr.api.enums.ControllerType;
+import me.phoenixra.atumvr.api.input.action.ActionIdentifier;
 import me.phoenixra.atumvr.api.input.action.VRActionDataButton;
-import me.phoenixra.atumvr.core.OpenXRProvider;
+import me.phoenixra.atumvr.core.XRProvider;
 import me.phoenixra.atumvr.core.enums.XRInputActionType;
 import me.phoenixra.atumvr.core.enums.XRInteractionProfile;
-import me.phoenixra.atumvr.core.input.action.OpenXRActionSet;
-import me.phoenixra.atumvr.core.input.action.OpenXRMultiAction;
+import me.phoenixra.atumvr.core.input.action.XRActionSet;
+import me.phoenixra.atumvr.core.input.action.XRMultiAction;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.openxr.XR10;
@@ -18,14 +19,14 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
 
-public class BoolButtonMultiAction extends OpenXRMultiAction<Boolean> {
+public class BoolButtonMultiAction extends XRMultiAction<Boolean> {
 
     @Getter
     private final List<SubActionBoolButton> subActionsAsButton;
 
-    public BoolButtonMultiAction(OpenXRProvider provider,
-                                 OpenXRActionSet actionSet,
-                                 String id,
+    public BoolButtonMultiAction(XRProvider provider,
+                                 XRActionSet actionSet,
+                                 ActionIdentifier id,
                                  String localizedName,
                                  List<SubActionBoolButton> subActions) {
         super(provider, actionSet, id, localizedName, XRInputActionType.BOOLEAN, subActions);
@@ -33,7 +34,7 @@ public class BoolButtonMultiAction extends OpenXRMultiAction<Boolean> {
     }
 
     @Override
-    protected void onInit(OpenXRActionSet actionSet, MemoryStack stack) {
+    protected void onInit(XRActionSet actionSet, MemoryStack stack) {
 
     }
 
@@ -61,7 +62,7 @@ public class BoolButtonMultiAction extends OpenXRMultiAction<Boolean> {
                 );
                 if(listener != null
                         && state.changedSinceLastSync()){
-                    listener.accept(entry.getId());
+                    listener.accept(entry.getId().getValue());
                 }
             }
         }
@@ -76,7 +77,7 @@ public class BoolButtonMultiAction extends OpenXRMultiAction<Boolean> {
     public static class SubActionBoolButton extends SubAction<Boolean> implements VRActionDataButton {
 
 
-        public SubActionBoolButton(String id, String path, Boolean initialState) {
+        public SubActionBoolButton(ActionIdentifier id, String path, Boolean initialState) {
             super(id, path, initialState);
 
         }

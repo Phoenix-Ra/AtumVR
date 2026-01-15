@@ -1,9 +1,9 @@
 package me.phoenixra.atumvr.core.init;
 
 import lombok.Getter;
-import me.phoenixra.atumvr.core.OpenXRHelper;
-import me.phoenixra.atumvr.core.OpenXRProvider;
-import me.phoenixra.atumvr.core.OpenXRState;
+import me.phoenixra.atumvr.core.XRHelper;
+import me.phoenixra.atumvr.core.XRProvider;
+import me.phoenixra.atumvr.core.XRState;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.openxr.*;
 import org.lwjgl.system.MemoryStack;
@@ -12,8 +12,8 @@ import org.lwjgl.system.Struct;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
-public class OpenXRSession {
-    private final OpenXRState xrState;
+public class XRSession {
+    private final XRState xrState;
 
     @Getter
     protected XrSession handle;
@@ -23,7 +23,7 @@ public class OpenXRSession {
     @Getter
     protected XrSpace xrViewSpace;
 
-    public OpenXRSession(OpenXRState xrState){
+    public XRSession(XRState xrState){
         this.xrState = xrState;
 
     }
@@ -31,7 +31,7 @@ public class OpenXRSession {
 
     public void init() {
         try (MemoryStack stack = MemoryStack.stackPush()) {
-            OpenXRProvider provider = this.xrState.getVrProvider();
+            XRProvider provider = this.xrState.getVrProvider();
             initSession(provider, stack);
             initSpaces(stack);
             initDisplayRefreshRate(provider, stack);
@@ -39,9 +39,9 @@ public class OpenXRSession {
     }
 
 
-    private void initSession(OpenXRProvider provider, MemoryStack stack){
-        OpenXRInstance xrInstance  = xrState.getVrInstance();
-        OpenXRSystem xrSystem  = xrState.getVrSystem();
+    private void initSession(XRProvider provider, MemoryStack stack){
+        XRInstance xrInstance  = xrState.getVrInstance();
+        XRSystem xrSystem  = xrState.getVrSystem();
         long systemId = xrState.getVrSystem().getSystemId();
 
         Struct<?> graphicsBind = xrSystem.createGraphicsBinding(
@@ -73,7 +73,7 @@ public class OpenXRSession {
                         XrVector3f.calloc(stack).set(0f, 0f, 0f)
                 );
 
-        xrAppSpace  = OpenXRHelper.createReferenceSpace(
+        xrAppSpace  = XRHelper.createReferenceSpace(
                 xrState,
                 XR10.XR_REFERENCE_SPACE_TYPE_STAGE,
                 identity,
@@ -85,7 +85,7 @@ public class OpenXRSession {
                         XrQuaternionf.calloc(stack).set(0, 0, 0, 1),
                         XrVector3f.calloc(stack).set(0f, 0f, 0f)
                 );
-        xrViewSpace = OpenXRHelper.createReferenceSpace(
+        xrViewSpace = XRHelper.createReferenceSpace(
                 xrState,
                 XR10.XR_REFERENCE_SPACE_TYPE_VIEW,
                 identity,
@@ -96,7 +96,7 @@ public class OpenXRSession {
 
 
     //@TODO test it
-    private void initDisplayRefreshRate(OpenXRProvider provider, MemoryStack stack) {
+    private void initDisplayRefreshRate(XRProvider provider, MemoryStack stack) {
         if (handle.getCapabilities().XR_FB_display_refresh_rate) {
             IntBuffer refreshRateCount = stack.callocInt(1);
             provider.checkXRError(
@@ -125,7 +125,7 @@ public class OpenXRSession {
     }
 
     public void destroy(){
-        OpenXRProvider provider = xrState.getVrProvider();
+        XRProvider provider = xrState.getVrProvider();
 
         if (this.xrAppSpace != null) {
             provider.checkXRError(

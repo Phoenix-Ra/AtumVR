@@ -3,9 +3,9 @@ package me.phoenixra.atumvr.core.input.action;
 import lombok.Getter;
 import me.phoenixra.atumconfig.api.tuples.PairRecord;
 import me.phoenixra.atumvr.api.input.action.VRActionSet;
-import me.phoenixra.atumvr.core.OpenXRProvider;
+import me.phoenixra.atumvr.core.XRProvider;
 import me.phoenixra.atumvr.core.enums.XRInteractionProfile;
-import me.phoenixra.atumvr.core.init.OpenXRInstance;
+import me.phoenixra.atumvr.core.init.XRInstance;
 import me.phoenixra.atumvr.core.input.action.types.HapticPulseAction;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.PointerBuffer;
@@ -23,9 +23,9 @@ import static org.lwjgl.system.MemoryStack.stackPush;
 import static org.lwjgl.system.MemoryUtil.NULL;
 import static org.lwjgl.system.MemoryUtil.memUTF8;
 
-public abstract class OpenXRActionSet implements VRActionSet {
+public abstract class XRActionSet implements VRActionSet {
 
-    private final OpenXRProvider provider;
+    private final XRProvider provider;
     @Getter
     private final String name;
     @Getter
@@ -37,20 +37,20 @@ public abstract class OpenXRActionSet implements VRActionSet {
     private final int priority;
 
     @Getter
-    private List<OpenXRAction> actions = new ArrayList<>();
+    private List<XRAction> actions = new ArrayList<>();
 
 
-    public OpenXRActionSet(OpenXRProvider provider,
-                           String name,
-                           String localizedName,
-                           int priority) {
+    public XRActionSet(XRProvider provider,
+                       String name,
+                       String localizedName,
+                       int priority) {
         this.provider = provider;
         this.name = name;
         this.localizedName = localizedName;
         this.priority = priority;
     }
 
-    protected abstract List<OpenXRAction> loadActions(OpenXRProvider provider);
+    protected abstract List<XRAction> loadActions(XRProvider provider);
 
 
     @Override
@@ -63,7 +63,7 @@ public abstract class OpenXRActionSet implements VRActionSet {
     @Override
     public void init() {
         try (MemoryStack stack = stackPush()) {
-            OpenXRInstance xrInstance = provider.getState().getVrInstance();
+            XRInstance xrInstance = provider.getState().getVrInstance();
             XrActionSetCreateInfo actionSetCreateInfo = XrActionSetCreateInfo
                     .calloc(stack)
                     .set(
@@ -92,10 +92,10 @@ public abstract class OpenXRActionSet implements VRActionSet {
         }
     }
 
-    public List<PairRecord<OpenXRAction, String>> getDefaultBindings(XRInteractionProfile profile){
-        List<PairRecord<OpenXRAction, String>> out = new ArrayList<>();
-        for(OpenXRAction action : actions){
-            if(action instanceof OpenXRSingleAction<?> singleAction){
+    public List<PairRecord<XRAction, String>> getDefaultBindings(XRInteractionProfile profile){
+        List<PairRecord<XRAction, String>> out = new ArrayList<>();
+        for(XRAction action : actions){
+            if(action instanceof XRSingleAction<?> singleAction){
                 var bind = singleAction.getDefaultBindings(profile);
                 if(bind == null) {
                     continue;
@@ -104,8 +104,8 @@ public abstract class OpenXRActionSet implements VRActionSet {
                         singleAction,
                         bind
                 ));
-            }else if(action instanceof OpenXRMultiAction<?> multiAction){
-                for(OpenXRMultiAction.SubAction<?> subAction : multiAction.getSubActions()){
+            }else if(action instanceof XRMultiAction<?> multiAction){
+                for(XRMultiAction.SubAction<?> subAction : multiAction.getSubActions()){
                     var bind = subAction.getDefaultBindings(profile);
                     if(bind == null) {
                         continue;

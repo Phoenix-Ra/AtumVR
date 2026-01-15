@@ -2,8 +2,8 @@ package me.phoenixra.atumvr.core.init;
 
 import lombok.Getter;
 import me.phoenixra.atumvr.api.exceptions.VRException;
-import me.phoenixra.atumvr.core.OpenXRProvider;
-import me.phoenixra.atumvr.core.OpenXRState;
+import me.phoenixra.atumvr.core.XRProvider;
+import me.phoenixra.atumvr.core.XRState;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.glfw.GLFWNativeGLX;
 import org.lwjgl.glfw.GLFWNativeWGL;
@@ -23,19 +23,19 @@ import static org.lwjgl.opengl.GLX13.*;
 import static org.lwjgl.system.MemoryStack.stackInts;
 import static org.lwjgl.system.MemoryUtil.*;
 
-public class OpenXRSystem {
-    private final OpenXRState xrState;
+public class XRSystem {
+    private final XRState xrState;
 
     @Getter
     private long systemId;
 
-    public OpenXRSystem(OpenXRState xrState){
+    public XRSystem(XRState xrState){
         this.xrState = xrState;
 
     }
     public void init(){
         try (MemoryStack stack = MemoryStack.stackPush()) {
-            OpenXRProvider provider = this.xrState.getVrProvider();
+            XRProvider provider = this.xrState.getVrProvider();
 
             // 1) Acquire system ID for HMD
             var sysGetInfo = XrSystemGetInfo.calloc(stack)
