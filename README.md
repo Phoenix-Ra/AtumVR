@@ -7,4 +7,6 @@ Library that simplifies VR development in Java. It can be used either:
 
 AtumVR uses **LWJGL** to access native VR APIs and currently supports **OpenXR only**.
 
+For rendering, the **OpenGL** is used
+
 This project is **not a full game engine**. Instead, it is intended to be a VR integration layer you can plug into your own engine or framework—so you don’t have to wrestle with low-level VR APIs directly.
