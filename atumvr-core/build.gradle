@@ -4,7 +4,24 @@ plugins {
 
 
 dependencies {
-    api(project(":atumvr-api"))
+    api("com.github.Phoenix-Ra:AtumConfiguration:1.0.0")
+    api("org.reflections:reflections:0.10.2")
+
+    api("org.joml:joml:1.10.5")
+
+    api platform("org.lwjgl:lwjgl-bom:3.4.0")
+
+    api("org.lwjgl:lwjgl")
+    api("org.lwjgl:lwjgl-opengl")
+    api("org.lwjgl:lwjgl-glfw")
+    api("org.lwjgl:lwjgl-openxr")
+
+
+    api("org.lwjgl:lwjgl::natives-windows")
+    api("org.lwjgl:lwjgl-opengl::natives-windows")
+    api("org.lwjgl:lwjgl-glfw::natives-windows")
+    api("org.lwjgl:lwjgl-openxr::natives-windows")
+    api("org.lwjgl:lwjgl-openxr::natives-linux")
 }
 task javadocJar(type: Jar, dependsOn: javadoc) {
     archiveClassifier.set('javadoc')

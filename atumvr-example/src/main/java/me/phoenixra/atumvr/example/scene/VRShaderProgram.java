@@ -1,7 +1,7 @@
 package me.phoenixra.atumvr.example.scene;
 
 import lombok.Getter;
-import me.phoenixra.atumvr.api.VRProvider;
+import me.phoenixra.atumvr.core.VRProvider;
 import org.lwjgl.opengl.GL30;
 
 import java.nio.file.Files;

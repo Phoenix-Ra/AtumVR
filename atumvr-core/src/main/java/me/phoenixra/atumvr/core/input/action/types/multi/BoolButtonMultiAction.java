@@ -1,14 +1,14 @@
 package me.phoenixra.atumvr.core.input.action.types.multi;
 
 import lombok.Getter;
-import me.phoenixra.atumvr.api.enums.ControllerType;
-import me.phoenixra.atumvr.api.input.action.ActionIdentifier;
-import me.phoenixra.atumvr.api.input.action.VRActionDataButton;
-import me.phoenixra.atumvr.core.XRProvider;
+import me.phoenixra.atumvr.core.enums.ControllerType;
+import me.phoenixra.atumvr.core.input.action.ActionIdentifier;
+import me.phoenixra.atumvr.core.input.action.data.VRActionDataButton;
+import me.phoenixra.atumvr.core.VRProvider;
 import me.phoenixra.atumvr.core.enums.XRInputActionType;
-import me.phoenixra.atumvr.core.enums.XRInteractionProfile;
-import me.phoenixra.atumvr.core.input.action.XRActionSet;
-import me.phoenixra.atumvr.core.input.action.XRMultiAction;
+import me.phoenixra.atumvr.core.input.profile.VRInteractionProfileType;
+import me.phoenixra.atumvr.core.input.action.VRActionSet;
+import me.phoenixra.atumvr.core.input.action.VRMultiAction;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.openxr.XR10;
@@ -17,38 +17,37 @@ import org.lwjgl.system.MemoryStack;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.function.Consumer;
 
-public class BoolButtonMultiAction extends XRMultiAction<Boolean> {
+public class BoolButtonMultiAction extends VRMultiAction<Boolean> {
 
     @Getter
     private final List<SubActionBoolButton> subActionsAsButton;
 
-    public BoolButtonMultiAction(XRProvider provider,
-                                 XRActionSet actionSet,
-                                 ActionIdentifier id,
-                                 String localizedName,
-                                 List<SubActionBoolButton> subActions) {
-        super(provider, actionSet, id, localizedName, XRInputActionType.BOOLEAN, subActions);
+    public BoolButtonMultiAction(@NotNull VRProvider vrProvider,
+                                 @NotNull VRActionSet actionSet,
+                                 @NotNull ActionIdentifier id,
+                                 @NotNull String localizedName,
+                                 @NotNull List<SubActionBoolButton> subActions) {
+        super(vrProvider, actionSet, id, localizedName, XRInputActionType.BOOLEAN, subActions);
         subActionsAsButton = Collections.unmodifiableList(subActions);
     }
 
     @Override
-    protected void onInit(XRActionSet actionSet, MemoryStack stack) {
+    protected void onInit(@NotNull VRActionSet actionSet, @NotNull MemoryStack stack) {
 
     }
 
     @Override
-    public void update(@Nullable Consumer<String> listener) {
+    public void update() {
         try(MemoryStack stack = MemoryStack.stackPush()) {
-            for(SubAction<Boolean> entry : subActions) {
+            for(var entry : subActionsAsButton) {
                 var state = XrActionStateBoolean.calloc(stack)
                         .type(actionType.getStateId());
                 getInfo.subactionPath(entry.getPathHandle());
                 getInfo.action(handle);
-                provider.checkXRError(
+                vrProvider.checkXRError(
                         XR10.xrGetActionStateBoolean(
-                                provider.getState().getVrSession().getHandle(),
+                                vrProvider.getSession().getHandle(),
                                 getInfo,
                                 state
                         ),
@@ -60,16 +59,17 @@ public class BoolButtonMultiAction extends XRMultiAction<Boolean> {
                         state.changedSinceLastSync(),
                         state.isActive()
                 );
-                if(listener != null
-                        && state.changedSinceLastSync()){
-                    listener.accept(entry.getId().getValue());
+                if(state.changedSinceLastSync()){
+                    vrProvider.getInputHandler().onActionChanged(
+                            entry
+                    );
                 }
             }
         }
     }
 
     @Override
-    public SubActionBoolButton getHandSubaction(ControllerType type) {
+    public SubActionBoolButton getHandSubaction(@NotNull ControllerType type) {
         return (SubActionBoolButton) super.getHandSubaction(type);
     }
 
@@ -77,18 +77,20 @@ public class BoolButtonMultiAction extends XRMultiAction<Boolean> {
     public static class SubActionBoolButton extends SubAction<Boolean> implements VRActionDataButton {
 
 
-        public SubActionBoolButton(ActionIdentifier id, String path, Boolean initialState) {
+        public SubActionBoolButton(@NotNull ActionIdentifier id,
+                                   @NotNull String path,
+                                   @NotNull Boolean initialState) {
             super(id, path, initialState);
 
         }
 
         @Override
-        public SubActionBoolButton putDefaultBindings(@NotNull List<XRInteractionProfile> profiles, @Nullable String source) {
+        public SubActionBoolButton putDefaultBindings(@NotNull List<VRInteractionProfileType> profiles, @Nullable String source) {
             return (SubActionBoolButton) super.putDefaultBindings(profiles, source);
         }
 
         @Override
-        public SubActionBoolButton putDefaultBindings(@NotNull XRInteractionProfile profile, @Nullable String source) {
+        public SubActionBoolButton putDefaultBindings(@NotNull VRInteractionProfileType profile, @Nullable String source) {
             return (SubActionBoolButton) super.putDefaultBindings(profile, source);
         }
 

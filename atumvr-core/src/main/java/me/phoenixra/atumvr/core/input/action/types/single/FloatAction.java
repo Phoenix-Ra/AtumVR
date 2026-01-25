@@ -1,28 +1,28 @@
 package me.phoenixra.atumvr.core.input.action.types.single;
 
 import lombok.Getter;
-import me.phoenixra.atumvr.api.input.action.ActionIdentifier;
-import me.phoenixra.atumvr.core.XRProvider;
+import me.phoenixra.atumvr.core.input.action.ActionIdentifier;
+import me.phoenixra.atumvr.core.VRProvider;
 import me.phoenixra.atumvr.core.enums.XRInputActionType;
-import me.phoenixra.atumvr.core.input.action.XRActionSet;
-import me.phoenixra.atumvr.core.input.action.XRSingleAction;
-import org.jetbrains.annotations.Nullable;
+import me.phoenixra.atumvr.core.input.action.VRActionSet;
+import me.phoenixra.atumvr.core.input.action.VRSingleAction;
+import me.phoenixra.atumvr.core.input.action.data.VRActionDataFloat;
+import org.jetbrains.annotations.NotNull;
 import org.lwjgl.openxr.XR10;
 import org.lwjgl.openxr.XrActionStateFloat;
 import org.lwjgl.system.MemoryStack;
 
-import java.util.function.Consumer;
 
 @Getter
-public class FloatAction extends XRSingleAction<Float> {
+public class FloatAction extends VRSingleAction<Float> implements VRActionDataFloat {
 
 
 
-    public FloatAction(XRProvider provider,
-                       XRActionSet actionSet,
-                       ActionIdentifier id,
-                       String localizedName) {
-        super(provider, actionSet, id, localizedName,  XRInputActionType.FLOAT);
+    public FloatAction(@NotNull VRProvider vrProvider,
+                       @NotNull VRActionSet actionSet,
+                       @NotNull ActionIdentifier id,
+                       @NotNull String localizedName) {
+        super(vrProvider, actionSet, id, localizedName,  XRInputActionType.FLOAT);
     }
 
 
@@ -30,18 +30,18 @@ public class FloatAction extends XRSingleAction<Float> {
 
 
     @Override
-    protected void onInit(XRActionSet actionSet, MemoryStack stack) {
+    protected void onInit(VRActionSet actionSet, MemoryStack stack) {
 
     }
     @Override
-    public void update(@Nullable Consumer<String> listener) {
+    public void update() {
         try(MemoryStack stack = MemoryStack.stackPush()) {
             var state = XrActionStateFloat.calloc(stack)
                     .type(actionType.getStateId());
             getInfo.action(handle);
-            provider.checkXRError(
+            vrProvider.checkXRError(
                     XR10.xrGetActionStateFloat(
-                            provider.getState().getVrSession().getHandle(),
+                            vrProvider.getSession().getHandle(),
                             getInfo,
                             state
                     ),
@@ -52,9 +52,16 @@ public class FloatAction extends XRSingleAction<Float> {
             this.lastChangeTime = state.lastChangeTime();
             this.active = state.isActive();
 
-            if(listener != null && changed){
-                listener.accept(id.getValue());
+            if(changed){
+                vrProvider.getInputHandler().onActionChanged(
+                        this
+                );
             }
         }
+    }
+
+    @Override
+    public float getFloat() {
+        return currentState;
     }
 }

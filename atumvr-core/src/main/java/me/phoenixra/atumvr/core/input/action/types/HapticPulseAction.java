@@ -1,15 +1,15 @@
 package me.phoenixra.atumvr.core.input.action.types;
 
 import me.phoenixra.atumconfig.api.tuples.PairRecord;
-import me.phoenixra.atumvr.api.enums.ControllerType;
-import me.phoenixra.atumvr.api.exceptions.VRException;
-import me.phoenixra.atumvr.api.input.action.ActionIdentifier;
-import me.phoenixra.atumvr.core.XRProvider;
+import me.phoenixra.atumvr.core.enums.ControllerType;
+import me.phoenixra.atumvr.core.exceptions.VRException;
+import me.phoenixra.atumvr.core.input.action.ActionIdentifier;
+import me.phoenixra.atumvr.core.VRProvider;
 import me.phoenixra.atumvr.core.enums.XRInputActionType;
-import me.phoenixra.atumvr.core.enums.XRInteractionProfile;
-import me.phoenixra.atumvr.core.input.XRInputHandler;
-import me.phoenixra.atumvr.core.input.action.XRAction;
-import me.phoenixra.atumvr.core.input.action.XRActionSet;
+import me.phoenixra.atumvr.core.input.profile.VRInteractionProfileType;
+import me.phoenixra.atumvr.core.input.VRInputHandler;
+import me.phoenixra.atumvr.core.input.action.VRAction;
+import me.phoenixra.atumvr.core.input.action.VRActionSet;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.PointerBuffer;
@@ -20,23 +20,22 @@ import java.nio.LongBuffer;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Consumer;
 
 import static org.lwjgl.openxr.XR10.*;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
-public class HapticPulseAction extends XRAction {
+public class HapticPulseAction extends VRAction {
 
 
 
-    protected Map<XRInteractionProfile, PairRecord<String,String>> defaultBindings = new LinkedHashMap<>();
+    protected Map<VRInteractionProfileType, PairRecord<String,String>> defaultBindings = new LinkedHashMap<>();
 
 
-    public HapticPulseAction(XRProvider provider,
-                             XRActionSet actionSet,
+    public HapticPulseAction(VRProvider vrProvider,
+                             VRActionSet actionSet,
                              String id,
                              String localizedName) {
-        super(provider,
+        super(vrProvider,
                 actionSet,
                 new ActionIdentifier(id),
                 localizedName,
@@ -47,12 +46,12 @@ public class HapticPulseAction extends XRAction {
 
 
     @Override
-    public void init(XRActionSet actionSet) {
-        XRInputHandler inputHandler = provider.getInputHandler();
+    public void init(@NotNull VRActionSet actionSet) {
+        VRInputHandler inputHandler = vrProvider.getInputHandler();
         try (MemoryStack stack = MemoryStack.stackPush()) {
             LongBuffer paths = stack.callocLong(2);
-            paths.put(0, inputHandler.getPath(LEFT_HAND_PATH));
-            paths.put(1, inputHandler.getPath(RIGHT_HAND_PATH));
+            paths.put(0, inputHandler.convertStringToXrPath(LEFT_HAND_PATH));
+            paths.put(1, inputHandler.convertStringToXrPath(RIGHT_HAND_PATH));
 
             XrActionCreateInfo actionCreateInfo = XrActionCreateInfo
                     .calloc(stack)
@@ -71,7 +70,7 @@ public class HapticPulseAction extends XRAction {
     }
 
     @Override
-    public void update(@Nullable Consumer<String> listener) {
+    public void update() {
 
     }
 
@@ -93,11 +92,11 @@ public class HapticPulseAction extends XRAction {
         if(handle == null){
             throw new VRException("Tried to apply haptic pulse before action initialized");
         }
-        XrSession session = provider.getState().getVrSession().getHandle();
-        XRInputHandler inputHandler = provider.getInputHandler();
+        XrSession session = vrProvider.getSession().getHandle();
+        VRInputHandler inputHandler = vrProvider.getInputHandler();
 
         try(MemoryStack stack = MemoryStack.stackPush()) {
-            long subPath = inputHandler.getPath(
+            long subPath = inputHandler.convertStringToXrPath(
                     controllerType == ControllerType.LEFT
                             ? LEFT_HAND_PATH
                             : RIGHT_HAND_PATH
@@ -124,7 +123,7 @@ public class HapticPulseAction extends XRAction {
     }
 
 
-    public HapticPulseAction putDefaultBindings(@NotNull XRInteractionProfile profile,
+    public HapticPulseAction putDefaultBindings(@NotNull VRInteractionProfileType profile,
                                                 @Nullable String source){
         defaultBindings.put(profile,
                 new PairRecord<>(
@@ -135,9 +134,9 @@ public class HapticPulseAction extends XRAction {
         return this;
     }
 
-    public HapticPulseAction putDefaultBindings(@NotNull List<XRInteractionProfile> profiles,
+    public HapticPulseAction putDefaultBindings(@NotNull List<VRInteractionProfileType> profiles,
                                                 @Nullable String source){
-        for(XRInteractionProfile profile : profiles){
+        for(VRInteractionProfileType profile : profiles){
             defaultBindings.put(
                     profile,
                     new PairRecord<>(
@@ -152,7 +151,7 @@ public class HapticPulseAction extends XRAction {
     }
 
     @Nullable
-    public PairRecord<String,String> getDefaultBindings(XRInteractionProfile profile){
+    public PairRecord<String,String> getDefaultBindings(VRInteractionProfileType profile){
         return defaultBindings.get(profile);
     }
 }

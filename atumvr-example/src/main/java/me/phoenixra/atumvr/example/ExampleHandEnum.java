@@ -1,7 +1,7 @@
 package me.phoenixra.atumvr.example;
 
 
-import me.phoenixra.atumvr.api.enums.ControllerType;
+import me.phoenixra.atumvr.core.enums.ControllerType;
 import org.jetbrains.annotations.NotNull;
 
 /**

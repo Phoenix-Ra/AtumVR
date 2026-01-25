@@ -73,7 +73,5 @@ allprojects {
 }
 
 dependencies {
-    implementation(project('atumvr-api'))
     implementation(project('atumvr-core'))
-
 }

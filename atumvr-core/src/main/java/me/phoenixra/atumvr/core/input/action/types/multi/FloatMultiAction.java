@@ -1,48 +1,54 @@
 package me.phoenixra.atumvr.core.input.action.types.multi;
 
-import me.phoenixra.atumvr.api.input.action.ActionIdentifier;
-import me.phoenixra.atumvr.core.XRProvider;
+import lombok.Getter;
+import me.phoenixra.atumvr.core.input.action.ActionIdentifier;
+import me.phoenixra.atumvr.core.VRProvider;
 import me.phoenixra.atumvr.core.enums.XRInputActionType;
-import me.phoenixra.atumvr.core.input.action.XRActionSet;
-import me.phoenixra.atumvr.core.input.action.XRMultiAction;
+import me.phoenixra.atumvr.core.input.action.VRActionSet;
+import me.phoenixra.atumvr.core.input.action.VRMultiAction;
+import me.phoenixra.atumvr.core.input.action.data.VRActionDataFloat;
+import me.phoenixra.atumvr.core.input.profile.VRInteractionProfileType;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.openxr.XR10;
 import org.lwjgl.openxr.XrActionStateFloat;
 import org.lwjgl.system.MemoryStack;
 
+import java.util.Collections;
 import java.util.List;
-import java.util.function.Consumer;
 
-public class FloatMultiAction extends XRMultiAction<Float> {
-
+public class FloatMultiAction extends VRMultiAction<Float> {
 
 
+    @Getter
+    private final List<SubActionFloat> subActionsAsFloat;
 
-    public FloatMultiAction(XRProvider provider,
-                            XRActionSet actionSet,
-                            ActionIdentifier id,
-                            String localizedName,
-                            List<SubAction<Float>> subActions) {
-        super(provider, actionSet, id, localizedName, XRInputActionType.FLOAT, subActions);
+    public FloatMultiAction(@NotNull VRProvider vrProvider,
+                            @NotNull VRActionSet actionSet,
+                            @NotNull ActionIdentifier id,
+                            @NotNull String localizedName,
+                            @NotNull List<SubActionFloat> subActions) {
+        super(vrProvider, actionSet, id, localizedName, XRInputActionType.FLOAT, subActions);
+        subActionsAsFloat = Collections.unmodifiableList(subActions);
     }
 
 
     @Override
-    protected void onInit(XRActionSet actionSet, MemoryStack stack) {
+    protected void onInit(@NotNull VRActionSet actionSet, @NotNull MemoryStack stack) {
 
     }
 
     @Override
-    public void update(@Nullable Consumer<String> listener) {
+    public void update() {
         try(MemoryStack stack = MemoryStack.stackPush()) {
-            for(SubAction<Float> entry : subActions) {
+            for(var entry : subActionsAsFloat) {
                 var state = XrActionStateFloat.calloc(stack)
                         .type(actionType.getStateId());
                 getInfo.subactionPath(entry.getPathHandle());
                 getInfo.action(handle);
-                provider.checkXRError(
+                vrProvider.checkXRError(
                         XR10.xrGetActionStateFloat(
-                                provider.getState().getVrSession().getHandle(),
+                                vrProvider.getSession().getHandle(),
                                 getInfo,
                                 state
                         ),
@@ -55,11 +61,38 @@ public class FloatMultiAction extends XRMultiAction<Float> {
                         state.changedSinceLastSync(),
                         state.isActive()
                 );
-                if(listener != null
-                        && state.changedSinceLastSync()){
-                    listener.accept(entry.getId().getValue());
+                if(state.changedSinceLastSync()){
+                    vrProvider.getInputHandler().onActionChanged(
+                            entry
+                    );
                 }
             }
+        }
+    }
+
+    public static class SubActionFloat extends SubAction<Float> implements VRActionDataFloat {
+
+
+        public SubActionFloat(@NotNull ActionIdentifier id,
+                              @NotNull String path,
+                              @NotNull Float initialState) {
+            super(id, path, initialState);
+
+        }
+
+        @Override
+        public SubActionFloat putDefaultBindings(@NotNull List<VRInteractionProfileType> profiles, @Nullable String source) {
+            return (SubActionFloat) super.putDefaultBindings(profiles, source);
+        }
+
+        @Override
+        public SubActionFloat putDefaultBindings(@NotNull VRInteractionProfileType profile, @Nullable String source) {
+            return (SubActionFloat) super.putDefaultBindings(profile, source);
+        }
+
+        @Override
+        public float getFloat() {
+            return currentState;
         }
     }
 

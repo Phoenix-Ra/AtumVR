@@ -5,6 +5,9 @@ import org.lwjgl.openxr.XR10;
 
 import java.util.HashMap;
 
+/**
+ * An enum representation of XR input action type
+ */
 public enum XRInputActionType {
 
     BOOLEAN(XR10.XR_ACTION_TYPE_BOOLEAN_INPUT, XR10.XR_TYPE_ACTION_STATE_BOOLEAN),
@@ -14,7 +17,6 @@ public enum XRInputActionType {
     VECTOR2F(XR10.XR_ACTION_TYPE_VECTOR2F_INPUT, XR10.XR_TYPE_ACTION_STATE_VECTOR2F),
 
     POSE(XR10.XR_ACTION_TYPE_POSE_INPUT, XR10.XR_TYPE_ACTION_STATE_POSE),
-
 
     HAPTIC(XR10.XR_ACTION_TYPE_VIBRATION_OUTPUT, XR10.XR_ACTION_TYPE_VIBRATION_OUTPUT);
 

@@ -1,12 +1,12 @@
 package me.phoenixra.atumvr.core.input.action.types.single;
 
-import me.phoenixra.atumvr.api.input.action.ActionIdentifier;
-import me.phoenixra.atumvr.api.input.action.VRActionDataButton;
-import me.phoenixra.atumvr.core.XRProvider;
+import me.phoenixra.atumvr.core.input.action.ActionIdentifier;
+import me.phoenixra.atumvr.core.input.action.data.VRActionDataButton;
+import me.phoenixra.atumvr.core.VRProvider;
 import me.phoenixra.atumvr.core.enums.XRInputActionType;
-import me.phoenixra.atumvr.core.enums.XRInteractionProfile;
-import me.phoenixra.atumvr.core.input.action.XRActionSet;
-import me.phoenixra.atumvr.core.input.action.XRSingleAction;
+import me.phoenixra.atumvr.core.input.profile.VRInteractionProfileType;
+import me.phoenixra.atumvr.core.input.action.VRActionSet;
+import me.phoenixra.atumvr.core.input.action.VRSingleAction;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.openxr.XR10;
@@ -14,32 +14,31 @@ import org.lwjgl.openxr.XrActionStateBoolean;
 import org.lwjgl.system.MemoryStack;
 
 import java.util.List;
-import java.util.function.Consumer;
 
-public class BoolButtonAction extends XRSingleAction<Boolean> implements VRActionDataButton {
+public class BoolButtonAction extends VRSingleAction<Boolean> implements VRActionDataButton {
 
 
-    public BoolButtonAction(XRProvider provider,
-                            XRActionSet actionSet,
-                            ActionIdentifier id,
-                            String localizedName) {
-        super(provider, actionSet, id, localizedName, XRInputActionType.BOOLEAN);
+    public BoolButtonAction(@NotNull VRProvider vrProvider,
+                            @NotNull VRActionSet actionSet,
+                            @NotNull ActionIdentifier id,
+                            @NotNull String localizedName) {
+        super(vrProvider, actionSet, id, localizedName, XRInputActionType.BOOLEAN);
         currentState = false;
     }
 
     @Override
-    protected void onInit(XRActionSet actionSet, MemoryStack stack) {
+    protected void onInit(@NotNull VRActionSet actionSet, @NotNull MemoryStack stack) {
 
     }
     @Override
-    public void update(@Nullable Consumer<String> listener) {
+    public void update() {
         try(MemoryStack stack = MemoryStack.stackPush()) {
             var state = XrActionStateBoolean.calloc(stack)
                     .type(actionType.getStateId());
             getInfo.action(handle);
-            provider.checkXRError(
+            vrProvider.checkXRError(
                     XR10.xrGetActionStateBoolean(
-                            provider.getState().getVrSession().getHandle(),
+                            vrProvider.getSession().getHandle(),
                             getInfo,
                             state
                     ),
@@ -49,8 +48,11 @@ public class BoolButtonAction extends XRSingleAction<Boolean> implements VRActio
             this.changed = state.changedSinceLastSync();
             this.lastChangeTime = state.lastChangeTime();
             this.active = state.isActive();
-            if(listener != null && changed){
-                listener.accept(id.getValue());
+
+            if(changed){
+                vrProvider.getInputHandler().onActionChanged(
+                        this
+                );
             }
         }
     }
@@ -72,12 +74,12 @@ public class BoolButtonAction extends XRSingleAction<Boolean> implements VRActio
 
 
     @Override
-    public BoolButtonAction putDefaultBindings(@NotNull List<XRInteractionProfile> profiles, @Nullable String source) {
+    public BoolButtonAction putDefaultBindings(@NotNull List<VRInteractionProfileType> profiles, @Nullable String source) {
         return (BoolButtonAction) super.putDefaultBindings(profiles, source);
     }
 
     @Override
-    public BoolButtonAction putDefaultBindings(@NotNull XRInteractionProfile profile, @Nullable String source) {
+    public BoolButtonAction putDefaultBindings(@NotNull VRInteractionProfileType profile, @Nullable String source) {
         return (BoolButtonAction) super.putDefaultBindings(profile, source);
     }
 }

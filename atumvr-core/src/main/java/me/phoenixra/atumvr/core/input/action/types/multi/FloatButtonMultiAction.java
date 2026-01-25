@@ -1,14 +1,14 @@
 package me.phoenixra.atumvr.core.input.action.types.multi;
 
 import lombok.Getter;
-import me.phoenixra.atumvr.api.enums.ControllerType;
-import me.phoenixra.atumvr.api.input.action.ActionIdentifier;
-import me.phoenixra.atumvr.api.input.action.VRActionDataButton;
-import me.phoenixra.atumvr.core.XRProvider;
+import me.phoenixra.atumvr.core.enums.ControllerType;
+import me.phoenixra.atumvr.core.input.action.ActionIdentifier;
+import me.phoenixra.atumvr.core.input.action.data.VRActionDataButton;
+import me.phoenixra.atumvr.core.VRProvider;
 import me.phoenixra.atumvr.core.enums.XRInputActionType;
-import me.phoenixra.atumvr.core.enums.XRInteractionProfile;
-import me.phoenixra.atumvr.core.input.action.XRActionSet;
-import me.phoenixra.atumvr.core.input.action.XRMultiAction;
+import me.phoenixra.atumvr.core.input.profile.VRInteractionProfileType;
+import me.phoenixra.atumvr.core.input.action.VRActionSet;
+import me.phoenixra.atumvr.core.input.action.VRMultiAction;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.openxr.XR10;
@@ -17,9 +17,8 @@ import org.lwjgl.system.MemoryStack;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.function.Consumer;
 
-public class FloatButtonMultiAction extends XRMultiAction<Float> {
+public class FloatButtonMultiAction extends VRMultiAction<Float> {
 
 
     @Getter
@@ -31,14 +30,14 @@ public class FloatButtonMultiAction extends XRMultiAction<Float> {
     @Getter
     private final List<SubActionFloatButton> subActionsAsButton;
 
-    public FloatButtonMultiAction(XRProvider provider,
-                                  XRActionSet actionSet,
-                                  ActionIdentifier id,
-                                  String localizedName,
+    public FloatButtonMultiAction(@NotNull VRProvider vrProvider,
+                                  @NotNull VRActionSet actionSet,
+                                  @NotNull ActionIdentifier id,
+                                  @NotNull String localizedName,
                                   float pressThreshold,
                                   float releaseThreshold,
-                                  List<SubActionFloatButton> subActions) {
-        super(provider, actionSet, id, localizedName, XRInputActionType.FLOAT, subActions);
+                                  @NotNull List<SubActionFloatButton> subActions) {
+        super(vrProvider, actionSet, id, localizedName, XRInputActionType.FLOAT, subActions);
         this.pressThreshold = pressThreshold;
         this.releaseThreshold = releaseThreshold;
         subActionsAsButton = Collections.unmodifiableList(subActions);
@@ -46,21 +45,21 @@ public class FloatButtonMultiAction extends XRMultiAction<Float> {
     }
 
     @Override
-    protected void onInit(XRActionSet actionSet, MemoryStack stack) {
+    protected void onInit(@NotNull VRActionSet actionSet, @NotNull MemoryStack stack) {
 
     }
 
     @Override
-    public void update(@Nullable Consumer<String> listener) {
+    public void update() {
         try(MemoryStack stack = MemoryStack.stackPush()) {
             for(SubActionFloatButton entry : subActionsAsButton) {
                 var state = XrActionStateFloat.calloc(stack)
                         .type(actionType.getStateId());
                 getInfo.subactionPath(entry.getPathHandle());
                 getInfo.action(handle);
-                provider.checkXRError(
+                vrProvider.checkXRError(
                         XR10.xrGetActionStateFloat(
-                                provider.getState().getVrSession().getHandle(),
+                                vrProvider.getSession().getHandle(),
                                 getInfo,
                                 state
                         ),
@@ -91,16 +90,17 @@ public class FloatButtonMultiAction extends XRMultiAction<Float> {
                         state.changedSinceLastSync(),
                         state.isActive()
                 );
-                if(listener != null
-                        && entry.buttonChanged){
-                    listener.accept(entry.getId().getValue());
+                if(entry.buttonChanged){
+                    vrProvider.getInputHandler().onActionChanged(
+                            entry
+                    );
                 }
             }
         }
     }
 
     @Override
-    public SubActionFloatButton getHandSubaction(ControllerType type) {
+    public SubActionFloatButton getHandSubaction(@NotNull ControllerType type) {
         return (SubActionFloatButton) super.getHandSubaction(type);
     }
 
@@ -111,18 +111,20 @@ public class FloatButtonMultiAction extends XRMultiAction<Float> {
         protected boolean buttonChanged;
         protected long buttonLastChangeTime;
 
-        public SubActionFloatButton(ActionIdentifier id, String path, Float initialState) {
+        public SubActionFloatButton(@NotNull ActionIdentifier id,
+                                    @NotNull String path,
+                                    @NotNull Float initialState) {
             super(id, path, initialState);
         }
 
         @Override
-        public SubActionFloatButton putDefaultBindings(@NotNull List<XRInteractionProfile> profiles,
+        public SubActionFloatButton putDefaultBindings(@NotNull List<VRInteractionProfileType> profiles,
                                                        @Nullable String source) {
             return (SubActionFloatButton) super.putDefaultBindings(profiles, source);
         }
 
         @Override
-        public SubActionFloatButton putDefaultBindings(@NotNull XRInteractionProfile profile, @Nullable String source) {
+        public SubActionFloatButton putDefaultBindings(@NotNull VRInteractionProfileType profile, @Nullable String source) {
             return (SubActionFloatButton) super.putDefaultBindings(profile, source);
         }
 

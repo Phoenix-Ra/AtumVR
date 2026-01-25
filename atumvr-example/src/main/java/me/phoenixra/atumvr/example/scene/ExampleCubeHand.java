@@ -1,7 +1,7 @@
 package me.phoenixra.atumvr.example.scene;
 
-import me.phoenixra.atumvr.api.enums.ControllerType;
-import me.phoenixra.atumvr.api.input.device.VRDeviceController;
+import me.phoenixra.atumvr.core.enums.ControllerType;
+import me.phoenixra.atumvr.core.input.device.VRDeviceController;
 import me.phoenixra.atumvr.example.ExampleVRProvider;
 import me.phoenixra.atumvr.example.texture.StbTexture;
 import org.joml.Matrix4f;
@@ -9,23 +9,23 @@ import org.joml.Matrix4fc;
 import org.joml.Vector3f;
 
 public class ExampleCubeHand extends ExampleCube{
-    private final ExampleVRProvider provider;
-    public ExampleCubeHand(ExampleVRProvider provider,
+    private final ExampleVRProvider vrProvider;
+    public ExampleCubeHand(ExampleVRProvider vrProvider,
                            StbTexture texture,
                            Vector3f position,
                            Vector3f scale,
                            Vector3f rotation) {
         super(texture, position, scale, rotation);
-        this.provider = provider;
+        this.vrProvider = vrProvider;
 
     }
     protected Matrix4f getModelMatrix(){
-        ControllerType type = provider.getInputHandler().getScaleHand().asType();
+        ControllerType type = vrProvider.getInputHandler().getScaleHand().asType();
 
         Vector3f scale = this.scale;
 
-        var profileSet = provider.getInputHandler().getProfileSetHolder()
-                .getActiveProfileSet();
+        var profileSet = vrProvider.getInputHandler().getProfileSetHolder()
+                .getActiveProfile();
         if(profileSet != null){
             if(profileSet.getTriggerValue()
                     .getHandSubaction(type).isPressed()){
@@ -34,8 +34,8 @@ public class ExampleCubeHand extends ExampleCube{
         }
 
         // 1) grab the controller’s world‐space pose
-        Matrix4fc handPose = provider.getInputHandler()
-                .getDevice(VRDeviceController.getDefaultId(type))
+        Matrix4fc handPose = vrProvider.getInputHandler()
+                .getDevice(VRDeviceController.getId(type))
                 .getPose().matrix();
 
         // 2) build a local transform: translate→rotate→scale

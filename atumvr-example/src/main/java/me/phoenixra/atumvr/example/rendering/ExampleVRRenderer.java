@@ -1,25 +1,22 @@
 package me.phoenixra.atumvr.example.rendering;
 
 
-import me.phoenixra.atumvr.api.rendering.VRScene;
-import me.phoenixra.atumvr.core.XRProvider;
-import me.phoenixra.atumvr.core.rendering.XRRenderer;
-import me.phoenixra.atumvr.core.rendering.XRTexture;
+
+import me.phoenixra.atumvr.core.VRProvider;
+import me.phoenixra.atumvr.core.rendering.VRRenderer;
+import me.phoenixra.atumvr.core.rendering.VRScene;
+import me.phoenixra.atumvr.core.rendering.VRTexture;
 import me.phoenixra.atumvr.example.ExampleVRProvider;
 import me.phoenixra.atumvr.example.scene.ExampleScene;
 import org.jetbrains.annotations.NotNull;
 
-public class ExampleVRRenderer extends XRRenderer {
+public class ExampleVRRenderer extends VRRenderer {
     private VRScene vrScene;
-    public ExampleVRRenderer(XRProvider provider) {
-        super(provider);
+    public ExampleVRRenderer(VRProvider vrProvider) {
+        super(vrProvider);
         vrScene = new ExampleScene(this);
     }
 
-    @Override
-    protected XRTexture createTexture(int width, int height, int textureId, int index) {
-        return new XRTexture(width, height, textureId, index);
-    }
 
     @Override
     public void onInit() {
@@ -27,7 +24,7 @@ public class ExampleVRRenderer extends XRRenderer {
     }
 
     @Override
-    public VRScene getCurrentScene() {
+    public @NotNull VRScene getCurrentScene() {
         return vrScene;
     }
 

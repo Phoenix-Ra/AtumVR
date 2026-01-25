@@ -1,8 +1,8 @@
 package me.phoenixra.atumvr.example.scene;
 
-import me.phoenixra.atumvr.api.enums.EyeType;
-import me.phoenixra.atumvr.core.rendering.XRRenderer;
-import me.phoenixra.atumvr.core.rendering.XRScene;
+import me.phoenixra.atumvr.core.enums.EyeType;
+import me.phoenixra.atumvr.core.rendering.VRRenderer;
+import me.phoenixra.atumvr.core.rendering.VRScene;
 import me.phoenixra.atumvr.example.ExampleVRProvider;
 import me.phoenixra.atumvr.example.rendering.ExampleVRRenderer;
 import me.phoenixra.atumvr.example.texture.StbTexture;
@@ -15,7 +15,7 @@ import org.lwjgl.system.MemoryStack;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ExampleScene extends XRScene {
+public class ExampleScene extends VRScene {
 
     private VRShaderProgram shaderProgram;
 
@@ -23,7 +23,7 @@ public class ExampleScene extends XRScene {
     private ExampleCube floorCube;
 
     private float timer;
-    public ExampleScene(@NotNull XRRenderer vrRenderer) {
+    public ExampleScene(@NotNull VRRenderer vrRenderer) {
         super(vrRenderer);
     }
 
@@ -75,7 +75,7 @@ public class ExampleScene extends XRScene {
         );
         exampleCubes.add(
                 new ExampleCubeHand(
-                        getVrProvider(),
+                        getProvider(),
                         new StbTexture("textures/test.png"),
                         new Vector3f(0f,0f,0f),
                         new Vector3f(0.3f,0.3f,0.3f),
@@ -90,7 +90,7 @@ public class ExampleScene extends XRScene {
     }
 
     @Override
-    public void updateEyeTexture(@NotNull EyeType eyeType) {
+    public void renderEyeTexture(@NotNull EyeType eyeType) {
         timer+=0.0005f;
         shaderProgram.useShader();
 
@@ -138,7 +138,7 @@ public class ExampleScene extends XRScene {
         );
     }
     private void initShaders(){
-        shaderProgram = new VRShaderProgram(getVrProvider());
+        shaderProgram = new VRShaderProgram(getProvider());
         shaderProgram.bindVertexShader("vertex.vsh");
         shaderProgram.bindFragmentShader("fragment.fsh");
         shaderProgram.finishShader();
@@ -160,8 +160,8 @@ public class ExampleScene extends XRScene {
         );
         GL30.glUniform3f(
                 shaderProgram.getShaderVariableLocation("iResolution"),
-                getVrRenderer().getResolutionWidth(),
-                getVrRenderer().getResolutionHeight(),
+                getRenderer().getResolutionWidth(),
+                getRenderer().getResolutionHeight(),
                 0
         );
         GL30.glUniform1i(
@@ -178,12 +178,12 @@ public class ExampleScene extends XRScene {
     }
 
     @Override
-    public @NotNull ExampleVRRenderer getVrRenderer() {
-        return (ExampleVRRenderer) super.getVrRenderer();
+    public @NotNull ExampleVRRenderer getRenderer() {
+        return (ExampleVRRenderer) super.getRenderer();
     }
 
-    @Override
-    public ExampleVRProvider getVrProvider() {
-        return getVrRenderer().getVrProvider();
+
+    public ExampleVRProvider getProvider() {
+        return getRenderer().getVrProvider();
     }
 }

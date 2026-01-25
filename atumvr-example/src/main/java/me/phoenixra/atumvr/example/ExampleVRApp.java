@@ -1,8 +1,8 @@
 package me.phoenixra.atumvr.example;
 
 import lombok.Getter;
-import me.phoenixra.atumvr.api.VRLogger;
-import me.phoenixra.atumvr.api.rendering.IRenderContext;
+import me.phoenixra.atumvr.core.VRLogger;
+import me.phoenixra.atumvr.core.rendering.VRRenderContext;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -11,7 +11,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class ExampleVRApp {
     public static ExampleVRApp appInstance;
-    public static ExampleVRProvider provider;
+    public static ExampleVRProvider vrProvider;
     @Getter
     private final File dataFolder;
 
@@ -37,7 +37,7 @@ public class ExampleVRApp {
                 break;
             }
             if(cmd.equals("restart")){
-                if(provider != null){
+                if(vrProvider != null){
                     restart.set(true);
                 }
             }
@@ -61,8 +61,8 @@ public class ExampleVRApp {
             do {
                 if(!init){
                     try {
-                        provider = new ExampleVRProvider(VRLogger.SIMPLE.setDebug(true));
-                        provider.initializeVR();
+                        vrProvider = new ExampleVRProvider(VRLogger.SIMPLE.setDebug(true));
+                        vrProvider.initializeVR();
                     }catch (Throwable throwable){
                         throwable.printStackTrace();
                         System.out.println("Init error");
@@ -75,19 +75,19 @@ public class ExampleVRApp {
                     break;
                 }
                 if(restart.get()){
-                    provider.destroy();
+                    vrProvider.destroy();
                     init = false;
                     restart.set(false);
                     continue;
                 }
-                if(provider.isXrStopping()){
+                if(vrProvider.isXrStopping()){
                     break;
                 }
 
-                IRenderContext context = () -> 1;
-                provider.startFrame();
-                provider.render(context);
-                provider.postRender();
+                VRRenderContext context = () -> 1;
+                vrProvider.startFrame();
+                vrProvider.render(context);
+                vrProvider.postRender();
 
             } while (true);
         });
