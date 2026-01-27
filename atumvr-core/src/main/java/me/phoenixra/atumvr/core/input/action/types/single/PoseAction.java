@@ -1,14 +1,14 @@
 package me.phoenixra.atumvr.core.input.action.types.single;
 
 import lombok.Getter;
-import me.phoenixra.atumvr.core.input.action.ActionIdentifier;
-import me.phoenixra.atumvr.core.input.action.data.VRActionDataPose;
-import me.phoenixra.atumvr.core.misc.pose.VRPoseRecord;
-import me.phoenixra.atumvr.core.utils.VRUtils;
-import me.phoenixra.atumvr.core.VRProvider;
+import me.phoenixra.atumvr.api.input.action.ActionIdentifier;
+import me.phoenixra.atumvr.api.input.action.data.VRActionDataPose;
+import me.phoenixra.atumvr.api.misc.pose.VRPoseRecord;
+import me.phoenixra.atumvr.core.utils.XRUtils;
+import me.phoenixra.atumvr.core.XRProvider;
 import me.phoenixra.atumvr.core.enums.XRInputActionType;
-import me.phoenixra.atumvr.core.input.action.VRActionSet;
-import me.phoenixra.atumvr.core.input.action.VRSingleAction;
+import me.phoenixra.atumvr.core.input.action.XRActionSet;
+import me.phoenixra.atumvr.core.input.action.XRSingleAction;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.openxr.*;
@@ -19,15 +19,15 @@ import static org.lwjgl.openxr.XR10.XR_NULL_PATH;
 import static org.lwjgl.system.MemoryStack.stackCallocPointer;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
-public class PoseAction extends VRSingleAction<VRPoseRecord> implements VRActionDataPose {
+public class PoseAction extends XRSingleAction<VRPoseRecord> implements VRActionDataPose {
 
 
 
     @Getter
     private XrSpace xrSpace;
 
-    public PoseAction(@NotNull VRProvider vrProvider,
-                      @NotNull VRActionSet actionSet,
+    public PoseAction(@NotNull XRProvider vrProvider,
+                      @NotNull XRActionSet actionSet,
                       @NotNull ActionIdentifier id,
                       @NotNull String localizedName) {
         super(vrProvider, actionSet, id, localizedName, XRInputActionType.POSE);
@@ -35,7 +35,7 @@ public class PoseAction extends VRSingleAction<VRPoseRecord> implements VRAction
 
     }
     @Override
-    protected void onInit(@NotNull VRActionSet actionSet, @NotNull MemoryStack stack) {
+    protected void onInit(@NotNull XRActionSet actionSet, @NotNull MemoryStack stack) {
         XrSession xrSession = vrProvider.getSession().getHandle();
         XrActionSpaceCreateInfo action_space_info = XrActionSpaceCreateInfo
                 .calloc(stack).set(
@@ -43,7 +43,7 @@ public class PoseAction extends VRSingleAction<VRPoseRecord> implements VRAction
                         NULL,
                         handle,
                         XR_NULL_PATH,
-                        VRUtils.getPoseIdentity(stack)
+                        XRUtils.getPoseIdentity(stack)
                 );
         PointerBuffer pp = stackCallocPointer(1);
         vrProvider.checkXRError(
@@ -75,7 +75,7 @@ public class PoseAction extends VRSingleAction<VRPoseRecord> implements VRAction
             this.lastChangeTime = System.nanoTime();
             this.active = state.isActive();
 
-            var loc = VRUtils.xrLocationFromSpace(
+            var loc = XRUtils.xrLocationFromSpace(
                     vrProvider, xrSpace, stack
             );
 
@@ -83,9 +83,9 @@ public class PoseAction extends VRSingleAction<VRPoseRecord> implements VRAction
                     ? VRPoseRecord.EMPTY
                     :
                     new VRPoseRecord(
-                            VRUtils.normalizeXrPose(loc.pose()),
-                            VRUtils.normalizeXrQuaternion(loc.pose().orientation()),
-                            VRUtils.normalizeXrVector(loc.pose().position$())
+                            XRUtils.normalizeXrPose(loc.pose()),
+                            XRUtils.normalizeXrQuaternion(loc.pose().orientation()),
+                            XRUtils.normalizeXrVector(loc.pose().position$())
                     );
 
             if(changed){

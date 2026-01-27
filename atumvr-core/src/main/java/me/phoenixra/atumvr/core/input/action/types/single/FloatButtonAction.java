@@ -1,12 +1,12 @@
 package me.phoenixra.atumvr.core.input.action.types.single;
 
 import lombok.Getter;
-import me.phoenixra.atumvr.core.input.action.ActionIdentifier;
-import me.phoenixra.atumvr.core.input.action.data.VRActionDataButton;
-import me.phoenixra.atumvr.core.VRProvider;
+import me.phoenixra.atumvr.api.input.action.ActionIdentifier;
+import me.phoenixra.atumvr.api.input.action.data.VRActionDataButton;
+import me.phoenixra.atumvr.core.XRProvider;
 import me.phoenixra.atumvr.core.enums.XRInputActionType;
-import me.phoenixra.atumvr.core.input.action.VRActionSet;
-import me.phoenixra.atumvr.core.input.action.VRSingleAction;
+import me.phoenixra.atumvr.core.input.action.XRActionSet;
+import me.phoenixra.atumvr.core.input.action.XRSingleAction;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.openxr.XR10;
 import org.lwjgl.openxr.XrActionStateFloat;
@@ -14,7 +14,7 @@ import org.lwjgl.system.MemoryStack;
 
 
 @Getter
-public class FloatButtonAction extends VRSingleAction<Float> implements VRActionDataButton {
+public class FloatButtonAction extends XRSingleAction<Float> implements VRActionDataButton {
 
 
     private boolean pressed;
@@ -25,8 +25,8 @@ public class FloatButtonAction extends VRSingleAction<Float> implements VRAction
     private final float releaseThreshold;
 
 
-    public FloatButtonAction(@NotNull VRProvider vrProvider,
-                             @NotNull VRActionSet actionSet,
+    public FloatButtonAction(@NotNull XRProvider vrProvider,
+                             @NotNull XRActionSet actionSet,
                              @NotNull ActionIdentifier id,
                              @NotNull String localizedName,
                              float pressThreshold,
@@ -40,7 +40,7 @@ public class FloatButtonAction extends VRSingleAction<Float> implements VRAction
 
 
     @Override
-    protected void onInit(VRActionSet actionSet, MemoryStack stack) {
+    protected void onInit(XRActionSet actionSet, MemoryStack stack) {
 
     }
 

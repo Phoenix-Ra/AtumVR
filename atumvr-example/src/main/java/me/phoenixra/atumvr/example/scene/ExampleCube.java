@@ -1,7 +1,7 @@
 package me.phoenixra.atumvr.example.scene;
 
 import lombok.Getter;
-import me.phoenixra.atumvr.core.utils.MathUtils;
+import me.phoenixra.atumvr.api.utils.MathUtils;
 import me.phoenixra.atumvr.example.texture.StbTexture;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;

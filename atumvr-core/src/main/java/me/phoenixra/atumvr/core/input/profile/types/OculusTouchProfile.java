@@ -1,15 +1,15 @@
 package me.phoenixra.atumvr.core.input.profile.types;
 
 import lombok.Getter;
-import me.phoenixra.atumvr.core.enums.ControllerType;
-import me.phoenixra.atumvr.core.input.action.ActionIdentifier;
-import me.phoenixra.atumvr.core.input.action.data.VRActionData;
-import me.phoenixra.atumvr.core.input.action.data.VRActionDataButton;
-import me.phoenixra.atumvr.core.input.action.data.VRActionDataVec2;
-import me.phoenixra.atumvr.core.VRProvider;
-import me.phoenixra.atumvr.core.input.profile.VRInteractionProfileType;
-import me.phoenixra.atumvr.core.input.action.VRAction;
-import me.phoenixra.atumvr.core.input.profile.VRInteractionProfile;
+import me.phoenixra.atumvr.api.enums.ControllerType;
+import me.phoenixra.atumvr.api.input.action.ActionIdentifier;
+import me.phoenixra.atumvr.api.input.action.data.VRActionData;
+import me.phoenixra.atumvr.api.input.action.data.VRActionDataButton;
+import me.phoenixra.atumvr.api.input.action.data.VRActionDataVec2;
+import me.phoenixra.atumvr.core.XRProvider;
+import me.phoenixra.atumvr.core.input.profile.XRInteractionProfileType;
+import me.phoenixra.atumvr.core.input.action.XRAction;
+import me.phoenixra.atumvr.core.input.profile.XRInteractionProfile;
 import me.phoenixra.atumvr.core.input.action.types.multi.BoolButtonMultiAction;
 import me.phoenixra.atumvr.core.input.action.types.multi.FloatButtonMultiAction;
 import me.phoenixra.atumvr.core.input.action.types.multi.Vec2MultiAction;
@@ -20,12 +20,12 @@ import org.joml.Vector2f;
 
 import java.util.*;
 
-import static me.phoenixra.atumvr.core.input.action.VRAction.LEFT_HAND_PATH;
-import static me.phoenixra.atumvr.core.input.action.VRAction.RIGHT_HAND_PATH;
+import static me.phoenixra.atumvr.core.input.action.XRAction.LEFT_HAND_PATH;
+import static me.phoenixra.atumvr.core.input.action.XRAction.RIGHT_HAND_PATH;
 
 @Getter
-public class OculusTouchProfile extends VRInteractionProfile {
-    private static final VRInteractionProfileType PROFILE = VRInteractionProfileType.OCULUS_TOUCH;
+public class OculusTouchProfile extends XRInteractionProfile {
+    private static final XRInteractionProfileType PROFILE = XRInteractionProfileType.OCULUS_TOUCH;
 
     // ---------- ACTION IDENTIFIERS ----------
 
@@ -95,12 +95,12 @@ public class OculusTouchProfile extends VRInteractionProfile {
     private Map<ActionIdentifier, VRActionDataButton> buttonMap;
     private Map<ActionIdentifier, VRActionDataVec2> vec2Map;
 
-    public OculusTouchProfile(VRProvider vrProvider) {
+    public OculusTouchProfile(XRProvider vrProvider) {
         super(vrProvider, "oculus_touch", "Oculus Touch Controller", 0);
     }
 
     @Override
-    protected List<VRAction> loadActions(@NotNull VRProvider vrProvider) {
+    protected List<XRAction> loadActions(@NotNull XRProvider vrProvider) {
 
 
         // -------- MENU & SYSTEM BUTTONS --------
@@ -381,7 +381,7 @@ public class OculusTouchProfile extends VRInteractionProfile {
 
 
     @Override
-    public @NotNull VRInteractionProfileType getType() {
+    public @NotNull XRInteractionProfileType getType() {
         return PROFILE;
     }
 }

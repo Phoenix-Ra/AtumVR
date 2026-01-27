@@ -1,15 +1,15 @@
 package me.phoenixra.atumvr.core.input.action.types.multi;
 
 import lombok.Getter;
-import me.phoenixra.atumvr.core.enums.ControllerType;
-import me.phoenixra.atumvr.core.input.action.ActionIdentifier;
-import me.phoenixra.atumvr.core.input.action.data.VRActionDataVec2;
-import me.phoenixra.atumvr.core.utils.VRUtils;
-import me.phoenixra.atumvr.core.VRProvider;
+import me.phoenixra.atumvr.api.enums.ControllerType;
+import me.phoenixra.atumvr.api.input.action.ActionIdentifier;
+import me.phoenixra.atumvr.api.input.action.data.VRActionDataVec2;
+import me.phoenixra.atumvr.core.utils.XRUtils;
+import me.phoenixra.atumvr.core.XRProvider;
 import me.phoenixra.atumvr.core.enums.XRInputActionType;
-import me.phoenixra.atumvr.core.input.profile.VRInteractionProfileType;
-import me.phoenixra.atumvr.core.input.action.VRActionSet;
-import me.phoenixra.atumvr.core.input.action.VRMultiAction;
+import me.phoenixra.atumvr.core.input.profile.XRInteractionProfileType;
+import me.phoenixra.atumvr.core.input.action.XRActionSet;
+import me.phoenixra.atumvr.core.input.action.XRMultiAction;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector2f;
@@ -20,14 +20,14 @@ import org.lwjgl.system.MemoryStack;
 import java.util.Collections;
 import java.util.List;
 
-public class Vec2MultiAction extends VRMultiAction<Vector2f> {
+public class Vec2MultiAction extends XRMultiAction<Vector2f> {
 
 
     @Getter
     private final List<SubActionVec2> subActionsAsVec2;
 
-    public Vec2MultiAction(@NotNull VRProvider vrProvider,
-                           @NotNull VRActionSet actionSet,
+    public Vec2MultiAction(@NotNull XRProvider vrProvider,
+                           @NotNull XRActionSet actionSet,
                            @NotNull ActionIdentifier id,
                            @NotNull String localizedName,
                            @NotNull List<SubActionVec2> subActions) {
@@ -36,7 +36,7 @@ public class Vec2MultiAction extends VRMultiAction<Vector2f> {
     }
 
     @Override
-    protected void onInit(@NotNull VRActionSet actionSet, @NotNull MemoryStack stack) {
+    protected void onInit(@NotNull XRActionSet actionSet, @NotNull MemoryStack stack) {
 
     }
 
@@ -57,7 +57,7 @@ public class Vec2MultiAction extends VRMultiAction<Vector2f> {
                         "xrGetActionStateFloat"
                 );
                 entry.update(
-                        VRUtils.normalizeXrVector(state.currentState()),
+                        XRUtils.normalizeXrVector(state.currentState()),
                         state.lastChangeTime(),
                         state.changedSinceLastSync(),
                         state.isActive()
@@ -88,13 +88,13 @@ public class Vec2MultiAction extends VRMultiAction<Vector2f> {
         }
 
         @Override
-        public SubActionVec2 putDefaultBindings(@NotNull List<VRInteractionProfileType> profiles,
+        public SubActionVec2 putDefaultBindings(@NotNull List<XRInteractionProfileType> profiles,
                                                 @Nullable String source) {
             return (SubActionVec2) super.putDefaultBindings(profiles, source);
         }
 
         @Override
-        public SubActionVec2 putDefaultBindings(@NotNull VRInteractionProfileType profile,
+        public SubActionVec2 putDefaultBindings(@NotNull XRInteractionProfileType profile,
                                                 @Nullable String source) {
             return (SubActionVec2) super.putDefaultBindings(profile, source);
         }

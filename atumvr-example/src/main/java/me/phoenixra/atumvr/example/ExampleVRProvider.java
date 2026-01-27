@@ -2,17 +2,17 @@ package me.phoenixra.atumvr.example;
 
 
 import lombok.Getter;
-import me.phoenixra.atumvr.core.VRLogger;
-import me.phoenixra.atumvr.core.VRState;
-import me.phoenixra.atumvr.core.VRProvider;
+import me.phoenixra.atumvr.api.VRLogger;
+import me.phoenixra.atumvr.core.XRState;
+import me.phoenixra.atumvr.core.XRProvider;
 import me.phoenixra.atumvr.core.enums.XRSessionState;
-import me.phoenixra.atumvr.core.input.VRInputHandler;
-import me.phoenixra.atumvr.core.rendering.VRRenderer;
+import me.phoenixra.atumvr.core.input.XRInputHandler;
+import me.phoenixra.atumvr.core.rendering.XRRenderer;
 import me.phoenixra.atumvr.example.input.ExampleVRInputHandler;
 import me.phoenixra.atumvr.example.rendering.ExampleVRRenderer;
 import org.jetbrains.annotations.NotNull;
 
-public class ExampleVRProvider extends VRProvider {
+public class ExampleVRProvider extends XRProvider {
 
     @Getter
     private boolean xrStopping = false;
@@ -24,8 +24,8 @@ public class ExampleVRProvider extends VRProvider {
 
 
     @Override
-    public @NotNull VRState createStateHandler() {
-        return new VRState(this);
+    public @NotNull XRState createStateHandler() {
+        return new XRState(this);
     }
 
     @Override
@@ -36,7 +36,7 @@ public class ExampleVRProvider extends VRProvider {
     }
 
     @Override
-    public @NotNull VRRenderer createRenderer() {
+    public @NotNull XRRenderer createRenderer() {
         ExampleVRRenderer vrRenderer = new ExampleVRRenderer(this);
         vrRenderer.setupGLContext();
         return vrRenderer;
@@ -44,7 +44,7 @@ public class ExampleVRProvider extends VRProvider {
 
 
     @Override
-    public @NotNull VRInputHandler createInputHandler() {
+    public @NotNull XRInputHandler createInputHandler() {
         return new ExampleVRInputHandler(this);
     }
 

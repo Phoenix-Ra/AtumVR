@@ -1,12 +1,12 @@
 package me.phoenixra.atumvr.core.input.action.types.single;
 
 import lombok.Getter;
-import me.phoenixra.atumvr.core.input.action.ActionIdentifier;
-import me.phoenixra.atumvr.core.VRProvider;
+import me.phoenixra.atumvr.api.input.action.ActionIdentifier;
+import me.phoenixra.atumvr.core.XRProvider;
 import me.phoenixra.atumvr.core.enums.XRInputActionType;
-import me.phoenixra.atumvr.core.input.action.VRActionSet;
-import me.phoenixra.atumvr.core.input.action.VRSingleAction;
-import me.phoenixra.atumvr.core.input.action.data.VRActionDataFloat;
+import me.phoenixra.atumvr.core.input.action.XRActionSet;
+import me.phoenixra.atumvr.core.input.action.XRSingleAction;
+import me.phoenixra.atumvr.api.input.action.data.VRActionDataFloat;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.openxr.XR10;
 import org.lwjgl.openxr.XrActionStateFloat;
@@ -14,12 +14,12 @@ import org.lwjgl.system.MemoryStack;
 
 
 @Getter
-public class FloatAction extends VRSingleAction<Float> implements VRActionDataFloat {
+public class FloatAction extends XRSingleAction<Float> implements VRActionDataFloat {
 
 
 
-    public FloatAction(@NotNull VRProvider vrProvider,
-                       @NotNull VRActionSet actionSet,
+    public FloatAction(@NotNull XRProvider vrProvider,
+                       @NotNull XRActionSet actionSet,
                        @NotNull ActionIdentifier id,
                        @NotNull String localizedName) {
         super(vrProvider, actionSet, id, localizedName,  XRInputActionType.FLOAT);
@@ -30,7 +30,7 @@ public class FloatAction extends VRSingleAction<Float> implements VRActionDataFl
 
 
     @Override
-    protected void onInit(VRActionSet actionSet, MemoryStack stack) {
+    protected void onInit(XRActionSet actionSet, MemoryStack stack) {
 
     }
     @Override

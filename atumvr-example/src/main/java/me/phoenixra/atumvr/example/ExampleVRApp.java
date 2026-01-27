@@ -1,8 +1,8 @@
 package me.phoenixra.atumvr.example;
 
 import lombok.Getter;
-import me.phoenixra.atumvr.core.VRLogger;
-import me.phoenixra.atumvr.core.rendering.VRRenderContext;
+import me.phoenixra.atumvr.api.VRLogger;
+import me.phoenixra.atumvr.api.rendering.VRRenderContext;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;

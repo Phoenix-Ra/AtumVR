@@ -1,26 +1,26 @@
 package me.phoenixra.atumvr.core.input.profile;
 
 import lombok.Getter;
-import me.phoenixra.atumvr.core.enums.ControllerType;
-import me.phoenixra.atumvr.core.input.action.ActionIdentifier;
-import me.phoenixra.atumvr.core.misc.pose.VRPoseRecord;
-import me.phoenixra.atumvr.core.VRProvider;
-import me.phoenixra.atumvr.core.input.action.VRAction;
-import me.phoenixra.atumvr.core.input.action.VRActionSet;
+import me.phoenixra.atumvr.api.enums.ControllerType;
+import me.phoenixra.atumvr.api.input.action.ActionIdentifier;
+import me.phoenixra.atumvr.api.misc.pose.VRPoseRecord;
+import me.phoenixra.atumvr.core.XRProvider;
+import me.phoenixra.atumvr.core.input.action.XRAction;
+import me.phoenixra.atumvr.core.input.action.XRActionSet;
 import me.phoenixra.atumvr.core.input.action.types.HapticPulseAction;
 import me.phoenixra.atumvr.core.input.action.types.multi.PoseMultiAction;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-import static me.phoenixra.atumvr.core.input.action.VRAction.LEFT_HAND_PATH;
-import static me.phoenixra.atumvr.core.input.action.VRAction.RIGHT_HAND_PATH;
+import static me.phoenixra.atumvr.core.input.action.XRAction.LEFT_HAND_PATH;
+import static me.phoenixra.atumvr.core.input.action.XRAction.RIGHT_HAND_PATH;
 
 /**
  * Action set that have essential actions available for all interaction profiles.
  */
 @Getter
-public class CommonActionSet extends VRActionSet {
+public class CommonActionSet extends XRActionSet {
 
     // ---------- ACTION IDENTIFIERS ----------
     public static final ActionIdentifier POSE_HAND_AIM_LEFT = new ActionIdentifier("hand.aim.left", ControllerType.LEFT);
@@ -42,13 +42,13 @@ public class CommonActionSet extends VRActionSet {
     private PoseMultiAction handPoseGrip;
 
 
-    public CommonActionSet(@NotNull VRProvider vrProvider) {
+    public CommonActionSet(@NotNull XRProvider vrProvider) {
         super(vrProvider, "common", "Common set", 0);
     }
 
     @Override
-    protected List<VRAction> loadActions(@NotNull VRProvider vrProvider) {
-        var supportedProfiles = VRInteractionProfileType.getSupported(vrProvider);
+    protected List<XRAction> loadActions(@NotNull XRProvider vrProvider) {
+        var supportedProfiles = XRInteractionProfileType.getSupported(vrProvider);
         // -------- HAPTICS --------
         hapticPulse = new HapticPulseAction(
                 vrProvider, this,

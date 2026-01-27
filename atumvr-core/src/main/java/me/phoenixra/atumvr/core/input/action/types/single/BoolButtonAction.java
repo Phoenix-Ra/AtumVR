@@ -1,12 +1,12 @@
 package me.phoenixra.atumvr.core.input.action.types.single;
 
-import me.phoenixra.atumvr.core.input.action.ActionIdentifier;
-import me.phoenixra.atumvr.core.input.action.data.VRActionDataButton;
-import me.phoenixra.atumvr.core.VRProvider;
+import me.phoenixra.atumvr.api.input.action.ActionIdentifier;
+import me.phoenixra.atumvr.api.input.action.data.VRActionDataButton;
+import me.phoenixra.atumvr.core.XRProvider;
 import me.phoenixra.atumvr.core.enums.XRInputActionType;
-import me.phoenixra.atumvr.core.input.profile.VRInteractionProfileType;
-import me.phoenixra.atumvr.core.input.action.VRActionSet;
-import me.phoenixra.atumvr.core.input.action.VRSingleAction;
+import me.phoenixra.atumvr.core.input.profile.XRInteractionProfileType;
+import me.phoenixra.atumvr.core.input.action.XRActionSet;
+import me.phoenixra.atumvr.core.input.action.XRSingleAction;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.openxr.XR10;
@@ -15,11 +15,11 @@ import org.lwjgl.system.MemoryStack;
 
 import java.util.List;
 
-public class BoolButtonAction extends VRSingleAction<Boolean> implements VRActionDataButton {
+public class BoolButtonAction extends XRSingleAction<Boolean> implements VRActionDataButton {
 
 
-    public BoolButtonAction(@NotNull VRProvider vrProvider,
-                            @NotNull VRActionSet actionSet,
+    public BoolButtonAction(@NotNull XRProvider vrProvider,
+                            @NotNull XRActionSet actionSet,
                             @NotNull ActionIdentifier id,
                             @NotNull String localizedName) {
         super(vrProvider, actionSet, id, localizedName, XRInputActionType.BOOLEAN);
@@ -27,7 +27,7 @@ public class BoolButtonAction extends VRSingleAction<Boolean> implements VRActio
     }
 
     @Override
-    protected void onInit(@NotNull VRActionSet actionSet, @NotNull MemoryStack stack) {
+    protected void onInit(@NotNull XRActionSet actionSet, @NotNull MemoryStack stack) {
 
     }
     @Override
@@ -74,12 +74,12 @@ public class BoolButtonAction extends VRSingleAction<Boolean> implements VRActio
 
 
     @Override
-    public BoolButtonAction putDefaultBindings(@NotNull List<VRInteractionProfileType> profiles, @Nullable String source) {
+    public BoolButtonAction putDefaultBindings(@NotNull List<XRInteractionProfileType> profiles, @Nullable String source) {
         return (BoolButtonAction) super.putDefaultBindings(profiles, source);
     }
 
     @Override
-    public BoolButtonAction putDefaultBindings(@NotNull VRInteractionProfileType profile, @Nullable String source) {
+    public BoolButtonAction putDefaultBindings(@NotNull XRInteractionProfileType profile, @Nullable String source) {
         return (BoolButtonAction) super.putDefaultBindings(profile, source);
     }
 }

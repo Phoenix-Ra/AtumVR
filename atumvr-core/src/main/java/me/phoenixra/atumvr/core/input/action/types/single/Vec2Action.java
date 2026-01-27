@@ -1,27 +1,23 @@
 package me.phoenixra.atumvr.core.input.action.types.single;
 
-import me.phoenixra.atumvr.core.input.action.ActionIdentifier;
-import me.phoenixra.atumvr.core.input.action.data.VRActionDataVec2;
-import me.phoenixra.atumvr.core.utils.VRUtils;
-import me.phoenixra.atumvr.core.VRProvider;
+import me.phoenixra.atumvr.api.input.action.ActionIdentifier;
+import me.phoenixra.atumvr.api.input.action.data.VRActionDataVec2;
+import me.phoenixra.atumvr.core.utils.XRUtils;
+import me.phoenixra.atumvr.core.XRProvider;
 import me.phoenixra.atumvr.core.enums.XRInputActionType;
-import me.phoenixra.atumvr.core.input.action.VRActionSet;
-import me.phoenixra.atumvr.core.input.action.VRSingleAction;
+import me.phoenixra.atumvr.core.input.action.XRActionSet;
+import me.phoenixra.atumvr.core.input.action.XRSingleAction;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.joml.Vector2f;
-import org.joml.Vector2fc;
 import org.lwjgl.openxr.XR10;
 import org.lwjgl.openxr.XrActionStateVector2f;
 import org.lwjgl.system.MemoryStack;
 
-import java.util.function.Consumer;
-
-public class Vec2Action extends VRSingleAction<Vector2f> implements VRActionDataVec2 {
+public class Vec2Action extends XRSingleAction<Vector2f> implements VRActionDataVec2 {
 
 
-    public Vec2Action(@NotNull VRProvider vrProvider,
-                      @NotNull VRActionSet actionSet,
+    public Vec2Action(@NotNull XRProvider vrProvider,
+                      @NotNull XRActionSet actionSet,
                       @NotNull ActionIdentifier id,
                       @NotNull String localizedName) {
         super(vrProvider, actionSet, id, localizedName, XRInputActionType.VECTOR2F);
@@ -30,7 +26,7 @@ public class Vec2Action extends VRSingleAction<Vector2f> implements VRActionData
 
 
     @Override
-    protected void onInit(@NotNull VRActionSet actionSet, @NotNull MemoryStack stack) {
+    protected void onInit(@NotNull XRActionSet actionSet, @NotNull MemoryStack stack) {
 
     }
 
@@ -48,7 +44,7 @@ public class Vec2Action extends VRSingleAction<Vector2f> implements VRActionData
                     ),
                     "xrGetActionStateFloat"
             );
-            this.currentState = VRUtils.normalizeXrVector(state.currentState());
+            this.currentState = XRUtils.normalizeXrVector(state.currentState());
             this.changed = state.changedSinceLastSync();
             this.lastChangeTime = state.lastChangeTime();
             this.active = state.isActive();

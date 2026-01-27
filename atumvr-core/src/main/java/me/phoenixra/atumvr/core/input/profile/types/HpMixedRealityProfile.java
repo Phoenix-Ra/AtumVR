@@ -1,15 +1,15 @@
 package me.phoenixra.atumvr.core.input.profile.types;
 
 import lombok.Getter;
-import me.phoenixra.atumvr.core.enums.ControllerType;
-import me.phoenixra.atumvr.core.input.action.ActionIdentifier;
-import me.phoenixra.atumvr.core.input.action.data.VRActionData;
-import me.phoenixra.atumvr.core.input.action.data.VRActionDataButton;
-import me.phoenixra.atumvr.core.input.action.data.VRActionDataVec2;
-import me.phoenixra.atumvr.core.VRProvider;
-import me.phoenixra.atumvr.core.input.profile.VRInteractionProfileType;
-import me.phoenixra.atumvr.core.input.action.VRAction;
-import me.phoenixra.atumvr.core.input.profile.VRInteractionProfile;
+import me.phoenixra.atumvr.api.enums.ControllerType;
+import me.phoenixra.atumvr.api.input.action.ActionIdentifier;
+import me.phoenixra.atumvr.api.input.action.data.VRActionData;
+import me.phoenixra.atumvr.api.input.action.data.VRActionDataButton;
+import me.phoenixra.atumvr.api.input.action.data.VRActionDataVec2;
+import me.phoenixra.atumvr.core.XRProvider;
+import me.phoenixra.atumvr.core.input.profile.XRInteractionProfileType;
+import me.phoenixra.atumvr.core.input.action.XRAction;
+import me.phoenixra.atumvr.core.input.profile.XRInteractionProfile;
 import me.phoenixra.atumvr.core.input.action.types.multi.BoolButtonMultiAction;
 import me.phoenixra.atumvr.core.input.action.types.multi.FloatButtonMultiAction;
 import me.phoenixra.atumvr.core.input.action.types.multi.Vec2MultiAction;
@@ -19,12 +19,12 @@ import org.joml.Vector2f;
 
 import java.util.*;
 
-import static me.phoenixra.atumvr.core.input.action.VRAction.LEFT_HAND_PATH;
-import static me.phoenixra.atumvr.core.input.action.VRAction.RIGHT_HAND_PATH;
+import static me.phoenixra.atumvr.core.input.action.XRAction.LEFT_HAND_PATH;
+import static me.phoenixra.atumvr.core.input.action.XRAction.RIGHT_HAND_PATH;
 
 @Getter
-public class HpMixedRealityProfile extends VRInteractionProfile {
-    private static final VRInteractionProfileType PROFILE = VRInteractionProfileType.HP_MIXED_REALITY;
+public class HpMixedRealityProfile extends XRInteractionProfile {
+    private static final XRInteractionProfileType PROFILE = XRInteractionProfileType.HP_MIXED_REALITY;
 
 
     // ---------- ACTION IDENTIFIERS ----------
@@ -76,12 +76,12 @@ public class HpMixedRealityProfile extends VRInteractionProfile {
     private Map<ActionIdentifier, VRActionDataButton> buttonMap;
     private Map<ActionIdentifier, VRActionDataVec2> vec2Map;
 
-    public HpMixedRealityProfile(VRProvider vrProvider) {
+    public HpMixedRealityProfile(XRProvider vrProvider) {
         super(vrProvider, "hp_mixed_reality", "HP Mixed Reality Controller", 0);
     }
 
     @Override
-    protected List<VRAction> loadActions(@NotNull VRProvider vrProvider) {
+    protected List<XRAction> loadActions(@NotNull XRProvider vrProvider) {
 
         // -------- MENU BUTTON --------
         menuButton = new BoolButtonMultiAction(
@@ -277,7 +277,7 @@ public class HpMixedRealityProfile extends VRInteractionProfile {
 
 
     @Override
-    public @NotNull VRInteractionProfileType getType() {
+    public @NotNull XRInteractionProfileType getType() {
         return PROFILE;
     }
 

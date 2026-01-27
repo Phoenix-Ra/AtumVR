@@ -1,51 +1,52 @@
 package me.phoenixra.atumvr.example.input;
 
 import lombok.Getter;
-import me.phoenixra.atumvr.core.input.device.VRDeviceController;
-import me.phoenixra.atumvr.core.input.profile.VRProfileManager;
+import me.phoenixra.atumvr.api.input.device.VRDeviceController;
+import me.phoenixra.atumvr.core.input.device.XRDeviceController;
+import me.phoenixra.atumvr.core.input.profile.XRProfileManager;
 import me.phoenixra.atumvr.example.ExampleHandEnum;
-import me.phoenixra.atumvr.core.enums.ControllerType;
-import me.phoenixra.atumvr.core.VRProvider;
-import me.phoenixra.atumvr.core.input.device.VRDevice;
-import me.phoenixra.atumvr.core.input.device.VRDeviceHMD;
-import me.phoenixra.atumvr.core.input.VRInputHandler;
-import me.phoenixra.atumvr.core.input.action.VRActionSet;
+import me.phoenixra.atumvr.api.enums.ControllerType;
+import me.phoenixra.atumvr.core.XRProvider;
+import me.phoenixra.atumvr.core.input.device.XRDevice;
+import me.phoenixra.atumvr.core.input.device.XRDeviceHMD;
+import me.phoenixra.atumvr.core.input.XRInputHandler;
+import me.phoenixra.atumvr.core.input.action.XRActionSet;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.system.MemoryStack;
 
 import java.util.List;
 
-public class ExampleVRInputHandler extends VRInputHandler {
+public class ExampleVRInputHandler extends XRInputHandler {
     @Getter
-    private VRProfileManager profileSetHolder;
+    private XRProfileManager profileSetHolder;
 
     private final ExampleHandEnum pulsatingHand = ExampleHandEnum.MAIN;
     @Getter
     private final ExampleHandEnum scaleHand = ExampleHandEnum.OFFHAND;
 
-    public ExampleVRInputHandler(VRProvider vrProvider) {
+    public ExampleVRInputHandler(XRProvider vrProvider) {
         super(vrProvider);
     }
 
     @Override
-    protected @NotNull List<? extends VRActionSet> generateActionSets(@NotNull MemoryStack stack) {
-        profileSetHolder = new VRProfileManager(getVrProvider());
+    protected @NotNull List<? extends XRActionSet> generateActionSets(@NotNull MemoryStack stack) {
+        profileSetHolder = new XRProfileManager(getVrProvider());
 
         return profileSetHolder.getAllActionSets();
     }
 
     @Override
-    protected @NotNull List<? extends VRDevice> generateDevices(@NotNull MemoryStack stack) {
+    protected @NotNull List<? extends XRDevice> generateDevices(@NotNull MemoryStack stack) {
         return List.of(
-                new VRDeviceHMD(getVrProvider()),
-                new me.phoenixra.atumvr.core.input.device.VRDeviceController(
+                new XRDeviceHMD(getVrProvider()),
+                new XRDeviceController(
                         getVrProvider(),
                         ControllerType.LEFT,
                         profileSetHolder.getSharedSet().getHandPoseAim(),
                         profileSetHolder.getSharedSet().getHandPoseGrip(),
                         profileSetHolder.getSharedSet().getHapticPulse()
                 ),
-                new me.phoenixra.atumvr.core.input.device.VRDeviceController(
+                new XRDeviceController(
                         getVrProvider(),
                         ControllerType.RIGHT,
                         profileSetHolder.getSharedSet().getHandPoseAim(),
@@ -66,7 +67,7 @@ public class ExampleVRInputHandler extends VRInputHandler {
         }
 
         if(profileSet.getTriggerValue().getHandSubaction(type).isPressed()){
-            getDevice(VRDeviceController.getId(type), VRDeviceController.class)
+            getDevice(VRDeviceController.getId(type), XRDeviceController.class)
                     .triggerHapticPulse(
                             160f,
                             1.0F,

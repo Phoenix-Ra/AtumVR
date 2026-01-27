@@ -1,7 +1,8 @@
 package me.phoenixra.atumvr.example.scene;
 
-import me.phoenixra.atumvr.core.enums.ControllerType;
-import me.phoenixra.atumvr.core.input.device.VRDeviceController;
+import me.phoenixra.atumvr.api.enums.ControllerType;
+import me.phoenixra.atumvr.api.input.device.VRDeviceController;
+import me.phoenixra.atumvr.core.input.device.XRDeviceController;
 import me.phoenixra.atumvr.example.ExampleVRProvider;
 import me.phoenixra.atumvr.example.texture.StbTexture;
 import org.joml.Matrix4f;

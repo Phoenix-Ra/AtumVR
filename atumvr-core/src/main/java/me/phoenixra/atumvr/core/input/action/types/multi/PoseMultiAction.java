@@ -1,15 +1,15 @@
 package me.phoenixra.atumvr.core.input.action.types.multi;
 
 import lombok.Getter;
-import me.phoenixra.atumvr.core.input.action.ActionIdentifier;
-import me.phoenixra.atumvr.core.input.action.data.VRActionDataPose;
-import me.phoenixra.atumvr.core.input.profile.VRInteractionProfileType;
-import me.phoenixra.atumvr.core.misc.pose.VRPoseRecord;
-import me.phoenixra.atumvr.core.utils.VRUtils;
-import me.phoenixra.atumvr.core.VRProvider;
+import me.phoenixra.atumvr.api.input.action.ActionIdentifier;
+import me.phoenixra.atumvr.api.input.action.data.VRActionDataPose;
+import me.phoenixra.atumvr.core.input.profile.XRInteractionProfileType;
+import me.phoenixra.atumvr.api.misc.pose.VRPoseRecord;
+import me.phoenixra.atumvr.core.utils.XRUtils;
+import me.phoenixra.atumvr.core.XRProvider;
 import me.phoenixra.atumvr.core.enums.XRInputActionType;
-import me.phoenixra.atumvr.core.input.action.VRActionSet;
-import me.phoenixra.atumvr.core.input.action.VRMultiAction;
+import me.phoenixra.atumvr.core.input.action.XRActionSet;
+import me.phoenixra.atumvr.core.input.action.XRMultiAction;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.PointerBuffer;
@@ -23,7 +23,7 @@ import java.util.List;
 import static org.lwjgl.system.MemoryStack.stackCallocPointer;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
-public class PoseMultiAction extends VRMultiAction<VRPoseRecord> {
+public class PoseMultiAction extends XRMultiAction<VRPoseRecord> {
 
     @Getter
     private HashMap<SubAction<VRPoseRecord>, XrSpace> xrSpace = new HashMap<>();
@@ -32,8 +32,8 @@ public class PoseMultiAction extends VRMultiAction<VRPoseRecord> {
     private final List<SubActionPose> subActionsAsPose;
 
 
-    public PoseMultiAction(@NotNull VRProvider vrProvider,
-                           @NotNull VRActionSet actionSet,
+    public PoseMultiAction(@NotNull XRProvider vrProvider,
+                           @NotNull XRActionSet actionSet,
                            @NotNull ActionIdentifier id,
                            @NotNull String localizedName,
                            @NotNull List<SubActionPose> subActions) {
@@ -42,7 +42,7 @@ public class PoseMultiAction extends VRMultiAction<VRPoseRecord> {
     }
 
     @Override
-    protected void onInit(@NotNull VRActionSet actionSet, @NotNull MemoryStack stack) {
+    protected void onInit(@NotNull XRActionSet actionSet, @NotNull MemoryStack stack) {
         for (SubAction<VRPoseRecord> entry : subActions) {
             XrSession xrSession = vrProvider.getSession().getHandle();
             XrActionSpaceCreateInfo action_space_info = XrActionSpaceCreateInfo
@@ -51,7 +51,7 @@ public class PoseMultiAction extends VRMultiAction<VRPoseRecord> {
                             NULL,
                             handle,
                             entry.getPathHandle(),
-                            VRUtils.getPoseIdentity(stack)
+                            XRUtils.getPoseIdentity(stack)
                     );
             PointerBuffer pp = stackCallocPointer(1);
             vrProvider.checkXRError(
@@ -81,16 +81,16 @@ public class PoseMultiAction extends VRMultiAction<VRPoseRecord> {
                         ),
                         "xrGetActionStateFloat"
                 );
-                var loc = VRUtils.xrLocationFromSpace(
+                var loc = XRUtils.xrLocationFromSpace(
                         vrProvider, xrSpace.get(entry), stack
                 );
                 VRPoseRecord entryState = loc == null
                         ? VRPoseRecord.EMPTY
                         :
                         new VRPoseRecord(
-                                VRUtils.normalizeXrPose(loc.pose()),
-                                VRUtils.normalizeXrQuaternion(loc.pose().orientation()),
-                                VRUtils.normalizeXrVector(loc.pose().position$())
+                                XRUtils.normalizeXrPose(loc.pose()),
+                                XRUtils.normalizeXrQuaternion(loc.pose().orientation()),
+                                XRUtils.normalizeXrVector(loc.pose().position$())
                         );
 
                 entry.update(
@@ -120,12 +120,12 @@ public class PoseMultiAction extends VRMultiAction<VRPoseRecord> {
         }
 
         @Override
-        public SubActionPose putDefaultBindings(@NotNull List<VRInteractionProfileType> profiles, @Nullable String source) {
+        public SubActionPose putDefaultBindings(@NotNull List<XRInteractionProfileType> profiles, @Nullable String source) {
             return (SubActionPose) super.putDefaultBindings(profiles, source);
         }
 
         @Override
-        public SubActionPose putDefaultBindings(@NotNull VRInteractionProfileType profile, @Nullable String source) {
+        public SubActionPose putDefaultBindings(@NotNull XRInteractionProfileType profile, @Nullable String source) {
             return (SubActionPose) super.putDefaultBindings(profile, source);
         }
 

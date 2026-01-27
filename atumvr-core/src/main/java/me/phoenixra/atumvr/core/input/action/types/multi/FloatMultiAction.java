@@ -1,13 +1,13 @@
 package me.phoenixra.atumvr.core.input.action.types.multi;
 
 import lombok.Getter;
-import me.phoenixra.atumvr.core.input.action.ActionIdentifier;
-import me.phoenixra.atumvr.core.VRProvider;
+import me.phoenixra.atumvr.api.input.action.ActionIdentifier;
+import me.phoenixra.atumvr.core.XRProvider;
 import me.phoenixra.atumvr.core.enums.XRInputActionType;
-import me.phoenixra.atumvr.core.input.action.VRActionSet;
-import me.phoenixra.atumvr.core.input.action.VRMultiAction;
-import me.phoenixra.atumvr.core.input.action.data.VRActionDataFloat;
-import me.phoenixra.atumvr.core.input.profile.VRInteractionProfileType;
+import me.phoenixra.atumvr.core.input.action.XRActionSet;
+import me.phoenixra.atumvr.core.input.action.XRMultiAction;
+import me.phoenixra.atumvr.api.input.action.data.VRActionDataFloat;
+import me.phoenixra.atumvr.core.input.profile.XRInteractionProfileType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.openxr.XR10;
@@ -17,14 +17,14 @@ import org.lwjgl.system.MemoryStack;
 import java.util.Collections;
 import java.util.List;
 
-public class FloatMultiAction extends VRMultiAction<Float> {
+public class FloatMultiAction extends XRMultiAction<Float> {
 
 
     @Getter
     private final List<SubActionFloat> subActionsAsFloat;
 
-    public FloatMultiAction(@NotNull VRProvider vrProvider,
-                            @NotNull VRActionSet actionSet,
+    public FloatMultiAction(@NotNull XRProvider vrProvider,
+                            @NotNull XRActionSet actionSet,
                             @NotNull ActionIdentifier id,
                             @NotNull String localizedName,
                             @NotNull List<SubActionFloat> subActions) {
@@ -34,7 +34,7 @@ public class FloatMultiAction extends VRMultiAction<Float> {
 
 
     @Override
-    protected void onInit(@NotNull VRActionSet actionSet, @NotNull MemoryStack stack) {
+    protected void onInit(@NotNull XRActionSet actionSet, @NotNull MemoryStack stack) {
 
     }
 
@@ -81,12 +81,12 @@ public class FloatMultiAction extends VRMultiAction<Float> {
         }
 
         @Override
-        public SubActionFloat putDefaultBindings(@NotNull List<VRInteractionProfileType> profiles, @Nullable String source) {
+        public SubActionFloat putDefaultBindings(@NotNull List<XRInteractionProfileType> profiles, @Nullable String source) {
             return (SubActionFloat) super.putDefaultBindings(profiles, source);
         }
 
         @Override
-        public SubActionFloat putDefaultBindings(@NotNull VRInteractionProfileType profile, @Nullable String source) {
+        public SubActionFloat putDefaultBindings(@NotNull XRInteractionProfileType profile, @Nullable String source) {
             return (SubActionFloat) super.putDefaultBindings(profile, source);
         }
 

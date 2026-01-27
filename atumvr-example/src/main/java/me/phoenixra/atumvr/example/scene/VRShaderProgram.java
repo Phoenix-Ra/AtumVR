@@ -1,7 +1,7 @@
 package me.phoenixra.atumvr.example.scene;
 
 import lombok.Getter;
-import me.phoenixra.atumvr.core.VRProvider;
+import me.phoenixra.atumvr.core.XRProvider;
 import org.lwjgl.opengl.GL30;
 
 import java.nio.file.Files;
@@ -10,7 +10,7 @@ import java.util.HashMap;
 
 public class VRShaderProgram {
     @Getter
-    private final VRProvider vrProvider;
+    private final XRProvider vrProvider;
     @Getter
     private final int shaderProgramId;
     @Getter
@@ -21,7 +21,7 @@ public class VRShaderProgram {
     @Getter
     private boolean initialized = false;
     private HashMap<String, Integer> variables;
-    public VRShaderProgram(VRProvider vrProvider){
+    public VRShaderProgram(XRProvider vrProvider){
         this.vrProvider = vrProvider;
         shaderProgramId = GL30.glCreateProgram();
     }
