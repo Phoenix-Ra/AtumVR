@@ -1,6 +1,6 @@
 package me.phoenixra.atumvr.core.input.action.types.single;
 
-import me.phoenixra.atumvr.api.input.action.ActionIdentifier;
+import me.phoenixra.atumvr.api.input.action.VRActionIdentifier;
 import me.phoenixra.atumvr.api.input.action.data.VRActionDataButton;
 import me.phoenixra.atumvr.core.XRProvider;
 import me.phoenixra.atumvr.core.enums.XRInputActionType;
@@ -20,7 +20,7 @@ public class BoolButtonAction extends XRSingleAction<Boolean> implements VRActio
 
     public BoolButtonAction(@NotNull XRProvider vrProvider,
                             @NotNull XRActionSet actionSet,
-                            @NotNull ActionIdentifier id,
+                            @NotNull VRActionIdentifier id,
                             @NotNull String localizedName) {
         super(vrProvider, actionSet, id, localizedName, XRInputActionType.BOOLEAN);
         currentState = false;

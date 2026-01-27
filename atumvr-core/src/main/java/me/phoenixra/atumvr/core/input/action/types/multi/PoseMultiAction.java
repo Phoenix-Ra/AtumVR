@@ -1,7 +1,7 @@
 package me.phoenixra.atumvr.core.input.action.types.multi;
 
 import lombok.Getter;
-import me.phoenixra.atumvr.api.input.action.ActionIdentifier;
+import me.phoenixra.atumvr.api.input.action.VRActionIdentifier;
 import me.phoenixra.atumvr.api.input.action.data.VRActionDataPose;
 import me.phoenixra.atumvr.core.input.profile.XRInteractionProfileType;
 import me.phoenixra.atumvr.api.misc.pose.VRPoseRecord;
@@ -34,7 +34,7 @@ public class PoseMultiAction extends XRMultiAction<VRPoseRecord> {
 
     public PoseMultiAction(@NotNull XRProvider vrProvider,
                            @NotNull XRActionSet actionSet,
-                           @NotNull ActionIdentifier id,
+                           @NotNull VRActionIdentifier id,
                            @NotNull String localizedName,
                            @NotNull List<SubActionPose> subActions) {
         super(vrProvider, actionSet, id, localizedName, XRInputActionType.POSE, subActions);
@@ -112,7 +112,7 @@ public class PoseMultiAction extends XRMultiAction<VRPoseRecord> {
     public static class SubActionPose extends SubAction<VRPoseRecord> implements VRActionDataPose {
 
 
-        public SubActionPose(@NotNull ActionIdentifier id,
+        public SubActionPose(@NotNull VRActionIdentifier id,
                              @NotNull String path,
                              @NotNull VRPoseRecord initialState) {
             super(id, path, initialState);

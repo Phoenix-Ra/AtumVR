@@ -16,7 +16,7 @@ public interface VRAction  {
      *
      * @return the id
      */
-    @NotNull ActionIdentifier getId();
+    @NotNull VRActionIdentifier getId();
 
     /**
      * Get action set, that uses this action

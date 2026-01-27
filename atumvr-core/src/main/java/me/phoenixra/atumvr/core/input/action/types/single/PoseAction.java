@@ -1,7 +1,7 @@
 package me.phoenixra.atumvr.core.input.action.types.single;
 
 import lombok.Getter;
-import me.phoenixra.atumvr.api.input.action.ActionIdentifier;
+import me.phoenixra.atumvr.api.input.action.VRActionIdentifier;
 import me.phoenixra.atumvr.api.input.action.data.VRActionDataPose;
 import me.phoenixra.atumvr.api.misc.pose.VRPoseRecord;
 import me.phoenixra.atumvr.core.utils.XRUtils;
@@ -28,7 +28,7 @@ public class PoseAction extends XRSingleAction<VRPoseRecord> implements VRAction
 
     public PoseAction(@NotNull XRProvider vrProvider,
                       @NotNull XRActionSet actionSet,
-                      @NotNull ActionIdentifier id,
+                      @NotNull VRActionIdentifier id,
                       @NotNull String localizedName) {
         super(vrProvider, actionSet, id, localizedName, XRInputActionType.POSE);
         currentState = VRPoseRecord.EMPTY;

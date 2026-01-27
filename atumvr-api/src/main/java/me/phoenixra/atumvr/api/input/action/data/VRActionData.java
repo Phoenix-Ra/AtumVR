@@ -1,6 +1,6 @@
 package me.phoenixra.atumvr.api.input.action.data;
 
-import me.phoenixra.atumvr.api.input.action.ActionIdentifier;
+import me.phoenixra.atumvr.api.input.action.VRActionIdentifier;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -39,5 +39,5 @@ public interface VRActionData {
      *
      * @return the action identifier
      */
-    @NotNull ActionIdentifier getId();
+    @NotNull VRActionIdentifier getId();
 }

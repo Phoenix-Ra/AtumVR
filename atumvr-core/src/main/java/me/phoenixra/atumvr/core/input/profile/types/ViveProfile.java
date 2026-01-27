@@ -2,7 +2,7 @@ package me.phoenixra.atumvr.core.input.profile.types;
 
 import lombok.Getter;
 import me.phoenixra.atumvr.api.enums.ControllerType;
-import me.phoenixra.atumvr.api.input.action.ActionIdentifier;
+import me.phoenixra.atumvr.api.input.action.VRActionIdentifier;
 import me.phoenixra.atumvr.api.input.action.data.VRActionData;
 import me.phoenixra.atumvr.api.input.action.data.VRActionDataButton;
 import me.phoenixra.atumvr.api.input.action.data.VRActionDataVec2;
@@ -28,29 +28,29 @@ public class ViveProfile extends XRInteractionProfile {
 
     // ---------- ACTION IDENTIFIERS ----------
 
-    public static final ActionIdentifier BUTTON_SYSTEM_LEFT = new ActionIdentifier("button.system.left", ControllerType.LEFT);;
-    public static final ActionIdentifier BUTTON_SYSTEM_RIGHT = new ActionIdentifier("button.system.right", ControllerType.RIGHT);
+    public static final VRActionIdentifier BUTTON_SYSTEM_LEFT = new VRActionIdentifier("button.system.left", ControllerType.LEFT);;
+    public static final VRActionIdentifier BUTTON_SYSTEM_RIGHT = new VRActionIdentifier("button.system.right", ControllerType.RIGHT);
 
-    public static final ActionIdentifier BUTTON_MENU_LEFT = new ActionIdentifier("button.menu.left", ControllerType.LEFT);;
-    public static final ActionIdentifier BUTTON_MENU_RIGHT = new ActionIdentifier("button.menu.right", ControllerType.RIGHT);
+    public static final VRActionIdentifier BUTTON_MENU_LEFT = new VRActionIdentifier("button.menu.left", ControllerType.LEFT);;
+    public static final VRActionIdentifier BUTTON_MENU_RIGHT = new VRActionIdentifier("button.menu.right", ControllerType.RIGHT);
 
-    public static final ActionIdentifier BUTTON_GRIP_LEFT = new ActionIdentifier("button.grip.left", ControllerType.LEFT);;
-    public static final ActionIdentifier BUTTON_GRIP_RIGHT = new ActionIdentifier("button.grip.right", ControllerType.RIGHT);
+    public static final VRActionIdentifier BUTTON_GRIP_LEFT = new VRActionIdentifier("button.grip.left", ControllerType.LEFT);;
+    public static final VRActionIdentifier BUTTON_GRIP_RIGHT = new VRActionIdentifier("button.grip.right", ControllerType.RIGHT);
 
-    public static final ActionIdentifier BUTTON_TRIGGER_LEFT = new ActionIdentifier("button.trigger.left", ControllerType.LEFT);;
-    public static final ActionIdentifier BUTTON_TRIGGER_RIGHT = new ActionIdentifier("button.trigger.right", ControllerType.RIGHT);
-    public static final ActionIdentifier BUTTON_TRIGGER_CLICK_LEFT = new ActionIdentifier("button.trigger.click.left", ControllerType.LEFT);;
-    public static final ActionIdentifier BUTTON_TRIGGER_CLICK_RIGHT = new ActionIdentifier("button.trigger.click.right", ControllerType.RIGHT);
-
-
-    public static final ActionIdentifier BUTTON_TRACKPAD_LEFT = new ActionIdentifier("button.trackpad.left", ControllerType.LEFT);;
-    public static final ActionIdentifier BUTTON_TRACKPAD_RIGHT = new ActionIdentifier("button.trackpad.right", ControllerType.RIGHT);
-    public static final ActionIdentifier BUTTON_TRACKPAD_TOUCH_LEFT = new ActionIdentifier("button.trackpad.touch.left", ControllerType.LEFT);;
-    public static final ActionIdentifier BUTTON_TRACKPAD_TOUCH_RIGHT = new ActionIdentifier("button.trackpad.touch.right", ControllerType.RIGHT);
+    public static final VRActionIdentifier BUTTON_TRIGGER_LEFT = new VRActionIdentifier("button.trigger.left", ControllerType.LEFT);;
+    public static final VRActionIdentifier BUTTON_TRIGGER_RIGHT = new VRActionIdentifier("button.trigger.right", ControllerType.RIGHT);
+    public static final VRActionIdentifier BUTTON_TRIGGER_CLICK_LEFT = new VRActionIdentifier("button.trigger.click.left", ControllerType.LEFT);;
+    public static final VRActionIdentifier BUTTON_TRIGGER_CLICK_RIGHT = new VRActionIdentifier("button.trigger.click.right", ControllerType.RIGHT);
 
 
-    public static final ActionIdentifier VEC2_TRACKPAD_LEFT = new ActionIdentifier("vec2.trackpad.left", ControllerType.LEFT);;
-    public static final ActionIdentifier VEC2_TRACKPAD_RIGHT = new ActionIdentifier("vec2.trackpad.right", ControllerType.RIGHT);
+    public static final VRActionIdentifier BUTTON_TRACKPAD_LEFT = new VRActionIdentifier("button.trackpad.left", ControllerType.LEFT);;
+    public static final VRActionIdentifier BUTTON_TRACKPAD_RIGHT = new VRActionIdentifier("button.trackpad.right", ControllerType.RIGHT);
+    public static final VRActionIdentifier BUTTON_TRACKPAD_TOUCH_LEFT = new VRActionIdentifier("button.trackpad.touch.left", ControllerType.LEFT);;
+    public static final VRActionIdentifier BUTTON_TRACKPAD_TOUCH_RIGHT = new VRActionIdentifier("button.trackpad.touch.right", ControllerType.RIGHT);
+
+
+    public static final VRActionIdentifier VEC2_TRACKPAD_LEFT = new VRActionIdentifier("vec2.trackpad.left", ControllerType.LEFT);;
+    public static final VRActionIdentifier VEC2_TRACKPAD_RIGHT = new VRActionIdentifier("vec2.trackpad.right", ControllerType.RIGHT);
 
     // ----------------------------------------
 
@@ -71,9 +71,9 @@ public class ViveProfile extends XRInteractionProfile {
     private BoolButtonMultiAction trackpadButton;
 
 
-    private Map<ActionIdentifier, VRActionData> actionMap;
-    private Map<ActionIdentifier, VRActionDataButton> buttonMap;
-    private Map<ActionIdentifier, VRActionDataVec2> vec2Map;
+    private Map<VRActionIdentifier, VRActionData> actionMap;
+    private Map<VRActionIdentifier, VRActionDataButton> buttonMap;
+    private Map<VRActionIdentifier, VRActionDataVec2> vec2Map;
 
     public ViveProfile(XRProvider vrProvider) {
         super(vrProvider, "vive", "Vive Controller", 0);
@@ -87,7 +87,7 @@ public class ViveProfile extends XRInteractionProfile {
         systemButton = new BoolButtonMultiAction(
                 vrProvider,
                 this,
-                new ActionIdentifier("button.system"),
+                new VRActionIdentifier("button.system"),
                 "System Button",
                 List.of(
                         new BoolButtonMultiAction.SubActionBoolButton(
@@ -106,7 +106,7 @@ public class ViveProfile extends XRInteractionProfile {
         menuButton = new BoolButtonMultiAction(
                 vrProvider,
                 this,
-                new ActionIdentifier("button.menu"),
+                new VRActionIdentifier("button.menu"),
                 "Menu Button",
                 List.of(
                         new BoolButtonMultiAction.SubActionBoolButton(
@@ -126,7 +126,7 @@ public class ViveProfile extends XRInteractionProfile {
         gripButton = new BoolButtonMultiAction(
                 vrProvider,
                 this,
-                new ActionIdentifier("button.grip"),
+                new VRActionIdentifier("button.grip"),
                 "Grip Button",
                 List.of(
                         new BoolButtonMultiAction.SubActionBoolButton(
@@ -146,7 +146,7 @@ public class ViveProfile extends XRInteractionProfile {
         triggerValue = new FloatButtonMultiAction(
                 vrProvider,
                 this,
-                new ActionIdentifier("trigger.button"),
+                new VRActionIdentifier("trigger.button"),
                 "Trigger Value",
                 0.7f,   // click threshold
                 0.65f,  // release threshold
@@ -167,7 +167,7 @@ public class ViveProfile extends XRInteractionProfile {
         triggerButton = new BoolButtonMultiAction(
                 vrProvider,
                 this,
-                new ActionIdentifier("trigger.button.click"),
+                new VRActionIdentifier("trigger.button.click"),
                 "Trigger Button",
                 List.of(
                         new BoolButtonMultiAction.SubActionBoolButton(
@@ -187,7 +187,7 @@ public class ViveProfile extends XRInteractionProfile {
         trackpad = new Vec2MultiAction(
                 vrProvider,
                 this,
-                new ActionIdentifier("vec2.trackpad"),
+                new VRActionIdentifier("vec2.trackpad"),
                 "Trackpad",
                 List.of(
                         new Vec2MultiAction.SubActionVec2(
@@ -206,7 +206,7 @@ public class ViveProfile extends XRInteractionProfile {
         trackpadTouch = new BoolButtonMultiAction(
                 vrProvider,
                 this,
-                new ActionIdentifier("button.trackpad.touch"),
+                new VRActionIdentifier("button.trackpad.touch"),
                 "Trackpad Touch",
                 List.of(
                         new BoolButtonMultiAction.SubActionBoolButton(
@@ -225,7 +225,7 @@ public class ViveProfile extends XRInteractionProfile {
         trackpadButton = new BoolButtonMultiAction(
                 vrProvider,
                 this,
-                new ActionIdentifier("button.trackpad"),
+                new VRActionIdentifier("button.trackpad"),
                 "Trackpad Button",
                 List.of(
                         new BoolButtonMultiAction.SubActionBoolButton(
@@ -277,34 +277,34 @@ public class ViveProfile extends XRInteractionProfile {
 
 
     @Override
-    public Collection<ActionIdentifier> getActionIds() {
+    public Collection<VRActionIdentifier> getActionIds() {
         return Collections.unmodifiableCollection(actionMap.keySet());
     }
 
     @Override
-    public @Nullable VRActionData getAction(@NotNull ActionIdentifier id) {
+    public @Nullable VRActionData getAction(@NotNull VRActionIdentifier id) {
         return actionMap.get(id);
     }
 
 
     @Override
-    public Collection<ActionIdentifier> getButtonIds() {
+    public Collection<VRActionIdentifier> getButtonIds() {
         return Collections.unmodifiableCollection(buttonMap.keySet());
     }
 
     @Override
-    public VRActionDataButton getButton(@NotNull ActionIdentifier id) {
+    public VRActionDataButton getButton(@NotNull VRActionIdentifier id) {
         return buttonMap.get(id);
     }
 
 
     @Override
-    public Collection<ActionIdentifier> getVec2Ids() {
+    public Collection<VRActionIdentifier> getVec2Ids() {
         return Collections.unmodifiableCollection(vec2Map.keySet());
     }
 
     @Override
-    public VRActionDataVec2 getVec2(@NotNull ActionIdentifier id) {
+    public VRActionDataVec2 getVec2(@NotNull VRActionIdentifier id) {
         return vec2Map.get(id);
     }
 

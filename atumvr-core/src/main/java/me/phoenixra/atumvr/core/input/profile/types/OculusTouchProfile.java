@@ -2,7 +2,7 @@ package me.phoenixra.atumvr.core.input.profile.types;
 
 import lombok.Getter;
 import me.phoenixra.atumvr.api.enums.ControllerType;
-import me.phoenixra.atumvr.api.input.action.ActionIdentifier;
+import me.phoenixra.atumvr.api.input.action.VRActionIdentifier;
 import me.phoenixra.atumvr.api.input.action.data.VRActionData;
 import me.phoenixra.atumvr.api.input.action.data.VRActionDataButton;
 import me.phoenixra.atumvr.api.input.action.data.VRActionDataVec2;
@@ -29,41 +29,41 @@ public class OculusTouchProfile extends XRInteractionProfile {
 
     // ---------- ACTION IDENTIFIERS ----------
 
-    public static final ActionIdentifier BUTTON_MENU = new ActionIdentifier("button.menu", ControllerType.LEFT);
-    public static final ActionIdentifier BUTTON_SYSTEM = new ActionIdentifier("button.system", ControllerType.RIGHT);
+    public static final VRActionIdentifier BUTTON_MENU = new VRActionIdentifier("button.menu", ControllerType.LEFT);
+    public static final VRActionIdentifier BUTTON_SYSTEM = new VRActionIdentifier("button.system", ControllerType.RIGHT);
 
-    public static final ActionIdentifier BUTTON_X = new ActionIdentifier("button.x", ControllerType.LEFT);
-    public static final ActionIdentifier BUTTON_A = new ActionIdentifier("button.a", ControllerType.RIGHT);
-    public static final ActionIdentifier BUTTON_X_TOUCH = new ActionIdentifier("button.x.touch", ControllerType.LEFT);
-    public static final ActionIdentifier BUTTON_A_TOUCH = new ActionIdentifier("button.a.touch", ControllerType.RIGHT);
-
-
-    public static final ActionIdentifier BUTTON_Y = new ActionIdentifier("button.y", ControllerType.LEFT);
-    public static final ActionIdentifier BUTTON_B = new ActionIdentifier("button.b", ControllerType.RIGHT);
-    public static final ActionIdentifier BUTTON_Y_TOUCH = new ActionIdentifier("button.y.touch", ControllerType.LEFT);
-    public static final ActionIdentifier BUTTON_B_TOUCH = new ActionIdentifier("button.b.touch", ControllerType.RIGHT);
+    public static final VRActionIdentifier BUTTON_X = new VRActionIdentifier("button.x", ControllerType.LEFT);
+    public static final VRActionIdentifier BUTTON_A = new VRActionIdentifier("button.a", ControllerType.RIGHT);
+    public static final VRActionIdentifier BUTTON_X_TOUCH = new VRActionIdentifier("button.x.touch", ControllerType.LEFT);
+    public static final VRActionIdentifier BUTTON_A_TOUCH = new VRActionIdentifier("button.a.touch", ControllerType.RIGHT);
 
 
-    public static final ActionIdentifier BUTTON_GRIP_LEFT = new ActionIdentifier("button.grip.left", ControllerType.LEFT);
-    public static final ActionIdentifier BUTTON_GRIP_RIGHT = new ActionIdentifier("button.grip.right", ControllerType.RIGHT);
-
-    public static final ActionIdentifier BUTTON_TRIGGER_LEFT = new ActionIdentifier("button.trigger.left", ControllerType.LEFT);
-    public static final ActionIdentifier BUTTON_TRIGGER_RIGHT = new ActionIdentifier("button.trigger.right", ControllerType.RIGHT);
-    public static final ActionIdentifier BUTTON_TRIGGER_TOUCH_LEFT = new ActionIdentifier("button.trigger.touch.left", ControllerType.LEFT);
-    public static final ActionIdentifier BUTTON_TRIGGER_TOUCH_RIGHT = new ActionIdentifier("button.trigger.touch.right", ControllerType.RIGHT);
+    public static final VRActionIdentifier BUTTON_Y = new VRActionIdentifier("button.y", ControllerType.LEFT);
+    public static final VRActionIdentifier BUTTON_B = new VRActionIdentifier("button.b", ControllerType.RIGHT);
+    public static final VRActionIdentifier BUTTON_Y_TOUCH = new VRActionIdentifier("button.y.touch", ControllerType.LEFT);
+    public static final VRActionIdentifier BUTTON_B_TOUCH = new VRActionIdentifier("button.b.touch", ControllerType.RIGHT);
 
 
-    public static final ActionIdentifier BUTTON_THUMBSTICK_LEFT = new ActionIdentifier("button.thumbstick.left", ControllerType.LEFT);
-    public static final ActionIdentifier BUTTON_THUMBSTICK_RIGHT = new ActionIdentifier("button.thumbstick.right", ControllerType.RIGHT);
-    public static final ActionIdentifier BUTTON_THUMBSTICK_TOUCH_LEFT = new ActionIdentifier("button.thumbstick.touch.left", ControllerType.LEFT);
-    public static final ActionIdentifier BUTTON_THUMBSTICK_TOUCH_RIGHT = new ActionIdentifier("button.thumbstick.touch.right", ControllerType.RIGHT);
+    public static final VRActionIdentifier BUTTON_GRIP_LEFT = new VRActionIdentifier("button.grip.left", ControllerType.LEFT);
+    public static final VRActionIdentifier BUTTON_GRIP_RIGHT = new VRActionIdentifier("button.grip.right", ControllerType.RIGHT);
 
-    public static final ActionIdentifier BUTTON_THUMBREST_TOUCH_LEFT = new ActionIdentifier("button.thumbrest.touch.left", ControllerType.LEFT);
-    public static final ActionIdentifier BUTTON_THUMBREST_TOUCH_RIGHT = new ActionIdentifier("button.thumbrest.touch.right", ControllerType.RIGHT);
+    public static final VRActionIdentifier BUTTON_TRIGGER_LEFT = new VRActionIdentifier("button.trigger.left", ControllerType.LEFT);
+    public static final VRActionIdentifier BUTTON_TRIGGER_RIGHT = new VRActionIdentifier("button.trigger.right", ControllerType.RIGHT);
+    public static final VRActionIdentifier BUTTON_TRIGGER_TOUCH_LEFT = new VRActionIdentifier("button.trigger.touch.left", ControllerType.LEFT);
+    public static final VRActionIdentifier BUTTON_TRIGGER_TOUCH_RIGHT = new VRActionIdentifier("button.trigger.touch.right", ControllerType.RIGHT);
 
 
-    public static final ActionIdentifier VEC2_THUMBSTICK_LEFT = new ActionIdentifier("vec2.thumbstick.left", ControllerType.LEFT);
-    public static final ActionIdentifier VEC2_THUMBSTICK_RIGHT = new ActionIdentifier("vec2.thumbstick.right", ControllerType.RIGHT);
+    public static final VRActionIdentifier BUTTON_THUMBSTICK_LEFT = new VRActionIdentifier("button.thumbstick.left", ControllerType.LEFT);
+    public static final VRActionIdentifier BUTTON_THUMBSTICK_RIGHT = new VRActionIdentifier("button.thumbstick.right", ControllerType.RIGHT);
+    public static final VRActionIdentifier BUTTON_THUMBSTICK_TOUCH_LEFT = new VRActionIdentifier("button.thumbstick.touch.left", ControllerType.LEFT);
+    public static final VRActionIdentifier BUTTON_THUMBSTICK_TOUCH_RIGHT = new VRActionIdentifier("button.thumbstick.touch.right", ControllerType.RIGHT);
+
+    public static final VRActionIdentifier BUTTON_THUMBREST_TOUCH_LEFT = new VRActionIdentifier("button.thumbrest.touch.left", ControllerType.LEFT);
+    public static final VRActionIdentifier BUTTON_THUMBREST_TOUCH_RIGHT = new VRActionIdentifier("button.thumbrest.touch.right", ControllerType.RIGHT);
+
+
+    public static final VRActionIdentifier VEC2_THUMBSTICK_LEFT = new VRActionIdentifier("vec2.thumbstick.left", ControllerType.LEFT);
+    public static final VRActionIdentifier VEC2_THUMBSTICK_RIGHT = new VRActionIdentifier("vec2.thumbstick.right", ControllerType.RIGHT);
 
     // ----------------------------------------
 
@@ -91,9 +91,9 @@ public class OculusTouchProfile extends XRInteractionProfile {
     private BoolButtonMultiAction thumbRestTouch;
 
 
-    private Map<ActionIdentifier, VRActionData> actionMap;
-    private Map<ActionIdentifier, VRActionDataButton> buttonMap;
-    private Map<ActionIdentifier, VRActionDataVec2> vec2Map;
+    private Map<VRActionIdentifier, VRActionData> actionMap;
+    private Map<VRActionIdentifier, VRActionDataButton> buttonMap;
+    private Map<VRActionIdentifier, VRActionDataVec2> vec2Map;
 
     public OculusTouchProfile(XRProvider vrProvider) {
         super(vrProvider, "oculus_touch", "Oculus Touch Controller", 0);
@@ -117,7 +117,7 @@ public class OculusTouchProfile extends XRInteractionProfile {
         // -------- PRIMARY BUTTONS (X/A) --------
         primaryButton = new BoolButtonMultiAction(
                 vrProvider, this,
-                new ActionIdentifier("button.primary"), "Primary Button",
+                new VRActionIdentifier("button.primary"), "Primary Button",
                 List.of(
                         new BoolButtonMultiAction.SubActionBoolButton(
                                 BUTTON_X,
@@ -133,7 +133,7 @@ public class OculusTouchProfile extends XRInteractionProfile {
         );
         primaryButtonTouch = new BoolButtonMultiAction(
                 vrProvider, this,
-                new ActionIdentifier("button.primary.touch"), "Primary Button Touch",
+                new VRActionIdentifier("button.primary.touch"), "Primary Button Touch",
                 List.of(
                         new BoolButtonMultiAction.SubActionBoolButton(
                                 BUTTON_X_TOUCH,
@@ -150,7 +150,7 @@ public class OculusTouchProfile extends XRInteractionProfile {
         // -------- SECONDARY (Y/B) --------
         secondaryButton = new BoolButtonMultiAction(
                 vrProvider, this,
-                new ActionIdentifier("button.secondary"), "Secondary Button",
+                new VRActionIdentifier("button.secondary"), "Secondary Button",
                 List.of(
                         new BoolButtonMultiAction.SubActionBoolButton(
                                 BUTTON_Y,
@@ -166,7 +166,7 @@ public class OculusTouchProfile extends XRInteractionProfile {
         );
         secondaryButtonTouch = new BoolButtonMultiAction(
                 vrProvider, this,
-                new ActionIdentifier("button.secondary.touch"), "Secondary Button Touch",
+                new VRActionIdentifier("button.secondary.touch"), "Secondary Button Touch",
                 List.of(
                         new BoolButtonMultiAction.SubActionBoolButton(
                                 BUTTON_Y_TOUCH,
@@ -184,7 +184,7 @@ public class OculusTouchProfile extends XRInteractionProfile {
         // -------- GRIP --------
         gripValue = new FloatButtonMultiAction(
                 vrProvider, this,
-                new ActionIdentifier("button.grip"), "Grip Value",
+                new VRActionIdentifier("button.grip"), "Grip Value",
                 0.9f,   // press
                 0.85f,  // release
                 List.of(
@@ -204,7 +204,7 @@ public class OculusTouchProfile extends XRInteractionProfile {
         // -------- TRIGGER BUTTON --------
         triggerValue = new FloatButtonMultiAction(
                 vrProvider, this,
-                new ActionIdentifier("button.trigger"), "Trigger Value",
+                new VRActionIdentifier("button.trigger"), "Trigger Value",
                 0.7f,   // press
                 0.65f,  // release
                 List.of(
@@ -222,7 +222,7 @@ public class OculusTouchProfile extends XRInteractionProfile {
         );
         triggerTouch = new BoolButtonMultiAction(
                 vrProvider, this,
-                new ActionIdentifier("button.trigger.touch"), "Trigger Touch",
+                new VRActionIdentifier("button.trigger.touch"), "Trigger Touch",
                 List.of(
                         new BoolButtonMultiAction.SubActionBoolButton(
                                 BUTTON_TRIGGER_TOUCH_LEFT,
@@ -240,7 +240,7 @@ public class OculusTouchProfile extends XRInteractionProfile {
         // -------- THUMB STICK --------
         thumbStick = new Vec2MultiAction(
                 vrProvider, this,
-                new ActionIdentifier("vec2.thumbstick"), "Thumbstick",
+                new VRActionIdentifier("vec2.thumbstick"), "Thumbstick",
                 List.of(
                         new Vec2MultiAction.SubActionVec2(
                                 VEC2_THUMBSTICK_LEFT,
@@ -256,7 +256,7 @@ public class OculusTouchProfile extends XRInteractionProfile {
         );
         thumbStickButton = new BoolButtonMultiAction(
                 vrProvider, this,
-                new ActionIdentifier("button.thumbstick"), "Thumbstick Button",
+                new VRActionIdentifier("button.thumbstick"), "Thumbstick Button",
                 List.of(
                         new BoolButtonMultiAction.SubActionBoolButton(
                                 BUTTON_THUMBSTICK_LEFT,
@@ -272,7 +272,7 @@ public class OculusTouchProfile extends XRInteractionProfile {
         );
         thumbStickTouch = new BoolButtonMultiAction(
                 vrProvider, this,
-                new ActionIdentifier("button.thumbstick.touch"), "Thumbstick Touch",
+                new VRActionIdentifier("button.thumbstick.touch"), "Thumbstick Touch",
                 List.of(
                         new BoolButtonMultiAction.SubActionBoolButton(
                                 BUTTON_THUMBSTICK_TOUCH_LEFT,
@@ -290,7 +290,7 @@ public class OculusTouchProfile extends XRInteractionProfile {
         // -------- THUMB REST --------
         thumbRestTouch = new BoolButtonMultiAction(
                 vrProvider, this,
-                new ActionIdentifier("button.thumbrest.touch"), "Thumbrest Touch",
+                new VRActionIdentifier("button.thumbrest.touch"), "Thumbrest Touch",
                 List.of(
                         new BoolButtonMultiAction.SubActionBoolButton(
                                 BUTTON_THUMBREST_TOUCH_LEFT,
@@ -348,34 +348,34 @@ public class OculusTouchProfile extends XRInteractionProfile {
 
 
     @Override
-    public Collection<ActionIdentifier> getActionIds() {
+    public Collection<VRActionIdentifier> getActionIds() {
         return Collections.unmodifiableCollection(actionMap.keySet());
     }
 
     @Override
-    public @Nullable VRActionData getAction(@NotNull ActionIdentifier id) {
+    public @Nullable VRActionData getAction(@NotNull VRActionIdentifier id) {
         return actionMap.get(id);
     }
 
 
     @Override
-    public Collection<ActionIdentifier> getButtonIds() {
+    public Collection<VRActionIdentifier> getButtonIds() {
         return Collections.unmodifiableCollection(buttonMap.keySet());
     }
 
     @Override
-    public VRActionDataButton getButton(@NotNull ActionIdentifier id) {
+    public VRActionDataButton getButton(@NotNull VRActionIdentifier id) {
         return buttonMap.get(id);
     }
 
 
     @Override
-    public Collection<ActionIdentifier> getVec2Ids() {
+    public Collection<VRActionIdentifier> getVec2Ids() {
         return Collections.unmodifiableCollection(vec2Map.keySet());
     }
 
     @Override
-    public VRActionDataVec2 getVec2(@NotNull ActionIdentifier id) {
+    public VRActionDataVec2 getVec2(@NotNull VRActionIdentifier id) {
         return vec2Map.get(id);
     }
 

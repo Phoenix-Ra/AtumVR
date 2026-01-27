@@ -2,7 +2,7 @@ package me.phoenixra.atumvr.core.input.action.types.multi;
 
 import lombok.Getter;
 import me.phoenixra.atumvr.api.enums.ControllerType;
-import me.phoenixra.atumvr.api.input.action.ActionIdentifier;
+import me.phoenixra.atumvr.api.input.action.VRActionIdentifier;
 import me.phoenixra.atumvr.api.input.action.data.VRActionDataButton;
 import me.phoenixra.atumvr.core.XRProvider;
 import me.phoenixra.atumvr.core.enums.XRInputActionType;
@@ -32,7 +32,7 @@ public class FloatButtonMultiAction extends XRMultiAction<Float> {
 
     public FloatButtonMultiAction(@NotNull XRProvider vrProvider,
                                   @NotNull XRActionSet actionSet,
-                                  @NotNull ActionIdentifier id,
+                                  @NotNull VRActionIdentifier id,
                                   @NotNull String localizedName,
                                   float pressThreshold,
                                   float releaseThreshold,
@@ -111,7 +111,7 @@ public class FloatButtonMultiAction extends XRMultiAction<Float> {
         protected boolean buttonChanged;
         protected long buttonLastChangeTime;
 
-        public SubActionFloatButton(@NotNull ActionIdentifier id,
+        public SubActionFloatButton(@NotNull VRActionIdentifier id,
                                     @NotNull String path,
                                     @NotNull Float initialState) {
             super(id, path, initialState);

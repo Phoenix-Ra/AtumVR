@@ -1,7 +1,7 @@
 package me.phoenixra.atumvr.core.input.action.types.single;
 
 import lombok.Getter;
-import me.phoenixra.atumvr.api.input.action.ActionIdentifier;
+import me.phoenixra.atumvr.api.input.action.VRActionIdentifier;
 import me.phoenixra.atumvr.api.input.action.data.VRActionDataButton;
 import me.phoenixra.atumvr.core.XRProvider;
 import me.phoenixra.atumvr.core.enums.XRInputActionType;
@@ -27,7 +27,7 @@ public class FloatButtonAction extends XRSingleAction<Float> implements VRAction
 
     public FloatButtonAction(@NotNull XRProvider vrProvider,
                              @NotNull XRActionSet actionSet,
-                             @NotNull ActionIdentifier id,
+                             @NotNull VRActionIdentifier id,
                              @NotNull String localizedName,
                              float pressThreshold,
                              float releaseThreshold) {

@@ -1,7 +1,7 @@
 package me.phoenixra.atumvr.core.input.profile;
 
 import me.phoenixra.atumvr.api.enums.ControllerType;
-import me.phoenixra.atumvr.api.input.action.ActionIdentifier;
+import me.phoenixra.atumvr.api.input.action.VRActionIdentifier;
 import me.phoenixra.atumvr.api.input.action.data.VRActionData;
 import me.phoenixra.atumvr.api.input.action.data.VRActionDataButton;
 import me.phoenixra.atumvr.api.input.action.data.VRActionDataVec2;
@@ -63,7 +63,7 @@ public abstract class XRInteractionProfile extends XRActionSet {
      *
      * @return the action ids
      */
-    public abstract Collection<ActionIdentifier> getActionIds();
+    public abstract Collection<VRActionIdentifier> getActionIds();
 
     /**
      * Get action by specified id or null if not found
@@ -71,7 +71,7 @@ public abstract class XRInteractionProfile extends XRActionSet {
      * @param id the action identifier
      * @return the action or null
      */
-    public abstract @Nullable VRActionData getAction(@NotNull ActionIdentifier id);
+    public abstract @Nullable VRActionData getAction(@NotNull VRActionIdentifier id);
 
 
     /**
@@ -79,7 +79,7 @@ public abstract class XRInteractionProfile extends XRActionSet {
      *
      * @return the button action ids
      */
-    public abstract Collection<ActionIdentifier> getButtonIds();
+    public abstract Collection<VRActionIdentifier> getButtonIds();
 
     /**
      * Get button action by specified id or null if not found
@@ -87,7 +87,7 @@ public abstract class XRInteractionProfile extends XRActionSet {
      * @param id the action identifier
      * @return the button action or null
      */
-    public abstract @Nullable VRActionDataButton getButton(@NotNull ActionIdentifier id);
+    public abstract @Nullable VRActionDataButton getButton(@NotNull VRActionIdentifier id);
 
 
     /**
@@ -95,7 +95,7 @@ public abstract class XRInteractionProfile extends XRActionSet {
      *
      * @return the vec2 action ids
      */
-    public abstract Collection<ActionIdentifier> getVec2Ids();
+    public abstract Collection<VRActionIdentifier> getVec2Ids();
 
     /**
      * Get vec2 action by specified id or null if not found
@@ -103,7 +103,7 @@ public abstract class XRInteractionProfile extends XRActionSet {
      * @param id the action identifier
      * @return action data or null
      */
-    public abstract @Nullable VRActionDataVec2 getVec2(@NotNull ActionIdentifier id);
+    public abstract @Nullable VRActionDataVec2 getVec2(@NotNull VRActionIdentifier id);
 
 
     /**

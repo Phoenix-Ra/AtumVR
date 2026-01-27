@@ -2,7 +2,7 @@ package me.phoenixra.atumvr.core.input.action.types.multi;
 
 import lombok.Getter;
 import me.phoenixra.atumvr.api.enums.ControllerType;
-import me.phoenixra.atumvr.api.input.action.ActionIdentifier;
+import me.phoenixra.atumvr.api.input.action.VRActionIdentifier;
 import me.phoenixra.atumvr.api.input.action.data.VRActionDataVec2;
 import me.phoenixra.atumvr.core.utils.XRUtils;
 import me.phoenixra.atumvr.core.XRProvider;
@@ -28,7 +28,7 @@ public class Vec2MultiAction extends XRMultiAction<Vector2f> {
 
     public Vec2MultiAction(@NotNull XRProvider vrProvider,
                            @NotNull XRActionSet actionSet,
-                           @NotNull ActionIdentifier id,
+                           @NotNull VRActionIdentifier id,
                            @NotNull String localizedName,
                            @NotNull List<SubActionVec2> subActions) {
         super(vrProvider, actionSet, id, localizedName, XRInputActionType.VECTOR2F, subActions);
@@ -81,7 +81,7 @@ public class Vec2MultiAction extends XRMultiAction<Vector2f> {
     public static class SubActionVec2 extends SubAction<Vector2f> implements VRActionDataVec2 {
 
 
-        public SubActionVec2(@NotNull ActionIdentifier id,
+        public SubActionVec2(@NotNull VRActionIdentifier id,
                              @NotNull String path,
                              @NotNull Vector2f initialState) {
             super(id, path, initialState);

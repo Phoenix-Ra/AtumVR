@@ -1,7 +1,7 @@
 package me.phoenixra.atumvr.core.input.action;
 
 import lombok.Getter;
-import me.phoenixra.atumvr.api.input.action.ActionIdentifier;
+import me.phoenixra.atumvr.api.input.action.VRActionIdentifier;
 import me.phoenixra.atumvr.core.XRProvider;
 import me.phoenixra.atumvr.core.enums.XRInputActionType;
 import me.phoenixra.atumvr.core.input.profile.XRInteractionProfileType;
@@ -47,7 +47,7 @@ public abstract class XRSingleAction<T> extends XRAction {
 
     public XRSingleAction(XRProvider vrProvider,
                           XRActionSet actionSet,
-                          ActionIdentifier id, String localizedName,
+                          VRActionIdentifier id, String localizedName,
                           XRInputActionType actionType) {
         super(vrProvider, actionSet, id, localizedName, actionType);
     }

@@ -42,16 +42,16 @@ public class ExampleVRInputHandler extends XRInputHandler {
                 new XRDeviceController(
                         getVrProvider(),
                         ControllerType.LEFT,
-                        profileSetHolder.getSharedSet().getHandPoseAim(),
-                        profileSetHolder.getSharedSet().getHandPoseGrip(),
-                        profileSetHolder.getSharedSet().getHapticPulse()
+                        profileSetHolder.getCommonSet().getHandPoseAim(),
+                        profileSetHolder.getCommonSet().getHandPoseGrip(),
+                        profileSetHolder.getCommonSet().getHapticPulse()
                 ),
                 new XRDeviceController(
                         getVrProvider(),
                         ControllerType.RIGHT,
-                        profileSetHolder.getSharedSet().getHandPoseAim(),
-                        profileSetHolder.getSharedSet().getHandPoseGrip(),
-                        profileSetHolder.getSharedSet().getHapticPulse()
+                        profileSetHolder.getCommonSet().getHandPoseAim(),
+                        profileSetHolder.getCommonSet().getHandPoseGrip(),
+                        profileSetHolder.getCommonSet().getHapticPulse()
                 )
         );
     }

@@ -2,7 +2,7 @@ package me.phoenixra.atumvr.core.input.profile.types;
 
 import lombok.Getter;
 import me.phoenixra.atumvr.api.enums.ControllerType;
-import me.phoenixra.atumvr.api.input.action.ActionIdentifier;
+import me.phoenixra.atumvr.api.input.action.VRActionIdentifier;
 import me.phoenixra.atumvr.api.input.action.data.VRActionData;
 import me.phoenixra.atumvr.api.input.action.data.VRActionDataButton;
 import me.phoenixra.atumvr.api.input.action.data.VRActionDataVec2;
@@ -29,57 +29,57 @@ public class ValveIndexProfile extends XRInteractionProfile {
     // ---------- ACTION IDENTIFIERS ----------
 
     //----------BUTTON----------
-    public static final ActionIdentifier BUTTON_SYSTEM_LEFT = new ActionIdentifier("button.system.left", ControllerType.LEFT);
-    public static final ActionIdentifier BUTTON_SYSTEM_RIGHT = new ActionIdentifier("button.system.right", ControllerType.RIGHT);
-    public static final ActionIdentifier BUTTON_SYSTEM_TOUCH_LEFT = new ActionIdentifier("button.system.touch.left", ControllerType.LEFT);
-    public static final ActionIdentifier BUTTON_SYSTEM_TOUCH_RIGHT = new ActionIdentifier("button.system.touch.right", ControllerType.RIGHT);
+    public static final VRActionIdentifier BUTTON_SYSTEM_LEFT = new VRActionIdentifier("button.system.left", ControllerType.LEFT);
+    public static final VRActionIdentifier BUTTON_SYSTEM_RIGHT = new VRActionIdentifier("button.system.right", ControllerType.RIGHT);
+    public static final VRActionIdentifier BUTTON_SYSTEM_TOUCH_LEFT = new VRActionIdentifier("button.system.touch.left", ControllerType.LEFT);
+    public static final VRActionIdentifier BUTTON_SYSTEM_TOUCH_RIGHT = new VRActionIdentifier("button.system.touch.right", ControllerType.RIGHT);
 
 
-    public static final ActionIdentifier BUTTON_A_LEFT = new ActionIdentifier("button.a.left", ControllerType.LEFT);
-    public static final ActionIdentifier BUTTON_A_RIGHT = new ActionIdentifier("button.a.right", ControllerType.RIGHT);
-    public static final ActionIdentifier BUTTON_A_TOUCH_LEFT = new ActionIdentifier("button.a.touch.left", ControllerType.LEFT);
-    public static final ActionIdentifier BUTTON_A_TOUCH_RIGHT = new ActionIdentifier("button.a.touch.right", ControllerType.RIGHT);
+    public static final VRActionIdentifier BUTTON_A_LEFT = new VRActionIdentifier("button.a.left", ControllerType.LEFT);
+    public static final VRActionIdentifier BUTTON_A_RIGHT = new VRActionIdentifier("button.a.right", ControllerType.RIGHT);
+    public static final VRActionIdentifier BUTTON_A_TOUCH_LEFT = new VRActionIdentifier("button.a.touch.left", ControllerType.LEFT);
+    public static final VRActionIdentifier BUTTON_A_TOUCH_RIGHT = new VRActionIdentifier("button.a.touch.right", ControllerType.RIGHT);
 
 
-    public static final ActionIdentifier BUTTON_B_LEFT = new ActionIdentifier("button.b.left", ControllerType.LEFT);
-    public static final ActionIdentifier BUTTON_B_RIGHT = new ActionIdentifier("button.b.right", ControllerType.RIGHT);
-    public static final ActionIdentifier BUTTON_B_TOUCH_LEFT = new ActionIdentifier("button.b.touch.left", ControllerType.LEFT);
-    public static final ActionIdentifier BUTTON_B_TOUCH_RIGHT = new ActionIdentifier("button.b.touch.right", ControllerType.RIGHT);
+    public static final VRActionIdentifier BUTTON_B_LEFT = new VRActionIdentifier("button.b.left", ControllerType.LEFT);
+    public static final VRActionIdentifier BUTTON_B_RIGHT = new VRActionIdentifier("button.b.right", ControllerType.RIGHT);
+    public static final VRActionIdentifier BUTTON_B_TOUCH_LEFT = new VRActionIdentifier("button.b.touch.left", ControllerType.LEFT);
+    public static final VRActionIdentifier BUTTON_B_TOUCH_RIGHT = new VRActionIdentifier("button.b.touch.right", ControllerType.RIGHT);
 
 
-    public static final ActionIdentifier BUTTON_GRIP_LEFT = new ActionIdentifier("button.grip.left", ControllerType.LEFT);
-    public static final ActionIdentifier BUTTON_GRIP_RIGHT = new ActionIdentifier("button.grip.right", ControllerType.RIGHT);
-    public static final ActionIdentifier BUTTON_GRIP_FORCE_LEFT = new ActionIdentifier("button.grip.force.left", ControllerType.LEFT);;
-    public static final ActionIdentifier BUTTON_GRIP_FORCE_RIGHT = new ActionIdentifier("button.grip.force.right", ControllerType.RIGHT);
+    public static final VRActionIdentifier BUTTON_GRIP_LEFT = new VRActionIdentifier("button.grip.left", ControllerType.LEFT);
+    public static final VRActionIdentifier BUTTON_GRIP_RIGHT = new VRActionIdentifier("button.grip.right", ControllerType.RIGHT);
+    public static final VRActionIdentifier BUTTON_GRIP_FORCE_LEFT = new VRActionIdentifier("button.grip.force.left", ControllerType.LEFT);;
+    public static final VRActionIdentifier BUTTON_GRIP_FORCE_RIGHT = new VRActionIdentifier("button.grip.force.right", ControllerType.RIGHT);
 
 
 
-    public static final ActionIdentifier BUTTON_TRIGGER_LEFT = new ActionIdentifier("button.trigger.left", ControllerType.LEFT);
-    public static final ActionIdentifier BUTTON_TRIGGER_RIGHT = new ActionIdentifier("button.trigger.right", ControllerType.RIGHT);
-    public static final ActionIdentifier BUTTON_TRIGGER_CLICK_LEFT = new ActionIdentifier("button.trigger.click.left", ControllerType.LEFT);
-    public static final ActionIdentifier BUTTON_TRIGGER_CLICK_RIGHT = new ActionIdentifier("button.trigger.click.right", ControllerType.RIGHT);
-    public static final ActionIdentifier BUTTON_TRIGGER_TOUCH_LEFT = new ActionIdentifier("button.trigger.touch.left", ControllerType.LEFT);
-    public static final ActionIdentifier BUTTON_TRIGGER_TOUCH_RIGHT = new ActionIdentifier("button.trigger.touch.right", ControllerType.RIGHT);
+    public static final VRActionIdentifier BUTTON_TRIGGER_LEFT = new VRActionIdentifier("button.trigger.left", ControllerType.LEFT);
+    public static final VRActionIdentifier BUTTON_TRIGGER_RIGHT = new VRActionIdentifier("button.trigger.right", ControllerType.RIGHT);
+    public static final VRActionIdentifier BUTTON_TRIGGER_CLICK_LEFT = new VRActionIdentifier("button.trigger.click.left", ControllerType.LEFT);
+    public static final VRActionIdentifier BUTTON_TRIGGER_CLICK_RIGHT = new VRActionIdentifier("button.trigger.click.right", ControllerType.RIGHT);
+    public static final VRActionIdentifier BUTTON_TRIGGER_TOUCH_LEFT = new VRActionIdentifier("button.trigger.touch.left", ControllerType.LEFT);
+    public static final VRActionIdentifier BUTTON_TRIGGER_TOUCH_RIGHT = new VRActionIdentifier("button.trigger.touch.right", ControllerType.RIGHT);
 
-    public static final ActionIdentifier BUTTON_THUMBSTICK_LEFT = new ActionIdentifier("button.thumbstick.left", ControllerType.LEFT);
-    public static final ActionIdentifier BUTTON_THUMBSTICK_RIGHT = new ActionIdentifier("button.thumbstick.right", ControllerType.RIGHT);
-    public static final ActionIdentifier BUTTON_THUMBSTICK_TOUCH_LEFT = new ActionIdentifier("button.thumbstick.touch.left", ControllerType.LEFT);
-    public static final ActionIdentifier BUTTON_THUMBSTICK_TOUCH_RIGHT = new ActionIdentifier("button.thumbstick.touch.right", ControllerType.RIGHT);
+    public static final VRActionIdentifier BUTTON_THUMBSTICK_LEFT = new VRActionIdentifier("button.thumbstick.left", ControllerType.LEFT);
+    public static final VRActionIdentifier BUTTON_THUMBSTICK_RIGHT = new VRActionIdentifier("button.thumbstick.right", ControllerType.RIGHT);
+    public static final VRActionIdentifier BUTTON_THUMBSTICK_TOUCH_LEFT = new VRActionIdentifier("button.thumbstick.touch.left", ControllerType.LEFT);
+    public static final VRActionIdentifier BUTTON_THUMBSTICK_TOUCH_RIGHT = new VRActionIdentifier("button.thumbstick.touch.right", ControllerType.RIGHT);
 
 
-    public static final ActionIdentifier BUTTON_TRACKPAD_TOUCH_LEFT = new ActionIdentifier("button.trackpad.touch.left", ControllerType.LEFT);
-    public static final ActionIdentifier BUTTON_TRACKPAD_TOUCH_RIGHT = new ActionIdentifier("button.trackpad.touch.right", ControllerType.RIGHT);
-    public static final ActionIdentifier BUTTON_TRACKPAD_FORCE_LEFT = new ActionIdentifier("button.trackpad.force.left", ControllerType.LEFT);
-    public static final ActionIdentifier BUTTON_TRACKPAD_FORCE_RIGHT = new ActionIdentifier("button.trackpad.force.right", ControllerType.RIGHT);
+    public static final VRActionIdentifier BUTTON_TRACKPAD_TOUCH_LEFT = new VRActionIdentifier("button.trackpad.touch.left", ControllerType.LEFT);
+    public static final VRActionIdentifier BUTTON_TRACKPAD_TOUCH_RIGHT = new VRActionIdentifier("button.trackpad.touch.right", ControllerType.RIGHT);
+    public static final VRActionIdentifier BUTTON_TRACKPAD_FORCE_LEFT = new VRActionIdentifier("button.trackpad.force.left", ControllerType.LEFT);
+    public static final VRActionIdentifier BUTTON_TRACKPAD_FORCE_RIGHT = new VRActionIdentifier("button.trackpad.force.right", ControllerType.RIGHT);
 
 
     //----------VEC2----------
-    public static final ActionIdentifier VEC2_THUMBSTICK_LEFT = new ActionIdentifier("vec2.thumbstick.left", ControllerType.LEFT);
-    public static final ActionIdentifier VEC2_THUMBSTICK_RIGHT = new ActionIdentifier("vec2.thumbstick.right", ControllerType.RIGHT);
+    public static final VRActionIdentifier VEC2_THUMBSTICK_LEFT = new VRActionIdentifier("vec2.thumbstick.left", ControllerType.LEFT);
+    public static final VRActionIdentifier VEC2_THUMBSTICK_RIGHT = new VRActionIdentifier("vec2.thumbstick.right", ControllerType.RIGHT);
 
 
-    public static final ActionIdentifier VEC2_TRACKPAD_LEFT = new ActionIdentifier("vec2.trackpad.left", ControllerType.LEFT);
-    public static final ActionIdentifier VEC2_TRACKPAD_RIGHT = new ActionIdentifier("vec2.trackpad.right", ControllerType.RIGHT);
+    public static final VRActionIdentifier VEC2_TRACKPAD_LEFT = new VRActionIdentifier("vec2.trackpad.left", ControllerType.LEFT);
+    public static final VRActionIdentifier VEC2_TRACKPAD_RIGHT = new VRActionIdentifier("vec2.trackpad.right", ControllerType.RIGHT);
 
     // ----------------------------------------
 
@@ -115,9 +115,9 @@ public class ValveIndexProfile extends XRInteractionProfile {
     private FloatButtonMultiAction trackpadForce;
 
 
-    private Map<ActionIdentifier, VRActionData> actionMap;
-    private Map<ActionIdentifier, VRActionDataButton> buttonMap;
-    private Map<ActionIdentifier, VRActionDataVec2> vec2Map;
+    private Map<VRActionIdentifier, VRActionData> actionMap;
+    private Map<VRActionIdentifier, VRActionDataButton> buttonMap;
+    private Map<VRActionIdentifier, VRActionDataVec2> vec2Map;
 
     public ValveIndexProfile(XRProvider vrProvider) {
         super(vrProvider, "valve_index", "Valve Index", 0);
@@ -131,7 +131,7 @@ public class ValveIndexProfile extends XRInteractionProfile {
         systemButton = new BoolButtonMultiAction(
                 vrProvider,
                 this,
-                new ActionIdentifier("button.system"), "System button",
+                new VRActionIdentifier("button.system"), "System button",
                 List.of(
                         new BoolButtonMultiAction.SubActionBoolButton(
                                 BUTTON_SYSTEM_LEFT,
@@ -150,7 +150,7 @@ public class ValveIndexProfile extends XRInteractionProfile {
         systemButtonTouch = new BoolButtonMultiAction(
                 vrProvider,
                 this,
-                new ActionIdentifier("button.system.touch"), "System button touch",
+                new VRActionIdentifier("button.system.touch"), "System button touch",
                 List.of(
                         new BoolButtonMultiAction.SubActionBoolButton(
                                 BUTTON_SYSTEM_TOUCH_LEFT,
@@ -171,7 +171,7 @@ public class ValveIndexProfile extends XRInteractionProfile {
         buttonA = new BoolButtonMultiAction(
                 vrProvider,
                 this,
-                new ActionIdentifier("button.primary"), "Primary Button",
+                new VRActionIdentifier("button.primary"), "Primary Button",
                 List.of(
                         new BoolButtonMultiAction.SubActionBoolButton(
                                 BUTTON_A_LEFT,
@@ -190,7 +190,7 @@ public class ValveIndexProfile extends XRInteractionProfile {
         buttonTouchA = new BoolButtonMultiAction(
                 vrProvider,
                 this,
-                new ActionIdentifier("button.a.touch"), "'A' Button Touch",
+                new VRActionIdentifier("button.a.touch"), "'A' Button Touch",
                 List.of(
                         new BoolButtonMultiAction.SubActionBoolButton(
                                 BUTTON_A_TOUCH_LEFT,
@@ -211,7 +211,7 @@ public class ValveIndexProfile extends XRInteractionProfile {
         buttonB = new BoolButtonMultiAction(
                 vrProvider,
                 this,
-                new ActionIdentifier("button.b"), "'B' Button",
+                new VRActionIdentifier("button.b"), "'B' Button",
                 List.of(
                         new BoolButtonMultiAction.SubActionBoolButton(
                                 BUTTON_B_LEFT,
@@ -230,7 +230,7 @@ public class ValveIndexProfile extends XRInteractionProfile {
         buttonTouchB = new BoolButtonMultiAction(
                 vrProvider,
                 this,
-                new ActionIdentifier("button.b.touch"), "B Button Touch",
+                new VRActionIdentifier("button.b.touch"), "B Button Touch",
                 List.of(
                         new BoolButtonMultiAction.SubActionBoolButton(
                                 BUTTON_B_TOUCH_LEFT,
@@ -250,7 +250,7 @@ public class ValveIndexProfile extends XRInteractionProfile {
         gripValue = new FloatButtonMultiAction(
                 vrProvider,
                 this,
-                new ActionIdentifier("button.grip"),
+                new VRActionIdentifier("button.grip"),
                 "Grip Value",
                 0.9f,
                 0.85f,
@@ -272,7 +272,7 @@ public class ValveIndexProfile extends XRInteractionProfile {
         gripForce = new FloatButtonMultiAction(
                 vrProvider,
                 this,
-                new ActionIdentifier("button.grip.force"),
+                new VRActionIdentifier("button.grip.force"),
                 "Grip Force button",
                 0.9f,
                 0.85f,
@@ -296,7 +296,7 @@ public class ValveIndexProfile extends XRInteractionProfile {
         triggerValue = new FloatButtonMultiAction(
                 vrProvider,
                 this,
-                new ActionIdentifier("button.trigger"),
+                new VRActionIdentifier("button.trigger"),
                 "Trigger Value",
                 0.7f,
                 0.65f,
@@ -318,7 +318,7 @@ public class ValveIndexProfile extends XRInteractionProfile {
         triggerButton = new BoolButtonMultiAction(
                 vrProvider,
                 this,
-                new ActionIdentifier("button.trigger.click"), "Trigger Button",
+                new VRActionIdentifier("button.trigger.click"), "Trigger Button",
                 List.of(
                         new BoolButtonMultiAction.SubActionBoolButton(
                                 BUTTON_TRIGGER_CLICK_LEFT,
@@ -337,7 +337,7 @@ public class ValveIndexProfile extends XRInteractionProfile {
         triggerButtonTouch = new BoolButtonMultiAction(
                 vrProvider,
                 this,
-                new ActionIdentifier("button.trigger.touch"), "Trigger Button Touch",
+                new VRActionIdentifier("button.trigger.touch"), "Trigger Button Touch",
                 List.of(
                         new BoolButtonMultiAction.SubActionBoolButton(
                                 BUTTON_TRIGGER_TOUCH_LEFT,
@@ -360,7 +360,7 @@ public class ValveIndexProfile extends XRInteractionProfile {
         thumbStick = new Vec2MultiAction(
                 vrProvider,
                 this,
-                new ActionIdentifier("vec2.thumbstick"), "Thumbstick",
+                new VRActionIdentifier("vec2.thumbstick"), "Thumbstick",
                 List.of(
                         new Vec2MultiAction.SubActionVec2(
                                 VEC2_THUMBSTICK_LEFT,
@@ -379,7 +379,7 @@ public class ValveIndexProfile extends XRInteractionProfile {
         thumbStickButton = new BoolButtonMultiAction(
                 vrProvider,
                 this,
-                new ActionIdentifier("button.thumbstick"), "ThumbStick Button",
+                new VRActionIdentifier("button.thumbstick"), "ThumbStick Button",
                 List.of(
                         new BoolButtonMultiAction.SubActionBoolButton(
                                 BUTTON_THUMBSTICK_LEFT,
@@ -398,7 +398,7 @@ public class ValveIndexProfile extends XRInteractionProfile {
         thumbStickButtonTouch = new BoolButtonMultiAction(
                 vrProvider,
                 this,
-                new ActionIdentifier("button.thumbstick.touch"), "ThumbStick Button Touch",
+                new VRActionIdentifier("button.thumbstick.touch"), "ThumbStick Button Touch",
                 List.of(
                         new BoolButtonMultiAction.SubActionBoolButton(
                                 BUTTON_THUMBSTICK_TOUCH_LEFT,
@@ -419,7 +419,7 @@ public class ValveIndexProfile extends XRInteractionProfile {
         trackpad = new Vec2MultiAction(
                 vrProvider,
                 this,
-                new ActionIdentifier("vec2.trackpad"), "Trackpad",
+                new VRActionIdentifier("vec2.trackpad"), "Trackpad",
                 List.of(
                         new Vec2MultiAction.SubActionVec2(
                                 VEC2_TRACKPAD_LEFT,
@@ -438,7 +438,7 @@ public class ValveIndexProfile extends XRInteractionProfile {
         trackpadTouch = new BoolButtonMultiAction(
                 vrProvider,
                 this,
-                new ActionIdentifier("button.trackpad.touch"), "Trackpad Touch",
+                new VRActionIdentifier("button.trackpad.touch"), "Trackpad Touch",
                 List.of(
                         new BoolButtonMultiAction.SubActionBoolButton(
                                 BUTTON_TRACKPAD_TOUCH_LEFT,
@@ -457,7 +457,7 @@ public class ValveIndexProfile extends XRInteractionProfile {
         trackpadForce = new FloatButtonMultiAction(
                 vrProvider,
                 this,
-                new ActionIdentifier("button.trackpad.force"),
+                new VRActionIdentifier("button.trackpad.force"),
                 "Trackpad Force button",
                 0.3f,
                 0.1f,
@@ -525,34 +525,34 @@ public class ValveIndexProfile extends XRInteractionProfile {
 
 
     @Override
-    public Collection<ActionIdentifier> getActionIds() {
+    public Collection<VRActionIdentifier> getActionIds() {
         return Collections.unmodifiableCollection(actionMap.keySet());
     }
 
     @Override
-    public @Nullable VRActionData getAction(@NotNull ActionIdentifier id) {
+    public @Nullable VRActionData getAction(@NotNull VRActionIdentifier id) {
         return actionMap.get(id);
     }
 
 
     @Override
-    public Collection<ActionIdentifier> getButtonIds() {
+    public Collection<VRActionIdentifier> getButtonIds() {
         return Collections.unmodifiableCollection(buttonMap.keySet());
     }
 
     @Override
-    public VRActionDataButton getButton(@NotNull ActionIdentifier id) {
+    public VRActionDataButton getButton(@NotNull VRActionIdentifier id) {
         return buttonMap.get(id);
     }
 
 
     @Override
-    public Collection<ActionIdentifier> getVec2Ids() {
+    public Collection<VRActionIdentifier> getVec2Ids() {
         return Collections.unmodifiableCollection(vec2Map.keySet());
     }
 
     @Override
-    public VRActionDataVec2 getVec2(@NotNull ActionIdentifier id) {
+    public VRActionDataVec2 getVec2(@NotNull VRActionIdentifier id) {
         return vec2Map.get(id);
     }
 

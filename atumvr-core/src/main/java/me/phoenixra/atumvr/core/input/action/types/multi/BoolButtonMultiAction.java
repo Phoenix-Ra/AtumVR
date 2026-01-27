@@ -2,7 +2,7 @@ package me.phoenixra.atumvr.core.input.action.types.multi;
 
 import lombok.Getter;
 import me.phoenixra.atumvr.api.enums.ControllerType;
-import me.phoenixra.atumvr.api.input.action.ActionIdentifier;
+import me.phoenixra.atumvr.api.input.action.VRActionIdentifier;
 import me.phoenixra.atumvr.api.input.action.data.VRActionDataButton;
 import me.phoenixra.atumvr.core.XRProvider;
 import me.phoenixra.atumvr.core.enums.XRInputActionType;
@@ -25,7 +25,7 @@ public class BoolButtonMultiAction extends XRMultiAction<Boolean> {
 
     public BoolButtonMultiAction(@NotNull XRProvider vrProvider,
                                  @NotNull XRActionSet actionSet,
-                                 @NotNull ActionIdentifier id,
+                                 @NotNull VRActionIdentifier id,
                                  @NotNull String localizedName,
                                  @NotNull List<SubActionBoolButton> subActions) {
         super(vrProvider, actionSet, id, localizedName, XRInputActionType.BOOLEAN, subActions);
@@ -77,7 +77,7 @@ public class BoolButtonMultiAction extends XRMultiAction<Boolean> {
     public static class SubActionBoolButton extends SubAction<Boolean> implements VRActionDataButton {
 
 
-        public SubActionBoolButton(@NotNull ActionIdentifier id,
+        public SubActionBoolButton(@NotNull VRActionIdentifier id,
                                    @NotNull String path,
                                    @NotNull Boolean initialState) {
             super(id, path, initialState);

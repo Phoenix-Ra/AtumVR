@@ -1,6 +1,6 @@
 package me.phoenixra.atumvr.api.input.action;
 
-import lombok.Getter;
+import lombok.Data;
 import me.phoenixra.atumvr.api.enums.ControllerType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -9,8 +9,8 @@ import org.jetbrains.annotations.Nullable;
 /**
  * VR Action identifier
  */
-@Getter
-public class ActionIdentifier {
+@Data
+public class VRActionIdentifier {
 
     /**The id value*/
     private final String value;
@@ -19,13 +19,13 @@ public class ActionIdentifier {
     @Nullable
     private final ControllerType controllerType;
 
-    public ActionIdentifier(@NotNull String actionId,
-                            @NotNull ControllerType controllerType){
+    public VRActionIdentifier(@NotNull String actionId,
+                              @NotNull ControllerType controllerType){
         this.value = actionId;
         this.controllerType = controllerType;
     }
 
-    public ActionIdentifier(@NotNull String actionId){
+    public VRActionIdentifier(@NotNull String actionId){
         this.value = actionId;
         this.controllerType = null;
     }
@@ -47,5 +47,7 @@ public class ActionIdentifier {
     public boolean isLeft(){
         return controllerType == ControllerType.LEFT;
     }
+
+
 
 }

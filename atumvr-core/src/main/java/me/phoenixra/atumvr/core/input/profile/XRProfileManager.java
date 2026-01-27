@@ -25,7 +25,7 @@ import java.util.*;
  */
 public class XRProfileManager {
     @Getter
-    private final CommonActionSet sharedSet;
+    private final CommonActionSet commonSet;
 
     private XRInteractionProfile lastActive;
 
@@ -39,9 +39,9 @@ public class XRProfileManager {
 
     }
 
-    public XRProfileManager(@NotNull CommonActionSet sharedSet,
+    public XRProfileManager(@NotNull CommonActionSet commonSet,
                             @NotNull List<XRInteractionProfile> profileSets){
-        this.sharedSet = sharedSet;
+        this.commonSet = commonSet;
         for(var entry : profileSets){
             profileSetMap.put(entry.getType(), entry);
         }
@@ -92,7 +92,7 @@ public class XRProfileManager {
      */
     public List<? extends XRActionSet> getAllActionSets(){
         var list = new ArrayList<XRActionSet>();
-        list.add(sharedSet);
+        list.add(commonSet);
         list.addAll(profileSetMap.values());
         return list;
     }
@@ -103,7 +103,7 @@ public class XRProfileManager {
      * @return the action
      */
     public HapticPulseAction getHapticPulse(){
-        return sharedSet.getHapticPulse();
+        return commonSet.getHapticPulse();
     }
 
     /**
@@ -112,7 +112,7 @@ public class XRProfileManager {
      * @return the action
      */
     public PoseMultiAction getHandPoseAim(){
-        return sharedSet.getHandPoseAim();
+        return commonSet.getHandPoseAim();
     }
 
     /**
@@ -121,7 +121,7 @@ public class XRProfileManager {
      * @return the action
      */
     public PoseMultiAction getHandPoseGrip(){
-        return sharedSet.getHandPoseGrip();
+        return commonSet.getHandPoseGrip();
     }
 
 }

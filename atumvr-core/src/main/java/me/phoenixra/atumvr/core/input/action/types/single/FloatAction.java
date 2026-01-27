@@ -1,7 +1,7 @@
 package me.phoenixra.atumvr.core.input.action.types.single;
 
 import lombok.Getter;
-import me.phoenixra.atumvr.api.input.action.ActionIdentifier;
+import me.phoenixra.atumvr.api.input.action.VRActionIdentifier;
 import me.phoenixra.atumvr.core.XRProvider;
 import me.phoenixra.atumvr.core.enums.XRInputActionType;
 import me.phoenixra.atumvr.core.input.action.XRActionSet;
@@ -20,7 +20,7 @@ public class FloatAction extends XRSingleAction<Float> implements VRActionDataFl
 
     public FloatAction(@NotNull XRProvider vrProvider,
                        @NotNull XRActionSet actionSet,
-                       @NotNull ActionIdentifier id,
+                       @NotNull VRActionIdentifier id,
                        @NotNull String localizedName) {
         super(vrProvider, actionSet, id, localizedName,  XRInputActionType.FLOAT);
     }

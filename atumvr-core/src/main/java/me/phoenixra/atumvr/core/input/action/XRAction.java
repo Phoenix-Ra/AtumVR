@@ -1,7 +1,7 @@
 package me.phoenixra.atumvr.core.input.action;
 
 import lombok.Getter;
-import me.phoenixra.atumvr.api.input.action.ActionIdentifier;
+import me.phoenixra.atumvr.api.input.action.VRActionIdentifier;
 import me.phoenixra.atumvr.api.input.action.VRAction;
 import me.phoenixra.atumvr.core.XRProvider;
 import me.phoenixra.atumvr.core.enums.XRInputActionType;
@@ -26,7 +26,7 @@ public abstract class XRAction implements VRAction {
     protected final @NotNull XRActionSet actionSet;
 
     @Getter
-    protected final @NotNull ActionIdentifier id;
+    protected final @NotNull VRActionIdentifier id;
     @Getter
     protected final @NotNull String localizedName;
 
@@ -34,7 +34,7 @@ public abstract class XRAction implements VRAction {
 
     public XRAction(@NotNull XRProvider vrProvider,
                     @NotNull XRActionSet actionSet,
-                    @NotNull ActionIdentifier id,
+                    @NotNull VRActionIdentifier id,
                     @NotNull String localizedName,
                     @NotNull XRInputActionType actionType) {
         this.vrProvider = vrProvider;

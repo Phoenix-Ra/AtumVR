@@ -3,7 +3,7 @@ package me.phoenixra.atumvr.core.input.action.types;
 import me.phoenixra.atumconfig.api.tuples.PairRecord;
 import me.phoenixra.atumvr.api.enums.ControllerType;
 import me.phoenixra.atumvr.api.exceptions.VRException;
-import me.phoenixra.atumvr.api.input.action.ActionIdentifier;
+import me.phoenixra.atumvr.api.input.action.VRActionIdentifier;
 import me.phoenixra.atumvr.core.XRProvider;
 import me.phoenixra.atumvr.core.enums.XRInputActionType;
 import me.phoenixra.atumvr.core.input.profile.XRInteractionProfileType;
@@ -37,7 +37,7 @@ public class HapticPulseAction extends XRAction {
                              String localizedName) {
         super(vrProvider,
                 actionSet,
-                new ActionIdentifier(id),
+                new VRActionIdentifier(id),
                 localizedName,
                 XRInputActionType.HAPTIC
         );

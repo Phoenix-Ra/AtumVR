@@ -1,7 +1,7 @@
 package me.phoenixra.atumvr.core.input.action.types.multi;
 
 import lombok.Getter;
-import me.phoenixra.atumvr.api.input.action.ActionIdentifier;
+import me.phoenixra.atumvr.api.input.action.VRActionIdentifier;
 import me.phoenixra.atumvr.core.XRProvider;
 import me.phoenixra.atumvr.core.enums.XRInputActionType;
 import me.phoenixra.atumvr.core.input.action.XRActionSet;
@@ -25,7 +25,7 @@ public class FloatMultiAction extends XRMultiAction<Float> {
 
     public FloatMultiAction(@NotNull XRProvider vrProvider,
                             @NotNull XRActionSet actionSet,
-                            @NotNull ActionIdentifier id,
+                            @NotNull VRActionIdentifier id,
                             @NotNull String localizedName,
                             @NotNull List<SubActionFloat> subActions) {
         super(vrProvider, actionSet, id, localizedName, XRInputActionType.FLOAT, subActions);
@@ -73,7 +73,7 @@ public class FloatMultiAction extends XRMultiAction<Float> {
     public static class SubActionFloat extends SubAction<Float> implements VRActionDataFloat {
 
 
-        public SubActionFloat(@NotNull ActionIdentifier id,
+        public SubActionFloat(@NotNull VRActionIdentifier id,
                               @NotNull String path,
                               @NotNull Float initialState) {
             super(id, path, initialState);

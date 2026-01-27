@@ -2,7 +2,7 @@ package me.phoenixra.atumvr.core.input.profile;
 
 import lombok.Getter;
 import me.phoenixra.atumvr.api.enums.ControllerType;
-import me.phoenixra.atumvr.api.input.action.ActionIdentifier;
+import me.phoenixra.atumvr.api.input.action.VRActionIdentifier;
 import me.phoenixra.atumvr.api.misc.pose.VRPoseRecord;
 import me.phoenixra.atumvr.core.XRProvider;
 import me.phoenixra.atumvr.core.input.action.XRAction;
@@ -23,14 +23,14 @@ import static me.phoenixra.atumvr.core.input.action.XRAction.RIGHT_HAND_PATH;
 public class CommonActionSet extends XRActionSet {
 
     // ---------- ACTION IDENTIFIERS ----------
-    public static final ActionIdentifier POSE_HAND_AIM_LEFT = new ActionIdentifier("hand.aim.left", ControllerType.LEFT);
+    public static final VRActionIdentifier POSE_HAND_AIM_LEFT = new VRActionIdentifier("hand.aim.left", ControllerType.LEFT);
 
-    public static final ActionIdentifier POSE_HAND_AIM_RIGHT = new ActionIdentifier("hand.aim.right", ControllerType.RIGHT);
+    public static final VRActionIdentifier POSE_HAND_AIM_RIGHT = new VRActionIdentifier("hand.aim.right", ControllerType.RIGHT);
 
 
-    public static final ActionIdentifier POSE_HAND_GRIP_LEFT = new ActionIdentifier("hand.grip.left", ControllerType.LEFT);
+    public static final VRActionIdentifier POSE_HAND_GRIP_LEFT = new VRActionIdentifier("hand.grip.left", ControllerType.LEFT);
 
-    public static final ActionIdentifier POSE_HAND_GRIP_RIGHT = new ActionIdentifier("hand.grip.right", ControllerType.RIGHT);
+    public static final VRActionIdentifier POSE_HAND_GRIP_RIGHT = new VRActionIdentifier("hand.grip.right", ControllerType.RIGHT);
 
     // ----------------------------------------
 
@@ -58,7 +58,7 @@ public class CommonActionSet extends XRActionSet {
         // -------- HAND POSES --------
         handPoseAim = new PoseMultiAction(
                 vrProvider, this,
-                new ActionIdentifier("hand_aim"),
+                new VRActionIdentifier("hand_aim"),
                 "Hand Aim",
                 List.of(
                         new PoseMultiAction.SubActionPose(
@@ -76,7 +76,7 @@ public class CommonActionSet extends XRActionSet {
 
         handPoseGrip = new PoseMultiAction(
                 vrProvider, this,
-                new ActionIdentifier("hand_grip"),
+                new VRActionIdentifier("hand_grip"),
                 "Hand Grip",
                 List.of(
                         new PoseMultiAction.SubActionPose(

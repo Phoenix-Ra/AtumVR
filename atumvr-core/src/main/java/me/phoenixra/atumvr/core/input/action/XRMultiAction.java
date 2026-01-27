@@ -2,7 +2,7 @@ package me.phoenixra.atumvr.core.input.action;
 
 import lombok.Getter;
 import lombok.Setter;
-import me.phoenixra.atumvr.api.input.action.ActionIdentifier;
+import me.phoenixra.atumvr.api.input.action.VRActionIdentifier;
 import me.phoenixra.atumvr.api.enums.ControllerType;
 import me.phoenixra.atumvr.core.XRProvider;
 import me.phoenixra.atumvr.core.enums.XRInputActionType;
@@ -49,7 +49,7 @@ public abstract class XRMultiAction<T> extends XRAction {
 
     public XRMultiAction(@NotNull XRProvider vrProvider,
                          @NotNull XRActionSet actionSet,
-                         @NotNull ActionIdentifier id,
+                         @NotNull VRActionIdentifier id,
                          @NotNull String localizedName,
                          @NotNull XRInputActionType actionType,
                          @NotNull List<? extends SubAction<T>> subActions) {
@@ -106,7 +106,7 @@ public abstract class XRMultiAction<T> extends XRAction {
         protected Map<XRInteractionProfileType, String> defaultBindings = new LinkedHashMap<>();
 
         @Getter
-        private final @NotNull ActionIdentifier id;
+        private final @NotNull VRActionIdentifier id;
 
         protected String pathName;
         @Setter
@@ -117,7 +117,7 @@ public abstract class XRMultiAction<T> extends XRAction {
         protected boolean changed = false;
         protected boolean active = false;
 
-        public SubAction(@NotNull ActionIdentifier id,
+        public SubAction(@NotNull VRActionIdentifier id,
                          @NotNull String path,
                          @NotNull T initialState){
             this.id = id;

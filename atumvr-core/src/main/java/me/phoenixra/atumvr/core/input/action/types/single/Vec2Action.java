@@ -1,6 +1,6 @@
 package me.phoenixra.atumvr.core.input.action.types.single;
 
-import me.phoenixra.atumvr.api.input.action.ActionIdentifier;
+import me.phoenixra.atumvr.api.input.action.VRActionIdentifier;
 import me.phoenixra.atumvr.api.input.action.data.VRActionDataVec2;
 import me.phoenixra.atumvr.core.utils.XRUtils;
 import me.phoenixra.atumvr.core.XRProvider;
@@ -18,7 +18,7 @@ public class Vec2Action extends XRSingleAction<Vector2f> implements VRActionData
 
     public Vec2Action(@NotNull XRProvider vrProvider,
                       @NotNull XRActionSet actionSet,
-                      @NotNull ActionIdentifier id,
+                      @NotNull VRActionIdentifier id,
                       @NotNull String localizedName) {
         super(vrProvider, actionSet, id, localizedName, XRInputActionType.VECTOR2F);
         currentState = new Vector2f();
