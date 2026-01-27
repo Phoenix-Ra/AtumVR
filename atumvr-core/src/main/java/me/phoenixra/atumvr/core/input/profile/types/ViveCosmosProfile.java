@@ -59,6 +59,43 @@ public class ViveCosmosProfile extends XRInteractionProfile {
     public static final VRActionIdentifier VEC2_THUMBSTICK_LEFT = new VRActionIdentifier("vec2.thumbstick.left", ControllerType.LEFT);
     public static final VRActionIdentifier VEC2_THUMBSTICK_RIGHT = new VRActionIdentifier("vec2.thumbstick.right", ControllerType.RIGHT);
 
+    @Getter
+    public static final List<VRActionIdentifier> ALL_ACTION_IDS;
+
+    @Getter
+    public static final List<VRActionIdentifier> BUTTON_IDS;
+
+    @Getter
+    public static final List<VRActionIdentifier> VEC2_IDS;
+
+    static {
+        ALL_ACTION_IDS = List.of(
+                BUTTON_MENU, BUTTON_SYSTEM,
+                BUTTON_X, BUTTON_A,
+                BUTTON_Y, BUTTON_B,
+                BUTTON_SHOULDER_LEFT, BUTTON_SHOULDER_RIGHT,
+                BUTTON_GRIP_LEFT, BUTTON_GRIP_RIGHT,
+                BUTTON_TRIGGER_LEFT, BUTTON_TRIGGER_RIGHT,
+                BUTTON_TRIGGER_CLICK_LEFT, BUTTON_TRIGGER_CLICK_RIGHT,
+                BUTTON_THUMBSTICK_LEFT, BUTTON_THUMBSTICK_RIGHT,
+                BUTTON_THUMBSTICK_TOUCH_LEFT, BUTTON_THUMBSTICK_TOUCH_RIGHT,
+                VEC2_THUMBSTICK_LEFT, VEC2_THUMBSTICK_RIGHT
+        );
+        BUTTON_IDS = List.of(
+                BUTTON_MENU, BUTTON_SYSTEM,
+                BUTTON_X, BUTTON_A,
+                BUTTON_Y, BUTTON_B,
+                BUTTON_SHOULDER_LEFT, BUTTON_SHOULDER_RIGHT,
+                BUTTON_GRIP_LEFT, BUTTON_GRIP_RIGHT,
+                BUTTON_TRIGGER_LEFT, BUTTON_TRIGGER_RIGHT,
+                BUTTON_TRIGGER_CLICK_LEFT, BUTTON_TRIGGER_CLICK_RIGHT,
+                BUTTON_THUMBSTICK_LEFT, BUTTON_THUMBSTICK_RIGHT,
+                BUTTON_THUMBSTICK_TOUCH_LEFT, BUTTON_THUMBSTICK_TOUCH_RIGHT
+        );
+        VEC2_IDS = List.of(
+                VEC2_THUMBSTICK_LEFT, VEC2_THUMBSTICK_RIGHT
+        );
+    }
     // ----------------------------------------
 
     // Single-hand only buttons

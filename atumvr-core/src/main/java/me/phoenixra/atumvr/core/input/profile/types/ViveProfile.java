@@ -52,6 +52,39 @@ public class ViveProfile extends XRInteractionProfile {
     public static final VRActionIdentifier VEC2_TRACKPAD_LEFT = new VRActionIdentifier("vec2.trackpad.left", ControllerType.LEFT);;
     public static final VRActionIdentifier VEC2_TRACKPAD_RIGHT = new VRActionIdentifier("vec2.trackpad.right", ControllerType.RIGHT);
 
+    @Getter
+    public static final List<VRActionIdentifier> ALL_ACTION_IDS;
+
+    @Getter
+    public static final List<VRActionIdentifier> BUTTON_IDS;
+
+    @Getter
+    public static final List<VRActionIdentifier> VEC2_IDS;
+
+    static {
+        ALL_ACTION_IDS = List.of(
+                BUTTON_SYSTEM_LEFT, BUTTON_SYSTEM_RIGHT,
+                BUTTON_MENU_LEFT, BUTTON_MENU_RIGHT,
+                BUTTON_GRIP_LEFT, BUTTON_GRIP_RIGHT,
+                BUTTON_TRIGGER_LEFT, BUTTON_TRIGGER_RIGHT,
+                BUTTON_TRIGGER_CLICK_LEFT, BUTTON_TRIGGER_CLICK_RIGHT,
+                BUTTON_TRACKPAD_LEFT, BUTTON_TRACKPAD_RIGHT,
+                BUTTON_TRACKPAD_TOUCH_LEFT, BUTTON_TRACKPAD_TOUCH_RIGHT,
+                VEC2_TRACKPAD_LEFT, VEC2_TRACKPAD_RIGHT
+        );
+        BUTTON_IDS = List.of(
+                BUTTON_SYSTEM_LEFT, BUTTON_SYSTEM_RIGHT,
+                BUTTON_MENU_LEFT, BUTTON_MENU_RIGHT,
+                BUTTON_GRIP_LEFT, BUTTON_GRIP_RIGHT,
+                BUTTON_TRIGGER_LEFT, BUTTON_TRIGGER_RIGHT,
+                BUTTON_TRIGGER_CLICK_LEFT, BUTTON_TRIGGER_CLICK_RIGHT,
+                BUTTON_TRACKPAD_LEFT, BUTTON_TRACKPAD_RIGHT,
+                BUTTON_TRACKPAD_TOUCH_LEFT, BUTTON_TRACKPAD_TOUCH_RIGHT
+        );
+        VEC2_IDS = List.of(
+                VEC2_TRACKPAD_LEFT, VEC2_TRACKPAD_RIGHT
+        );
+    }
     // ----------------------------------------
 
     // System & Menu Buttons
