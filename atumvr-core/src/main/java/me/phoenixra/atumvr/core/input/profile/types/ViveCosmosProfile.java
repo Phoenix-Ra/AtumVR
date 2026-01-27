@@ -59,13 +59,9 @@ public class ViveCosmosProfile extends XRInteractionProfile {
     public static final VRActionIdentifier VEC2_THUMBSTICK_LEFT = new VRActionIdentifier("vec2.thumbstick.left", ControllerType.LEFT);
     public static final VRActionIdentifier VEC2_THUMBSTICK_RIGHT = new VRActionIdentifier("vec2.thumbstick.right", ControllerType.RIGHT);
 
-    @Getter
+
     public static final List<VRActionIdentifier> ALL_ACTION_IDS;
-
-    @Getter
     public static final List<VRActionIdentifier> BUTTON_IDS;
-
-    @Getter
     public static final List<VRActionIdentifier> VEC2_IDS;
 
     static {

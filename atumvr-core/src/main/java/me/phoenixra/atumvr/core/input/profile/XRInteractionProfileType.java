@@ -1,6 +1,7 @@
 package me.phoenixra.atumvr.core.input.profile;
 
 import lombok.Getter;
+import me.phoenixra.atumvr.api.input.action.VRActionIdentifier;
 import me.phoenixra.atumvr.core.XRProvider;
 import me.phoenixra.atumvr.core.input.profile.types.*;
 import me.phoenixra.atumvr.core.session.XRInstance;
@@ -93,5 +94,71 @@ public enum XRInteractionProfileType {
         if(supported.contains(VIVE_COSMOS)) out.add(new ViveCosmosProfile(vrProvider));
 
         return out;
+    }
+
+    /**
+     * Get action ids of specified profile type
+     *
+     * @param profileType the interaction profile type
+     * @return the list of action ids
+     */
+    public static List<VRActionIdentifier> getActionIdsOf(@NotNull XRInteractionProfileType profileType){
+        return switch (profileType){
+            case HP_MIXED_REALITY -> HpMixedRealityProfile.ALL_ACTION_IDS;
+
+            case OCULUS_TOUCH -> OculusTouchProfile.ALL_ACTION_IDS;
+
+            case VALVE_INDEX -> ValveIndexProfile.ALL_ACTION_IDS;
+
+            case VIVE_COSMOS -> ViveCosmosProfile.ALL_ACTION_IDS;
+
+            case VIVE -> ViveProfile.ALL_ACTION_IDS;
+
+            case WINDOWS_MOTION -> WindowsMotionProfile.ALL_ACTION_IDS;
+        };
+    }
+
+    /**
+     * Get action button ids of specified profile type
+     *
+     * @param profileType the interaction profile type
+     * @return the list of action ids
+     */
+    public static List<VRActionIdentifier> getButtonIdsOf(@NotNull XRInteractionProfileType profileType){
+        return switch (profileType){
+            case HP_MIXED_REALITY -> HpMixedRealityProfile.BUTTON_IDS;
+
+            case OCULUS_TOUCH -> OculusTouchProfile.BUTTON_IDS;
+
+            case VALVE_INDEX -> ValveIndexProfile.BUTTON_IDS;
+
+            case VIVE_COSMOS -> ViveCosmosProfile.BUTTON_IDS;
+
+            case VIVE -> ViveProfile.BUTTON_IDS;
+
+            case WINDOWS_MOTION -> WindowsMotionProfile.BUTTON_IDS;
+        };
+    }
+
+    /**
+     * Get action vec2 ids of specified profile type
+     *
+     * @param profileType the interaction profile type
+     * @return the list of action ids
+     */
+    public static List<VRActionIdentifier> getVec2IdsOf(@NotNull XRInteractionProfileType profileType){
+        return switch (profileType){
+            case HP_MIXED_REALITY -> HpMixedRealityProfile.VEC2_IDS;
+
+            case OCULUS_TOUCH -> OculusTouchProfile.VEC2_IDS;
+
+            case VALVE_INDEX -> ValveIndexProfile.VEC2_IDS;
+
+            case VIVE_COSMOS -> ViveCosmosProfile.VEC2_IDS;
+
+            case VIVE -> ViveProfile.VEC2_IDS;
+
+            case WINDOWS_MOTION -> WindowsMotionProfile.VEC2_IDS;
+        };
     }
 }
