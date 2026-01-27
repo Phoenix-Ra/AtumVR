@@ -10,7 +10,7 @@ dependencies {
 
     api("org.joml:joml:1.10.5")
 
-    api platform("org.lwjgl:lwjgl-bom:3.4.0")
+    api platform("org.lwjgl:lwjgl-bom:3.3.6")
 
     api("org.lwjgl:lwjgl")
     api("org.lwjgl:lwjgl-opengl")

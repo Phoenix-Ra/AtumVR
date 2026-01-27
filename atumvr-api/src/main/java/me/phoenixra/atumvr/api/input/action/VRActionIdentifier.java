@@ -1,6 +1,7 @@
 package me.phoenixra.atumvr.api.input.action;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import me.phoenixra.atumvr.api.enums.ControllerType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -16,7 +17,7 @@ public class VRActionIdentifier {
     private final String value;
 
     /**The controller type the action is attached to or null if not attached*/
-    @Nullable
+    @Nullable @EqualsAndHashCode.Exclude
     private final ControllerType controllerType;
 
     public VRActionIdentifier(@NotNull String actionId,
@@ -47,6 +48,7 @@ public class VRActionIdentifier {
     public boolean isLeft(){
         return controllerType == ControllerType.LEFT;
     }
+
 
 
 
