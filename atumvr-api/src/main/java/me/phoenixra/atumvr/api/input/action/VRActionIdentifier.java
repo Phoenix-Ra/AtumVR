@@ -36,7 +36,7 @@ public class VRActionIdentifier {
      *
      * @return true/false
      */
-    public boolean isRight(){
+    public boolean isControllerRight(){
         return controllerType == ControllerType.RIGHT;
     }
 
@@ -45,7 +45,7 @@ public class VRActionIdentifier {
      *
      * @return true/false
      */
-    public boolean isLeft(){
+    public boolean isControllerLeft(){
         return controllerType == ControllerType.LEFT;
     }
 

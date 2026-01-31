@@ -73,6 +73,14 @@ public interface VRProvider {
     VRState getState();
 
     /**
+     * Get VR session
+     *
+     * @return the VR session
+     */
+    @NotNull
+    VRSession getSession();
+
+    /**
      * Get VR Input Handler
      *
      * @return the VR state

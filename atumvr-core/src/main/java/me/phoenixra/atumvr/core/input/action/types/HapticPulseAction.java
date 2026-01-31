@@ -6,7 +6,7 @@ import me.phoenixra.atumvr.api.exceptions.VRException;
 import me.phoenixra.atumvr.api.input.action.VRActionIdentifier;
 import me.phoenixra.atumvr.core.XRProvider;
 import me.phoenixra.atumvr.core.enums.XRInputActionType;
-import me.phoenixra.atumvr.core.input.profile.XRInteractionProfileType;
+import me.phoenixra.atumvr.api.input.profile.VRInteractionProfileType;
 import me.phoenixra.atumvr.core.input.XRInputHandler;
 import me.phoenixra.atumvr.core.input.action.XRAction;
 import me.phoenixra.atumvr.core.input.action.XRActionSet;
@@ -28,7 +28,7 @@ public class HapticPulseAction extends XRAction {
 
 
 
-    protected Map<XRInteractionProfileType, PairRecord<String,String>> defaultBindings = new LinkedHashMap<>();
+    protected Map<VRInteractionProfileType, PairRecord<String,String>> defaultBindings = new LinkedHashMap<>();
 
 
     public HapticPulseAction(XRProvider vrProvider,
@@ -123,7 +123,7 @@ public class HapticPulseAction extends XRAction {
     }
 
 
-    public HapticPulseAction putDefaultBindings(@NotNull XRInteractionProfileType profile,
+    public HapticPulseAction putDefaultBindings(@NotNull VRInteractionProfileType profile,
                                                 @Nullable String source){
         defaultBindings.put(profile,
                 new PairRecord<>(
@@ -134,9 +134,9 @@ public class HapticPulseAction extends XRAction {
         return this;
     }
 
-    public HapticPulseAction putDefaultBindings(@NotNull List<XRInteractionProfileType> profiles,
+    public HapticPulseAction putDefaultBindings(@NotNull List<VRInteractionProfileType> profiles,
                                                 @Nullable String source){
-        for(XRInteractionProfileType profile : profiles){
+        for(VRInteractionProfileType profile : profiles){
             defaultBindings.put(
                     profile,
                     new PairRecord<>(
@@ -151,7 +151,7 @@ public class HapticPulseAction extends XRAction {
     }
 
     @Nullable
-    public PairRecord<String,String> getDefaultBindings(XRInteractionProfileType profile){
+    public PairRecord<String,String> getDefaultBindings(VRInteractionProfileType profile){
         return defaultBindings.get(profile);
     }
 }

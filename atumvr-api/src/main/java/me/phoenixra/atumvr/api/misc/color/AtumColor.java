@@ -6,13 +6,11 @@ import java.awt.*;
 
 
 /**
- * The AtumColor interface defines the common functionality for color objects
- * Colors are represented with normalized float values
- * for red, green, blue, and alpha (transparency) as well as corresponding integer
- * representations (0–255) cached for performance reasons.
- * <br><br>
- * The interface also provides several pre-defined color constants and static factory
- * methods to create either mutable or immutable color instances
+ * Base interface for colors.
+ * <p>
+ *     It is in this lib to simplify work with textures.<br>
+ *     Optional to use, can be ignored
+ * </p>
  */
 public interface AtumColor {
 

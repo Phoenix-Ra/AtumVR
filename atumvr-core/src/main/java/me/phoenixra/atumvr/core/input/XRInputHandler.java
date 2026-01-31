@@ -7,10 +7,14 @@ import me.phoenixra.atumvr.api.input.VRInputHandler;
 import me.phoenixra.atumvr.api.input.device.VRDevice;
 import me.phoenixra.atumvr.core.XRProvider;
 import me.phoenixra.atumvr.api.input.action.data.VRActionData;
-import me.phoenixra.atumvr.core.input.profile.XRInteractionProfileType;
+import me.phoenixra.atumvr.api.input.profile.VRInteractionProfileType;
 import me.phoenixra.atumvr.core.input.action.XRAction;
 import me.phoenixra.atumvr.core.input.action.XRActionSet;
 import me.phoenixra.atumvr.core.input.device.XRDevice;
+import me.phoenixra.atumvr.api.input.profile.VRInteractionProfile;
+import me.phoenixra.atumvr.core.input.profile.XRInteractionProfile;
+import me.phoenixra.atumvr.core.input.profile.types.*;
+import me.phoenixra.atumvr.core.session.XRInstance;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.openxr.*;
 import org.lwjgl.system.MemoryStack;
@@ -18,6 +22,8 @@ import org.lwjgl.system.MemoryStack;
 import java.nio.LongBuffer;
 import java.util.*;
 
+import static me.phoenixra.atumvr.api.input.profile.VRInteractionProfileType.*;
+import static me.phoenixra.atumvr.api.input.profile.VRInteractionProfileType.VIVE_COSMOS;
 import static org.lwjgl.openxr.XR10.*;
 import static org.lwjgl.system.MemoryStack.*;
 import static org.lwjgl.system.MemoryUtil.NULL;
@@ -162,12 +168,12 @@ public abstract class XRInputHandler implements VRInputHandler {
     private void suggestDefaultBindings(@NotNull MemoryStack stack) {
 
         XrInstance xrInstance = vrProvider.getSession().getInstance().getHandle();
-        List<XRInteractionProfileType> supportedProfiles = XRInteractionProfileType.getSupported(vrProvider);
+        List<VRInteractionProfileType> supportedProfiles = getSupportedProfileTypes();
 
-        for (XRInteractionProfileType profile : supportedProfiles) {
+        for (VRInteractionProfileType profileType : supportedProfiles) {
             List<PairRecord<XRAction, String>> bindingsSet = new ArrayList<>();
             for(XRActionSet actionSet : actionSets.values()){
-                var binds = actionSet.getDefaultBindings(profile);
+                var binds = actionSet.getDefaultBindings(profileType);
                 if(binds == null || binds.isEmpty()) continue;
                 bindingsSet.addAll(binds);
             }
@@ -187,7 +193,7 @@ public abstract class XRInputHandler implements VRInputHandler {
                     .set(
                             XR10.XR_TYPE_INTERACTION_PROFILE_SUGGESTED_BINDING,
                             NULL,
-                            convertStringToXrPath(profile.getPathName()),
+                            convertStringToXrPath(profileType.getXrPath()),
                             bindings
                     );
 
@@ -254,6 +260,48 @@ public abstract class XRInputHandler implements VRInputHandler {
                 return buf.get();
             }
         });
+    }
+
+
+    @Override
+    public @NotNull List<VRInteractionProfileType> getSupportedProfileTypes(){
+        List<VRInteractionProfileType> list = new ArrayList<>();
+        XRInstance instance = vrProvider.getSession().getInstance();
+
+        list.add(OCULUS_TOUCH);
+        list.add(VALVE_INDEX);
+        list.add(WINDOWS_MOTION);
+        list.add(VIVE);
+
+        if(instance.getHandle().getCapabilities().XR_EXT_hp_mixed_reality_controller){
+            list.add(HP_MIXED_REALITY);
+        }
+        if(instance.getHandle().getCapabilities().XR_HTC_vive_cosmos_controller_interaction){
+            list.add(VIVE_COSMOS);
+        }
+
+        return list;
+    }
+
+    /**
+     * Get supported interaction profiles by the user's hardware
+     */
+    public @NotNull List<XRInteractionProfile> getSupportedProfiles(){
+        var out = new ArrayList<XRInteractionProfile>();
+        var supported = getSupportedProfileTypes();
+        if(supported.contains(VALVE_INDEX)) out.add(new ValveIndexXRProfile(vrProvider));
+
+        if(supported.contains(OCULUS_TOUCH)) out.add(new OculusTouchXRProfile(vrProvider));
+
+        if(supported.contains(WINDOWS_MOTION)) out.add(new WindowsMotionXRProfile(vrProvider));
+
+        if(supported.contains(HP_MIXED_REALITY)) out.add(new HpMixedRealityXRProfile(vrProvider));
+
+        if(supported.contains(VIVE)) out.add(new ViveXRProfile(vrProvider));
+
+        if(supported.contains(VIVE_COSMOS)) out.add(new ViveCosmosXRProfile(vrProvider));
+
+        return out;
     }
 
     // -------- DESTROY --------

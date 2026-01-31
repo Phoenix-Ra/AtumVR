@@ -3,9 +3,11 @@ package me.phoenixra.atumvr.api.input;
 import me.phoenixra.atumvr.api.VRProvider;
 import me.phoenixra.atumvr.api.input.action.VRActionSet;
 import me.phoenixra.atumvr.api.input.device.VRDevice;
+import me.phoenixra.atumvr.api.input.profile.VRInteractionProfileType;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Base class for VR input
@@ -68,6 +70,12 @@ public interface VRInputHandler {
      * @return collection of devices
      */
     Collection<? extends VRDevice> getDevices();
+
+
+    /**
+     * Get supported interaction profile types by the user's hardware
+     */
+    @NotNull List<VRInteractionProfileType> getSupportedProfileTypes();
 
     /**
      * Get VR provider associated with this instance

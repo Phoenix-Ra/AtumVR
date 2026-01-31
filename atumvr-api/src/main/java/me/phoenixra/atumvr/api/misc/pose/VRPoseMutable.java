@@ -3,6 +3,9 @@ package me.phoenixra.atumvr.api.misc.pose;
 import org.jetbrains.annotations.NotNull;
 import org.joml.*;
 
+/**
+ * Mutable representation of {@link VRPose}
+ */
 public class VRPoseMutable implements VRPose{
 
     private final Matrix4f matrix;

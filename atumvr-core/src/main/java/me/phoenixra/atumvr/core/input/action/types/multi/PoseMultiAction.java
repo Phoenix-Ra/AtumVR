@@ -3,7 +3,7 @@ package me.phoenixra.atumvr.core.input.action.types.multi;
 import lombok.Getter;
 import me.phoenixra.atumvr.api.input.action.VRActionIdentifier;
 import me.phoenixra.atumvr.api.input.action.data.VRActionDataPose;
-import me.phoenixra.atumvr.core.input.profile.XRInteractionProfileType;
+import me.phoenixra.atumvr.api.input.profile.VRInteractionProfileType;
 import me.phoenixra.atumvr.api.misc.pose.VRPoseRecord;
 import me.phoenixra.atumvr.core.utils.XRUtils;
 import me.phoenixra.atumvr.core.XRProvider;
@@ -120,12 +120,12 @@ public class PoseMultiAction extends XRMultiAction<VRPoseRecord> {
         }
 
         @Override
-        public SubActionPose putDefaultBindings(@NotNull List<XRInteractionProfileType> profiles, @Nullable String source) {
+        public SubActionPose putDefaultBindings(@NotNull List<VRInteractionProfileType> profiles, @Nullable String source) {
             return (SubActionPose) super.putDefaultBindings(profiles, source);
         }
 
         @Override
-        public SubActionPose putDefaultBindings(@NotNull XRInteractionProfileType profile, @Nullable String source) {
+        public SubActionPose putDefaultBindings(@NotNull VRInteractionProfileType profile, @Nullable String source) {
             return (SubActionPose) super.putDefaultBindings(profile, source);
         }
 

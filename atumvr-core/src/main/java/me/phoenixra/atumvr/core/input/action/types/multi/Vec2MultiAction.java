@@ -7,7 +7,7 @@ import me.phoenixra.atumvr.api.input.action.data.VRActionDataVec2;
 import me.phoenixra.atumvr.core.utils.XRUtils;
 import me.phoenixra.atumvr.core.XRProvider;
 import me.phoenixra.atumvr.core.enums.XRInputActionType;
-import me.phoenixra.atumvr.core.input.profile.XRInteractionProfileType;
+import me.phoenixra.atumvr.api.input.profile.VRInteractionProfileType;
 import me.phoenixra.atumvr.core.input.action.XRActionSet;
 import me.phoenixra.atumvr.core.input.action.XRMultiAction;
 import org.jetbrains.annotations.NotNull;
@@ -88,13 +88,13 @@ public class Vec2MultiAction extends XRMultiAction<Vector2f> {
         }
 
         @Override
-        public SubActionVec2 putDefaultBindings(@NotNull List<XRInteractionProfileType> profiles,
+        public SubActionVec2 putDefaultBindings(@NotNull List<VRInteractionProfileType> profiles,
                                                 @Nullable String source) {
             return (SubActionVec2) super.putDefaultBindings(profiles, source);
         }
 
         @Override
-        public SubActionVec2 putDefaultBindings(@NotNull XRInteractionProfileType profile,
+        public SubActionVec2 putDefaultBindings(@NotNull VRInteractionProfileType profile,
                                                 @Nullable String source) {
             return (SubActionVec2) super.putDefaultBindings(profile, source);
         }

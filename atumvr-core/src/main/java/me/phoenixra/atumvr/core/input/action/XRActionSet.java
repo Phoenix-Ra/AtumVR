@@ -4,7 +4,7 @@ import lombok.Getter;
 import me.phoenixra.atumconfig.api.tuples.PairRecord;
 import me.phoenixra.atumvr.api.input.action.VRActionSet;
 import me.phoenixra.atumvr.core.XRProvider;
-import me.phoenixra.atumvr.core.input.profile.XRInteractionProfileType;
+import me.phoenixra.atumvr.api.input.profile.VRInteractionProfileType;
 import me.phoenixra.atumvr.core.session.XRInstance;
 import me.phoenixra.atumvr.core.input.action.types.HapticPulseAction;
 import org.jetbrains.annotations.NotNull;
@@ -107,7 +107,7 @@ public abstract class XRActionSet implements VRActionSet {
      * @param profile the interaction profile
      * @return the list of default bindings
      */
-    public List<PairRecord<XRAction, String>> getDefaultBindings(@NotNull XRInteractionProfileType profile){
+    public List<PairRecord<XRAction, String>> getDefaultBindings(@NotNull VRInteractionProfileType profile){
         List<PairRecord<XRAction, String>> out = new ArrayList<>();
         for(XRAction action : actions){
             if(action instanceof XRSingleAction<?> singleAction){

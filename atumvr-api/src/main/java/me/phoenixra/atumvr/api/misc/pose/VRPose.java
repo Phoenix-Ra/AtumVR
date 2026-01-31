@@ -4,6 +4,9 @@ import org.joml.Matrix4fc;
 import org.joml.Quaternionfc;
 import org.joml.Vector3fc;
 
+/**
+ * Base interface to hold pose data
+ */
 public interface VRPose {
 
     Matrix4fc matrix();

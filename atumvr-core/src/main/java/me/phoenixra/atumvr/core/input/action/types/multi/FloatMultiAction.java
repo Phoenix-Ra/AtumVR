@@ -7,7 +7,7 @@ import me.phoenixra.atumvr.core.enums.XRInputActionType;
 import me.phoenixra.atumvr.core.input.action.XRActionSet;
 import me.phoenixra.atumvr.core.input.action.XRMultiAction;
 import me.phoenixra.atumvr.api.input.action.data.VRActionDataFloat;
-import me.phoenixra.atumvr.core.input.profile.XRInteractionProfileType;
+import me.phoenixra.atumvr.api.input.profile.VRInteractionProfileType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.openxr.XR10;
@@ -81,12 +81,12 @@ public class FloatMultiAction extends XRMultiAction<Float> {
         }
 
         @Override
-        public SubActionFloat putDefaultBindings(@NotNull List<XRInteractionProfileType> profiles, @Nullable String source) {
+        public SubActionFloat putDefaultBindings(@NotNull List<VRInteractionProfileType> profiles, @Nullable String source) {
             return (SubActionFloat) super.putDefaultBindings(profiles, source);
         }
 
         @Override
-        public SubActionFloat putDefaultBindings(@NotNull XRInteractionProfileType profile, @Nullable String source) {
+        public SubActionFloat putDefaultBindings(@NotNull VRInteractionProfileType profile, @Nullable String source) {
             return (SubActionFloat) super.putDefaultBindings(profile, source);
         }
 

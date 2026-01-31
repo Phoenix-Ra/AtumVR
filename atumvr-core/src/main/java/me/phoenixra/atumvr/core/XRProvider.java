@@ -72,6 +72,17 @@ public abstract class XRProvider implements VRProvider {
 
     /**
      * Create renderer
+     * <p>
+     *     This is a special case.<br>
+     *     For your rendering class, you have an option to extend {@link XRRenderer}
+     *     or implement interface {@link VRRenderer}.
+     * </p>
+     * <p>
+     *     It is made this way, to help big projects make less mess while integrating AtumVR.<br>
+     *     The other parts like input and session are too different
+     *     from what you would have on PC game code (no purpose collision, won't be ugly)
+     *     and not so potentially huge and important as rendering
+     * </p>
      *
      * @return new VRRenderer instance
      */

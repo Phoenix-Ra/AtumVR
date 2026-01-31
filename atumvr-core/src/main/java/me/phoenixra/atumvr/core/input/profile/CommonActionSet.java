@@ -3,6 +3,7 @@ package me.phoenixra.atumvr.core.input.profile;
 import lombok.Getter;
 import me.phoenixra.atumvr.api.enums.ControllerType;
 import me.phoenixra.atumvr.api.input.action.VRActionIdentifier;
+import me.phoenixra.atumvr.api.input.profile.VRInteractionProfileType;
 import me.phoenixra.atumvr.api.misc.pose.VRPoseRecord;
 import me.phoenixra.atumvr.core.XRProvider;
 import me.phoenixra.atumvr.core.input.action.XRAction;
@@ -13,6 +14,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
+import static me.phoenixra.atumvr.api.input.profile.VRInteractionProfile.*;
 import static me.phoenixra.atumvr.core.input.action.XRAction.LEFT_HAND_PATH;
 import static me.phoenixra.atumvr.core.input.action.XRAction.RIGHT_HAND_PATH;
 
@@ -21,18 +23,6 @@ import static me.phoenixra.atumvr.core.input.action.XRAction.RIGHT_HAND_PATH;
  */
 @Getter
 public class CommonActionSet extends XRActionSet {
-
-    // ---------- ACTION IDENTIFIERS ----------
-    public static final VRActionIdentifier POSE_HAND_AIM_LEFT = new VRActionIdentifier("hand.aim.left", ControllerType.LEFT);
-
-    public static final VRActionIdentifier POSE_HAND_AIM_RIGHT = new VRActionIdentifier("hand.aim.right", ControllerType.RIGHT);
-
-
-    public static final VRActionIdentifier POSE_HAND_GRIP_LEFT = new VRActionIdentifier("hand.grip.left", ControllerType.LEFT);
-
-    public static final VRActionIdentifier POSE_HAND_GRIP_RIGHT = new VRActionIdentifier("hand.grip.right", ControllerType.RIGHT);
-
-    // ----------------------------------------
 
     // Haptics
     private HapticPulseAction hapticPulse;
@@ -48,7 +38,7 @@ public class CommonActionSet extends XRActionSet {
 
     @Override
     protected List<XRAction> loadActions(@NotNull XRProvider vrProvider) {
-        var supportedProfiles = XRInteractionProfileType.getSupported(vrProvider);
+        var supportedProfiles = vrProvider.getInputHandler().getSupportedProfileTypes();
         // -------- HAPTICS --------
         hapticPulse = new HapticPulseAction(
                 vrProvider, this,

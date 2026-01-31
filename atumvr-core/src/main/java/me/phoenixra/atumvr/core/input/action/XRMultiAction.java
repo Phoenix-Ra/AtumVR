@@ -6,7 +6,7 @@ import me.phoenixra.atumvr.api.input.action.VRActionIdentifier;
 import me.phoenixra.atumvr.api.enums.ControllerType;
 import me.phoenixra.atumvr.core.XRProvider;
 import me.phoenixra.atumvr.core.enums.XRInputActionType;
-import me.phoenixra.atumvr.core.input.profile.XRInteractionProfileType;
+import me.phoenixra.atumvr.api.input.profile.VRInteractionProfileType;
 import me.phoenixra.atumvr.core.input.XRInputHandler;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -103,7 +103,7 @@ public abstract class XRMultiAction<T> extends XRAction {
 
     @Getter
     public static class SubAction<T>{
-        protected Map<XRInteractionProfileType, String> defaultBindings = new LinkedHashMap<>();
+        protected Map<VRInteractionProfileType, String> defaultBindings = new LinkedHashMap<>();
 
         @Getter
         private final @NotNull VRActionIdentifier id;
@@ -134,14 +134,14 @@ public abstract class XRMultiAction<T> extends XRAction {
             this.active = isActive;
         }
 
-        public SubAction<T> putDefaultBindings(@NotNull XRInteractionProfileType profile,
+        public SubAction<T> putDefaultBindings(@NotNull VRInteractionProfileType profile,
                                                @Nullable String source){
             defaultBindings.put(profile, pathName+"/"+source);
             return this;
         }
-        public SubAction<T> putDefaultBindings(@NotNull List<XRInteractionProfileType> profiles,
+        public SubAction<T> putDefaultBindings(@NotNull List<VRInteractionProfileType> profiles,
                                                @Nullable String source){
-            for(XRInteractionProfileType profile : profiles){
+            for(VRInteractionProfileType profile : profiles){
                 defaultBindings.put(profile, pathName+"/"+source);
             }
 
@@ -149,7 +149,7 @@ public abstract class XRMultiAction<T> extends XRAction {
         }
 
         @Nullable
-        public String getDefaultBindings(@NotNull XRInteractionProfileType profile){
+        public String getDefaultBindings(@NotNull VRInteractionProfileType profile){
             return defaultBindings.get(profile);
         }
     }

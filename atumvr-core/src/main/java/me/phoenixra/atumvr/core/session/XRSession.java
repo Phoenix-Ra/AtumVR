@@ -1,6 +1,7 @@
 package me.phoenixra.atumvr.core.session;
 
 import lombok.Getter;
+import me.phoenixra.atumvr.api.VRSession;
 import me.phoenixra.atumvr.core.utils.XRUtils;
 import me.phoenixra.atumvr.core.XRProvider;
 import org.jetbrains.annotations.NotNull;
@@ -15,7 +16,7 @@ import java.nio.IntBuffer;
 /**
  * XR session handler (low-level OpenXR stuff)
  */
-public class XRSession {
+public class XRSession implements VRSession {
     private final XRProvider vrProvider;
 
     @Getter

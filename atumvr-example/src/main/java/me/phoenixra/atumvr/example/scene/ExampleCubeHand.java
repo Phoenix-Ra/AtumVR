@@ -28,8 +28,7 @@ public class ExampleCubeHand extends ExampleCube{
         var profileSet = vrProvider.getInputHandler().getProfileSetHolder()
                 .getActiveProfile();
         if(profileSet != null){
-            if(profileSet.getTriggerValue()
-                    .getHandSubaction(type).isPressed()){
+            if(profileSet.getTriggerButton(type).isPressed()){
                 scale = scale.mul(0.2f, new Vector3f());
             }
         }

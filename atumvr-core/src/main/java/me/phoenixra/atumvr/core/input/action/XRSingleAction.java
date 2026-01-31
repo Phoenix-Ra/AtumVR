@@ -4,7 +4,7 @@ import lombok.Getter;
 import me.phoenixra.atumvr.api.input.action.VRActionIdentifier;
 import me.phoenixra.atumvr.core.XRProvider;
 import me.phoenixra.atumvr.core.enums.XRInputActionType;
-import me.phoenixra.atumvr.core.input.profile.XRInteractionProfileType;
+import me.phoenixra.atumvr.api.input.profile.VRInteractionProfileType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.PointerBuffer;
@@ -36,7 +36,7 @@ public abstract class XRSingleAction<T> extends XRAction {
     protected static final XrActionStateGetInfo getInfo = XrActionStateGetInfo.calloc()
             .type(XR10.XR_TYPE_ACTION_STATE_GET_INFO);
 
-    protected Map<XRInteractionProfileType, String> defaultBindings = new LinkedHashMap<>();
+    protected Map<VRInteractionProfileType, String> defaultBindings = new LinkedHashMap<>();
 
 
     protected T currentState;
@@ -84,14 +84,14 @@ public abstract class XRSingleAction<T> extends XRAction {
     }
 
 
-    public XRSingleAction<T> putDefaultBindings(@NotNull XRInteractionProfileType profile,
+    public XRSingleAction<T> putDefaultBindings(@NotNull VRInteractionProfileType profile,
                                                 @Nullable String source){
         defaultBindings.put(profile, source);
         return this;
     }
-    public XRSingleAction<T> putDefaultBindings(@NotNull List<XRInteractionProfileType> profiles,
+    public XRSingleAction<T> putDefaultBindings(@NotNull List<VRInteractionProfileType> profiles,
                                                 @Nullable String source){
-        for(XRInteractionProfileType profile : profiles){
+        for(VRInteractionProfileType profile : profiles){
             defaultBindings.put(profile, source);
         }
 
@@ -100,7 +100,7 @@ public abstract class XRSingleAction<T> extends XRAction {
     }
 
     @Nullable
-    public String getDefaultBindings(XRInteractionProfileType profile){
+    public String getDefaultBindings(VRInteractionProfileType profile){
         return defaultBindings.get(profile);
     }
 
