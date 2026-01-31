@@ -18,7 +18,7 @@ import java.util.*;
  *
  * <p>
  *     Use it in {@link XRInputHandler} while generating action sets. <br>
- *     Create class instance there and call {@link #getAllActionSets()} <br>
+ *     Create XRProfileManager instance there and call {@link #getAllActionSets()} <br>
  *     for generated actions sets return result.
  * </p>
  * <p>
