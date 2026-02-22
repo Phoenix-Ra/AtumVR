@@ -66,7 +66,7 @@ public interface VRDeviceController extends VRDevice{
         triggerHapticPulse(
                 160f,
                 1f,
-                (long) (durationMilliseconds * 1_000_000_000)
+                (long) (durationMilliseconds * 1_000_000)
         );
     }
 
