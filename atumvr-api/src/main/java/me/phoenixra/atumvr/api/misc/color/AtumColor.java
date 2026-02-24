@@ -4,7 +4,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
 
-
 /**
  * Base interface for colors.
  * <p>
@@ -255,20 +254,68 @@ public interface AtumColor {
     }
 
     /**
-     * Converts this color to an integer representation.
+     * Converts this color to an integer representation with alpha.
      * <p>
      * The integer is formed by shifting and combining the RGBA components:
      * red (shifted 16 bits), green (shifted 8 bits), blue, and alpha (shifted 24 bits).
      * </p>
      *
-     * @return the integer representation of this color
+     * @return the integer representation of this color (0xAARRGGBB)
      */
     default int asInt() {
-        return (getRedInt() << 16)
-                | (getGreenInt() << 8)
-                | getBlueInt()
-                | (getAlphaInt() << 24);
+        return asInt(true);
     }
+
+    /**
+     * Converts this color to an integer representation.
+     * <p>
+     * If {@code withAlpha} is {@code true}, the integer includes the alpha component
+     * in the top 8 bits (0xAARRGGBB). Otherwise, only the RGB components are packed (0x00RRGGBB).
+     * </p>
+     *
+     * @param withAlpha {@code true} to include alpha; {@code false} for RGB only
+     * @return the integer representation of this color
+     */
+    default int asInt(boolean withAlpha) {
+        int value = (getRedInt() << 16)
+                | (getGreenInt() << 8)
+                | getBlueInt();
+        if (withAlpha) {
+            value |= (getAlphaInt() << 24);
+        }
+        return value;
+    }
+
+    /**
+     * Converts this color to a semicolon-separated string.
+     * <p>
+     * If {@code withAlpha} is {@code true}, the format is "red;green;blue;alpha".
+     * Otherwise, the format is "red;green;blue".
+     * Values are normalized floats (0.0 to 1.0).
+     * </p>
+     *
+     * @param withAlpha {@code true} to include alpha; {@code false} otherwise
+     * @return the string representation of this color
+     */
+    default @NotNull String asString(boolean withAlpha) {
+        if (withAlpha) {
+            return getRed() + ";" + getGreen() + ";" + getBlue() + ";" + getAlpha();
+        }
+        return getRed() + ";" + getGreen() + ";" + getBlue();
+    }
+
+    /**
+     * Converts this color to a semicolon-separated string including alpha.
+     * <p>
+     * Format: "red;green;blue;alpha" with normalized float values (0.0 to 1.0).
+     * </p>
+     *
+     * @return the string representation of this color with alpha
+     */
+    default @NotNull String asString() {
+        return asString(true);
+    }
+
 
     /**
      * Converts this color to a hexadecimal string.
@@ -358,6 +405,18 @@ public interface AtumColor {
     }
 
     /**
+     * Creates a mutable color instance from a semicolon-separated string.
+     *
+     * @param colorString the color string (e.g. "1.0;0.5;0.0" or "1.0;0.5;0.0;1.0")
+     * @return a new {@link AtumColorMutable} instance
+     * @throws IllegalArgumentException if the string is not in a valid format
+     */
+    static @NotNull AtumColorMutable mutableFromString(@NotNull String colorString) {
+        float[] values = valuesFromString(colorString);
+        return new AtumColorMutable(values[0], values[1], values[2], values[3]);
+    }
+
+    /**
      * Creates a mutable color instance from a hexadecimal string.
      *
      * @param hex a hexadecimal string representing the color (e.g. "#RRGGBB" or "#RRGGBBAA")
@@ -413,6 +472,18 @@ public interface AtumColor {
     }
 
     /**
+     * Creates an immutable color instance from a semicolon-separated string.
+     *
+     * @param colorString the color string (e.g. "1.0;0.5;0.0" or "1.0;0.5;0.0;1.0")
+     * @return a new {@link AtumColorImmutable} instance
+     * @throws IllegalArgumentException if the string is not in a valid format
+     */
+    static @NotNull AtumColorImmutable immutableFromString(@NotNull String colorString) {
+        float[] values = valuesFromString(colorString);
+        return new AtumColorImmutable(values[0], values[1], values[2], values[3]);
+    }
+
+    /**
      * Creates an immutable color instance from a hexadecimal string.
      *
      * @param hex a hexadecimal string representing the color (e.g. "#RRGGBB" or "#RRGGBBAA")
@@ -458,5 +529,39 @@ public interface AtumColor {
             return new float[]{r, g, b, a};
         }
         throw new IllegalArgumentException("Invalid hex format");
+    }
+
+    /**
+     * Parses a semicolon-separated color string and returns the corresponding float values.
+     * <p>
+     * Accepted formats:
+     * <ul>
+     *   <li>"red;green;blue" — alpha defaults to 1.0</li>
+     *   <li>"red;green;blue;alpha"</li>
+     * </ul>
+     * All values are expected as normalized floats (0.0 to 1.0).
+     * </p>
+     *
+     * @param colorString the semicolon-separated color string
+     * @return an array of floats: [red, green, blue, alpha]
+     * @throws IllegalArgumentException if the string is not in a valid format
+     */
+    static float[] valuesFromString(@NotNull String colorString) {
+        String[] parts = colorString.split(";");
+        if (parts.length == 3) {
+            float r = Float.parseFloat(parts[0]);
+            float g = Float.parseFloat(parts[1]);
+            float b = Float.parseFloat(parts[2]);
+            return new float[]{r, g, b, 1.0f};
+        } else if (parts.length == 4) {
+            float r = Float.parseFloat(parts[0]);
+            float g = Float.parseFloat(parts[1]);
+            float b = Float.parseFloat(parts[2]);
+            float a = Float.parseFloat(parts[3]);
+            return new float[]{r, g, b, a};
+        }
+        throw new IllegalArgumentException(
+                "Invalid color string format. Expected 'r;g;b' or 'r;g;b;a', got: " + colorString
+        );
     }
 }
