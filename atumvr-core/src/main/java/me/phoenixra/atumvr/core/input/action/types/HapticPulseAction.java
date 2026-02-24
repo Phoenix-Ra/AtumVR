@@ -2,7 +2,7 @@ package me.phoenixra.atumvr.core.input.action.types;
 
 import me.phoenixra.atumconfig.api.tuples.PairRecord;
 import me.phoenixra.atumvr.api.enums.ControllerType;
-import me.phoenixra.atumvr.api.exceptions.VRException;
+import me.phoenixra.atumvr.api.exceptions.AtumVRException;
 import me.phoenixra.atumvr.api.input.action.VRActionIdentifier;
 import me.phoenixra.atumvr.core.XRProvider;
 import me.phoenixra.atumvr.core.enums.XRInputActionType;
@@ -90,7 +90,7 @@ public class HapticPulseAction extends XRAction {
                                    float frequency, float amplitude,
                                    long durationNanoSec){
         if(handle == null){
-            throw new VRException("Tried to apply haptic pulse before action initialized");
+            throw new AtumVRException("Tried to apply haptic pulse before action initialized");
         }
         XrSession session = vrProvider.getSession().getHandle();
         XRInputHandler inputHandler = vrProvider.getInputHandler();

@@ -1,7 +1,7 @@
 package me.phoenixra.atumvr.core.session;
 
 import lombok.Getter;
-import me.phoenixra.atumvr.api.exceptions.VRException;
+import me.phoenixra.atumvr.api.exceptions.AtumVRException;
 import me.phoenixra.atumvr.core.XRProvider;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.PointerBuffer;
@@ -59,7 +59,7 @@ public class XRSystem {
 
             systemId = sysIdBuf.get(0);
             if (systemId == XR10.XR_NULL_SYSTEM_ID) {
-                throw new VRException("No compatible HMD detected (system ID == 0)");
+                throw new AtumVRException("No compatible HMD detected (system ID == 0)");
             }
 
             // 2) Query system properties
@@ -123,7 +123,7 @@ public class XRSystem {
                     stackInts(GLX_FBCONFIG_ID, fbXID, 0)
             );
             if (fbConfigBuf == null) {
-                throw new VRException("Framebuffer config is null");
+                throw new AtumVRException("Framebuffer config is null");
             }
             long fbConfig = fbConfigBuf.get();
 
@@ -137,7 +137,7 @@ public class XRSystem {
                     glXContext
             );
         } else {
-            throw new VRException("MacOS not supported");
+            throw new AtumVRException("MacOS not supported");
         }
     }
     public void destroy(){

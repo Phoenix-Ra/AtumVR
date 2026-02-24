@@ -6,7 +6,7 @@ import me.phoenixra.atumvr.api.rendering.VRRenderer;
 import me.phoenixra.atumvr.api.rendering.VRTexture;
 import me.phoenixra.atumvr.core.XRProvider;
 import me.phoenixra.atumvr.api.enums.EyeType;
-import me.phoenixra.atumvr.api.exceptions.VRException;
+import me.phoenixra.atumvr.api.exceptions.AtumVRException;
 import me.phoenixra.atumvr.core.input.device.XRDeviceHMD;
 import me.phoenixra.atumvr.api.utils.GLUtils;
 import org.jetbrains.annotations.NotNull;
@@ -441,7 +441,7 @@ public abstract class XRRenderer implements VRRenderer {
     @Override
     public @NotNull VRTexture getTextureLeftEye() {
         if(leftFramebuffers==null){
-            throw new VRException("Tried to get left eye texture before textures initialized");
+            throw new AtumVRException("Tried to get left eye texture before textures initialized");
         }
         return leftFramebuffers[swapIndex];
     }
@@ -450,7 +450,7 @@ public abstract class XRRenderer implements VRRenderer {
     @Override
     public @NotNull VRTexture getTextureRightEye() {
         if(rightFramebuffers==null){
-            throw new VRException("Tried to get right eye texture before textures initialized");
+            throw new AtumVRException("Tried to get right eye texture before textures initialized");
         }
         return rightFramebuffers[swapIndex];
     }

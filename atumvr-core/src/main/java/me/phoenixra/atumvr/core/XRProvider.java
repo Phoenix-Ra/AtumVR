@@ -6,7 +6,7 @@ import me.phoenixra.atumvr.api.VRLogger;
 import me.phoenixra.atumvr.api.VRProvider;
 import me.phoenixra.atumvr.api.rendering.VRRenderer;
 import me.phoenixra.atumvr.core.enums.XREvent;
-import me.phoenixra.atumvr.api.exceptions.VRException;
+import me.phoenixra.atumvr.api.exceptions.AtumVRException;
 import me.phoenixra.atumvr.api.rendering.VRRenderContext;
 import me.phoenixra.atumvr.core.enums.XRActionResult;
 import me.phoenixra.atumvr.core.enums.XRSessionState;
@@ -196,7 +196,7 @@ public abstract class XRProvider implements VRProvider {
     @Override
     public void initializeVR() throws Throwable{
         if (state.isInitialized()) {
-            throw new VRException("Already initialized!");
+            throw new AtumVRException("Already initialized!");
         }
 
         session = createSessionHandler();
@@ -269,14 +269,14 @@ public abstract class XRProvider implements VRProvider {
 
     public void checkXRError(int xrResult,
                              @NotNull String caller,
-                             String... args) throws VRException{
+                             String... args) throws AtumVRException {
         checkXRError(true,xrResult,caller,args);
     }
 
     public void checkXRError(boolean throwError,
                              int xrResult,
                              @NotNull String caller,
-                             String... args) throws VRException{
+                             String... args) throws AtumVRException {
         if (xrResult < 0) {
             String msg = String.format(
                     "%s for %s error: %s",
@@ -290,7 +290,7 @@ public abstract class XRProvider implements VRProvider {
                 );
                 return;
             }
-            throw new VRException(msg);
+            throw new AtumVRException(msg);
         }
     }
 

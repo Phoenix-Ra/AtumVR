@@ -2,7 +2,7 @@ package me.phoenixra.atumvr.core.input;
 
 import lombok.Getter;
 import me.phoenixra.atumconfig.api.tuples.PairRecord;
-import me.phoenixra.atumvr.api.exceptions.VRException;
+import me.phoenixra.atumvr.api.exceptions.AtumVRException;
 import me.phoenixra.atumvr.api.input.VRInputHandler;
 import me.phoenixra.atumvr.api.input.device.VRDevice;
 import me.phoenixra.atumvr.core.XRProvider;
@@ -11,7 +11,6 @@ import me.phoenixra.atumvr.api.input.profile.VRInteractionProfileType;
 import me.phoenixra.atumvr.core.input.action.XRAction;
 import me.phoenixra.atumvr.core.input.action.XRActionSet;
 import me.phoenixra.atumvr.core.input.device.XRDevice;
-import me.phoenixra.atumvr.api.input.profile.VRInteractionProfile;
 import me.phoenixra.atumvr.core.input.profile.XRInteractionProfile;
 import me.phoenixra.atumvr.core.input.profile.types.*;
 import me.phoenixra.atumvr.core.session.XRInstance;
@@ -231,7 +230,7 @@ public abstract class XRInputHandler implements VRInputHandler {
     @Override
     public void registerDevice(@NotNull VRDevice device) {
         if(!(device instanceof XRDevice xrDevice)){
-            throw new VRException("Tried to register VRDevice that is not an instance of XRDevice! Id: "+device.getId());
+            throw new AtumVRException("Tried to register VRDevice that is not an instance of XRDevice! Id: "+device.getId());
         }
         devices.put(device.getId(), xrDevice);
     }
@@ -242,7 +241,7 @@ public abstract class XRInputHandler implements VRInputHandler {
      *
      * @param pathString the path string (e.g., "/user/hand/left")
      * @return the OpenXR path handle
-     * @throws VRException if the path format is invalid
+     * @throws AtumVRException if the path format is invalid
      */
     public long convertStringToXrPath(@NotNull String pathString) {
         return paths.computeIfAbsent(pathString, s -> {
@@ -253,7 +252,7 @@ public abstract class XRInputHandler implements VRInputHandler {
                         pathString, buf
                 );
                 if (xrResult == XR10.XR_ERROR_PATH_FORMAT_INVALID) {
-                    throw new VRException("Invalid path:\"" + pathString + "\"");
+                    throw new AtumVRException("Invalid path:\"" + pathString + "\"");
                 } else {
                     vrProvider.checkXRError(xrResult, "xrStringToPath");
                 }

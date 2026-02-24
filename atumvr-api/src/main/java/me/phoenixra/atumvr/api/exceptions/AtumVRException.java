@@ -3,13 +3,13 @@ package me.phoenixra.atumvr.api.exceptions;
 /**
  * VRException is the class for VR-related exceptions
  */
-public class VRException extends RuntimeException {
+public class AtumVRException extends RuntimeException {
 
-    public VRException(String message) {
+    public AtumVRException(String message) {
         super(message);
     }
 
-    public VRException(String message, Throwable origin) {
+    public AtumVRException(String message, Throwable origin) {
         super(message, origin);
     }
 }

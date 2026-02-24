@@ -1,7 +1,7 @@
 package me.phoenixra.atumvr.core.session;
 
 import lombok.Getter;
-import me.phoenixra.atumvr.api.exceptions.VRException;
+import me.phoenixra.atumvr.api.exceptions.AtumVRException;
 import me.phoenixra.atumvr.core.XRProvider;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.PointerBuffer;
@@ -69,9 +69,9 @@ public class XRInstance {
             var instancePointer = stack.callocPointer(1);
             int result = XR10.xrCreateInstance(instInfo, instancePointer);
             if (result == XR10.XR_ERROR_RUNTIME_FAILURE) {
-                throw new VRException("Failed to create XrInstance: runtime failure (is headset connected?)");
+                throw new AtumVRException("Failed to create XrInstance: runtime failure (is headset connected?)");
             } else if (result == XR10.XR_ERROR_INSTANCE_LOST) {
-                throw new VRException("Failed to create XrInstance: instance lost during creation");
+                throw new AtumVRException("Failed to create XrInstance: instance lost during creation");
             } else if (result != XR10.XR_SUCCESS) {
                 vrProvider.checkXRError(result, "xrCreateInstance", "Failed to create XrInstance");
             }
@@ -136,7 +136,7 @@ public class XRInstance {
 
         // Ensure graphics extension is present
         if (!availableExtensions.contains(GRAPHICS_EXTENSION)) {
-            throw new VRException(
+            throw new AtumVRException(
                     "Missing required graphics extension: " + GRAPHICS_EXTENSION
             );
         }
