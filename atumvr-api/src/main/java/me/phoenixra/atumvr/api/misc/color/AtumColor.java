@@ -540,7 +540,7 @@ public interface AtumColor {
      *   <li>"red;green;blue;alpha"</li>
      * </ul>
      * Values are clamped to the range 0–255.
-     * </p>
+     *
      *
      * @param colorString the semicolon-separated color string
      * @return an array of floats: [red, green, blue, alpha] normalized to 0.0–1.0
