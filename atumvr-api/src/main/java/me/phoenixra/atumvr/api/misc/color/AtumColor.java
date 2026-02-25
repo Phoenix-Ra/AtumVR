@@ -540,7 +540,6 @@ public interface AtumColor {
      *   <li>"red;green;blue;alpha"</li>
      * </ul>
      * All values are expected as normalized floats (0.0 to 1.0).
-     * </p>
      *
      * @param colorString the semicolon-separated color string
      * @return an array of floats: [red, green, blue, alpha]
