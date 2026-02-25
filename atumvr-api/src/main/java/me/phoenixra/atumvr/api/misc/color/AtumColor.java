@@ -287,11 +287,10 @@ public interface AtumColor {
     }
 
     /**
-     * Converts this color to a semicolon-separated string.
+     * Converts this color to a semicolon-separated string with integer values (0–255).
      * <p>
      * If {@code withAlpha} is {@code true}, the format is "red;green;blue;alpha".
      * Otherwise, the format is "red;green;blue".
-     * Values are normalized floats (0.0 to 1.0).
      * </p>
      *
      * @param withAlpha {@code true} to include alpha; {@code false} otherwise
@@ -299,15 +298,15 @@ public interface AtumColor {
      */
     default @NotNull String asString(boolean withAlpha) {
         if (withAlpha) {
-            return getRed() + ";" + getGreen() + ";" + getBlue() + ";" + getAlpha();
+            return getRedInt() + ";" + getGreenInt() + ";" + getBlueInt() + ";" + getAlphaInt();
         }
-        return getRed() + ";" + getGreen() + ";" + getBlue();
+        return getRedInt() + ";" + getGreenInt() + ";" + getBlueInt();
     }
 
     /**
      * Converts this color to a semicolon-separated string including alpha.
      * <p>
-     * Format: "red;green;blue;alpha" with normalized float values (0.0 to 1.0).
+     * Format: "red;green;blue;alpha" with integer values (0–255).
      * </p>
      *
      * @return the string representation of this color with alpha
@@ -407,12 +406,12 @@ public interface AtumColor {
     /**
      * Creates a mutable color instance from a semicolon-separated string.
      *
-     * @param colorString the color string (e.g. "1.0;0.5;0.0" or "1.0;0.5;0.0;1.0")
+     * @param colorString the color string (e.g. "255;128;0" or "255;128;0;255")
      * @return a new {@link AtumColorMutable} instance
      * @throws IllegalArgumentException if the string is not in a valid format
      */
     static @NotNull AtumColorMutable mutableFromString(@NotNull String colorString) {
-        float[] values = valuesFromString(colorString);
+        int[] values = valuesFromString(colorString);
         return new AtumColorMutable(values[0], values[1], values[2], values[3]);
     }
 
@@ -474,12 +473,12 @@ public interface AtumColor {
     /**
      * Creates an immutable color instance from a semicolon-separated string.
      *
-     * @param colorString the color string (e.g. "1.0;0.5;0.0" or "1.0;0.5;0.0;1.0")
+     * @param colorString the color string (e.g. "255;128;0" or "255;128;0;255")
      * @return a new {@link AtumColorImmutable} instance
      * @throws IllegalArgumentException if the string is not in a valid format
      */
     static @NotNull AtumColorImmutable immutableFromString(@NotNull String colorString) {
-        float[] values = valuesFromString(colorString);
+        int[] values = valuesFromString(colorString);
         return new AtumColorImmutable(values[0], values[1], values[2], values[3]);
     }
 
@@ -532,35 +531,46 @@ public interface AtumColor {
     }
 
     /**
-     * Parses a semicolon-separated color string and returns the corresponding float values.
+     * Parses a semicolon-separated color string with integer values (0–255)
+     * and returns the corresponding normalized float values.
      * <p>
      * Accepted formats:
      * <ul>
-     *   <li>"red;green;blue" — alpha defaults to 1.0</li>
+     *   <li>"red;green;blue" — alpha defaults to 255</li>
      *   <li>"red;green;blue;alpha"</li>
      * </ul>
-     * All values are expected as normalized floats (0.0 to 1.0).
+     * Values are clamped to the range 0–255.
+     * </p>
      *
      * @param colorString the semicolon-separated color string
-     * @return an array of floats: [red, green, blue, alpha]
+     * @return an array of floats: [red, green, blue, alpha] normalized to 0.0–1.0
      * @throws IllegalArgumentException if the string is not in a valid format
      */
-    static float[] valuesFromString(@NotNull String colorString) {
+    static int[] valuesFromString(@NotNull String colorString) {
         String[] parts = colorString.split(";");
         if (parts.length == 3) {
-            float r = Float.parseFloat(parts[0]);
-            float g = Float.parseFloat(parts[1]);
-            float b = Float.parseFloat(parts[2]);
-            return new float[]{r, g, b, 1.0f};
+            int r = clampColorValue(Integer.parseInt(parts[0]));
+            int g = clampColorValue(Integer.parseInt(parts[1]));
+            int b = clampColorValue(Integer.parseInt(parts[2]));
+            return new int[]{r, g, b, 255};
         } else if (parts.length == 4) {
-            float r = Float.parseFloat(parts[0]);
-            float g = Float.parseFloat(parts[1]);
-            float b = Float.parseFloat(parts[2]);
-            float a = Float.parseFloat(parts[3]);
-            return new float[]{r, g, b, a};
+            int r = clampColorValue(Integer.parseInt(parts[0]));
+            int g = clampColorValue(Integer.parseInt(parts[1]));
+            int b = clampColorValue(Integer.parseInt(parts[2]));
+            int a = clampColorValue(Integer.parseInt(parts[3]));
+            return new int[]{r, g, b, a};
         }
         throw new IllegalArgumentException(
                 "Invalid color string format. Expected 'r;g;b' or 'r;g;b;a', got: " + colorString
         );
+    }
+    /**
+     * Clamps an integer color value to the valid range of 0–255.
+     *
+     * @param value the input value
+     * @return the clamped value
+     */
+    static int clampColorValue(int value) {
+        return Math.max(0, Math.min(255, value));
     }
 }
