@@ -5,7 +5,7 @@ plugins {
 
 
 dependencies {
-    api("com.github.Phoenix-Ra:AtumConfiguration:1.1.0")
+    api("com.github.Phoenix-Ra:AtumConfiguration:1.2.0pre")
     api("org.reflections:reflections:0.10.2")
 
     api("org.joml:joml:1.10.5")
