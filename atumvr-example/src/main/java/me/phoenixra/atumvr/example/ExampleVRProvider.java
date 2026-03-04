@@ -2,7 +2,7 @@ package me.phoenixra.atumvr.example;
 
 
 import lombok.Getter;
-import me.phoenixra.atumvr.api.VRLogger;
+import me.phoenixra.atumvr.api.AtumVRLogger;
 import me.phoenixra.atumvr.core.XRState;
 import me.phoenixra.atumvr.core.XRProvider;
 import me.phoenixra.atumvr.core.enums.XRSessionState;
@@ -17,7 +17,7 @@ public class ExampleVRProvider extends XRProvider {
     @Getter
     private boolean xrStopping = false;
 
-    public ExampleVRProvider(@NotNull VRLogger logger) {
+    public ExampleVRProvider(@NotNull AtumVRLogger logger) {
         super("ExampleApp",logger);
     }
 

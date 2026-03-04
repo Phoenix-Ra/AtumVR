@@ -7,7 +7,7 @@ import java.util.Collection;
 /**
  * Interface used for VR action sets
  */
-public interface VRActionSet {
+public interface AtumVRActionSet {
 
 
     /**
@@ -31,7 +31,7 @@ public interface VRActionSet {
      *
      * @return the actions collection
      */
-    Collection<? extends VRAction> getActions();
+    Collection<? extends AtumVRAction> getActions();
 
 
     /**

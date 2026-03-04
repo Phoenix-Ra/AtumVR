@@ -1,9 +1,9 @@
 package me.phoenixra.atumvr.core.rendering;
 
 import lombok.Getter;
-import me.phoenixra.atumvr.api.rendering.VRRenderContext;
-import me.phoenixra.atumvr.api.rendering.VRRenderer;
-import me.phoenixra.atumvr.api.rendering.VRTexture;
+import me.phoenixra.atumvr.api.rendering.AtumVRRenderContext;
+import me.phoenixra.atumvr.api.rendering.AtumVRRenderer;
+import me.phoenixra.atumvr.api.rendering.AtumVRTexture;
 import me.phoenixra.atumvr.core.XRProvider;
 import me.phoenixra.atumvr.api.enums.EyeType;
 import me.phoenixra.atumvr.api.exceptions.AtumVRException;
@@ -27,7 +27,7 @@ import static org.lwjgl.glfw.GLFW.*;
 /**
  * Abstract base class for XR rendering
  */
-public abstract class XRRenderer implements VRRenderer {
+public abstract class XRRenderer implements AtumVRRenderer {
 
     @Getter
     protected XRProvider vrProvider;
@@ -49,10 +49,10 @@ public abstract class XRRenderer implements VRRenderer {
     protected int swapIndex;
 
     /** FrameBuffers for left eye. */
-    protected VRTexture[] leftFramebuffers;
+    protected AtumVRTexture[] leftFramebuffers;
 
     /** FrameBuffers for right eye. */
-    protected VRTexture[] rightFramebuffers;
+    protected AtumVRTexture[] rightFramebuffers;
 
     /** Projection layer views for frame submission. */
     protected XrCompositionLayerProjectionView.Buffer projectionLayerViews;
@@ -113,7 +113,7 @@ public abstract class XRRenderer implements VRRenderer {
     }
 
     @Override
-    public void renderFrame(@NotNull VRRenderContext context) {
+    public void renderFrame(@NotNull AtumVRRenderContext context) {
 
 
         if(glContextCreated) {
@@ -337,8 +337,8 @@ public abstract class XRRenderer implements VRRenderer {
                     XrSwapchainImageBaseHeader.create(swapchainImageBuffer.address(), swapchainImageBuffer.capacity()));
             vrProvider.checkXRError(error, "xrEnumerateSwapchainImages", "get images");
 
-            this.leftFramebuffers = new VRTexture[imageCount];
-            this.rightFramebuffers = new VRTexture[imageCount];
+            this.leftFramebuffers = new AtumVRTexture[imageCount];
+            this.rightFramebuffers = new AtumVRTexture[imageCount];
 
             for (int i = 0; i < imageCount; i++) {
                 XrSwapchainImageOpenGLKHR openxrImage = swapchainImageBuffer.get(i);
@@ -439,7 +439,7 @@ public abstract class XRRenderer implements VRRenderer {
     // -------- API --------
 
     @Override
-    public @NotNull VRTexture getTextureLeftEye() {
+    public @NotNull AtumVRTexture getTextureLeftEye() {
         if(leftFramebuffers==null){
             throw new AtumVRException("Tried to get left eye texture before textures initialized");
         }
@@ -448,7 +448,7 @@ public abstract class XRRenderer implements VRRenderer {
 
 
     @Override
-    public @NotNull VRTexture getTextureRightEye() {
+    public @NotNull AtumVRTexture getTextureRightEye() {
         if(rightFramebuffers==null){
             throw new AtumVRException("Tried to get right eye texture before textures initialized");
         }

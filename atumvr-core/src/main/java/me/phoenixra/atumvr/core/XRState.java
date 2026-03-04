@@ -1,7 +1,7 @@
 package me.phoenixra.atumvr.core;
 
 import lombok.Getter;
-import me.phoenixra.atumvr.api.VRState;
+import me.phoenixra.atumvr.api.AtumVRState;
 import me.phoenixra.atumvr.core.enums.XREvent;
 import me.phoenixra.atumvr.core.enums.XRSessionState;
 import me.phoenixra.atumvr.core.session.XRInstance;
@@ -13,7 +13,7 @@ import org.lwjgl.system.MemoryStack;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
 
-public class XRState implements VRState {
+public class XRState implements AtumVRState {
 
     @Getter
     private final XRProvider vrProvider;

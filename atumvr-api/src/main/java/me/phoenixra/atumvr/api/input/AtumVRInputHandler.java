@@ -1,8 +1,8 @@
 package me.phoenixra.atumvr.api.input;
 
-import me.phoenixra.atumvr.api.VRProvider;
-import me.phoenixra.atumvr.api.input.action.VRActionSet;
-import me.phoenixra.atumvr.api.input.device.VRDevice;
+import me.phoenixra.atumvr.api.AtumVRProvider;
+import me.phoenixra.atumvr.api.input.action.AtumVRActionSet;
+import me.phoenixra.atumvr.api.input.device.AtumVRDevice;
 import me.phoenixra.atumvr.api.input.profile.VRInteractionProfileType;
 import org.jetbrains.annotations.NotNull;
 
@@ -12,7 +12,7 @@ import java.util.List;
 /**
  * Base class for VR input
  */
-public interface VRInputHandler {
+public interface AtumVRInputHandler {
 
     /**
      * Initialize VR input
@@ -35,14 +35,14 @@ public interface VRInputHandler {
      *
      * @return collection of action sets
      */
-    Collection<? extends VRActionSet> getActionSets();
+    Collection<? extends AtumVRActionSet> getActionSets();
 
     /**
      * Registers a VR device.
      *
      * @param device the device to register
      */
-    void registerDevice(VRDevice device);
+    void registerDevice(AtumVRDevice device);
 
     /**
      * Gets a device by its ID.
@@ -50,7 +50,7 @@ public interface VRInputHandler {
      * @param id the device ID
      * @return the device, or null if not found
      */
-    VRDevice getDevice(String id);
+    AtumVRDevice getDevice(String id);
 
     /**
      * Gets a device by ID with type casting.
@@ -60,7 +60,7 @@ public interface VRInputHandler {
      * @param <T>   the device type
      * @return the device cast to the specified type
      */
-    default <T extends VRDevice> T getDevice(String id, Class<T> clazz){
+    default <T extends AtumVRDevice> T getDevice(String id, Class<T> clazz){
         return (T) getDevice(id);
     }
 
@@ -69,7 +69,7 @@ public interface VRInputHandler {
      *
      * @return collection of devices
      */
-    Collection<? extends VRDevice> getDevices();
+    Collection<? extends AtumVRDevice> getDevices();
 
 
     /**
@@ -83,7 +83,7 @@ public interface VRInputHandler {
      * @return VRProvider
      */
     @NotNull
-    VRProvider getVrProvider();
+    AtumVRProvider getVrProvider();
 
 
 }

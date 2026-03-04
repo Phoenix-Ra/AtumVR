@@ -4,7 +4,7 @@ import lombok.Getter;
 import me.phoenixra.atumvr.api.input.action.VRActionIdentifier;
 import me.phoenixra.atumvr.api.input.action.data.VRActionDataPose;
 import me.phoenixra.atumvr.api.input.profile.VRInteractionProfileType;
-import me.phoenixra.atumvr.api.misc.pose.VRPoseRecord;
+import me.phoenixra.atumvr.api.misc.pose.AtumVRPoseRecord;
 import me.phoenixra.atumvr.core.utils.XRUtils;
 import me.phoenixra.atumvr.core.XRProvider;
 import me.phoenixra.atumvr.core.enums.XRInputActionType;
@@ -23,10 +23,10 @@ import java.util.List;
 import static org.lwjgl.system.MemoryStack.stackCallocPointer;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
-public class PoseMultiAction extends XRMultiAction<VRPoseRecord> {
+public class PoseMultiAction extends XRMultiAction<AtumVRPoseRecord> {
 
     @Getter
-    private HashMap<SubAction<VRPoseRecord>, XrSpace> xrSpace = new HashMap<>();
+    private HashMap<SubAction<AtumVRPoseRecord>, XrSpace> xrSpace = new HashMap<>();
 
     @Getter
     private final List<SubActionPose> subActionsAsPose;
@@ -43,7 +43,7 @@ public class PoseMultiAction extends XRMultiAction<VRPoseRecord> {
 
     @Override
     protected void onInit(@NotNull XRActionSet actionSet, @NotNull MemoryStack stack) {
-        for (SubAction<VRPoseRecord> entry : subActions) {
+        for (SubAction<AtumVRPoseRecord> entry : subActions) {
             XrSession xrSession = vrProvider.getSession().getHandle();
             XrActionSpaceCreateInfo action_space_info = XrActionSpaceCreateInfo
                     .calloc(stack).set(
@@ -84,10 +84,10 @@ public class PoseMultiAction extends XRMultiAction<VRPoseRecord> {
                 var loc = XRUtils.xrLocationFromSpace(
                         vrProvider, xrSpace.get(entry), stack
                 );
-                VRPoseRecord entryState = loc == null
-                        ? VRPoseRecord.EMPTY
+                AtumVRPoseRecord entryState = loc == null
+                        ? AtumVRPoseRecord.EMPTY
                         :
-                        new VRPoseRecord(
+                        new AtumVRPoseRecord(
                                 XRUtils.normalizeXrPose(loc.pose()),
                                 XRUtils.normalizeXrQuaternion(loc.pose().orientation()),
                                 XRUtils.normalizeXrVector(loc.pose().position$())
@@ -109,12 +109,12 @@ public class PoseMultiAction extends XRMultiAction<VRPoseRecord> {
         }
     }
 
-    public static class SubActionPose extends SubAction<VRPoseRecord> implements VRActionDataPose {
+    public static class SubActionPose extends SubAction<AtumVRPoseRecord> implements VRActionDataPose {
 
 
         public SubActionPose(@NotNull VRActionIdentifier id,
                              @NotNull String path,
-                             @NotNull VRPoseRecord initialState) {
+                             @NotNull AtumVRPoseRecord initialState) {
             super(id, path, initialState);
 
         }
@@ -130,7 +130,7 @@ public class PoseMultiAction extends XRMultiAction<VRPoseRecord> {
         }
 
         @Override
-        public @NotNull VRPoseRecord getPose() {
+        public @NotNull AtumVRPoseRecord getPose() {
             return currentState;
         }
     }

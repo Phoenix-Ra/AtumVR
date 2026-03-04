@@ -1,9 +1,9 @@
 package me.phoenixra.atumvr.core.input.device;
 
 import me.phoenixra.atumvr.api.enums.EyeType;
-import me.phoenixra.atumvr.api.input.device.VRDeviceHMD;
-import me.phoenixra.atumvr.api.misc.pose.VRPose;
-import me.phoenixra.atumvr.api.misc.pose.VRPoseMutable;
+import me.phoenixra.atumvr.api.input.device.AtumVRDeviceHMD;
+import me.phoenixra.atumvr.api.misc.pose.AtumVRPose;
+import me.phoenixra.atumvr.api.misc.pose.AtumVRPoseMutable;
 import me.phoenixra.atumvr.core.utils.XRUtils;
 import me.phoenixra.atumvr.core.XRProvider;
 import org.jetbrains.annotations.NotNull;
@@ -14,15 +14,15 @@ import org.lwjgl.openxr.XrView;
 import org.lwjgl.system.MemoryStack;
 
 
-public class XRDeviceHMD extends XRDevice implements VRDeviceHMD {
+public class XRDeviceHMD extends XRDevice implements AtumVRDeviceHMD {
     /**
      * VR device identifier for HMD
      */
     public static final String ID = "hmd";
 
-    private final VRPoseMutable eyeLeftPose = new VRPoseMutable();
+    private final AtumVRPoseMutable eyeLeftPose = new AtumVRPoseMutable();
 
-    private final VRPoseMutable eyeRightPose = new VRPoseMutable();
+    private final AtumVRPoseMutable eyeRightPose = new AtumVRPoseMutable();
 
     private final XrSpace space;
 
@@ -69,7 +69,7 @@ public class XRDeviceHMD extends XRDevice implements VRDeviceHMD {
     }
 
     @Override
-    public @NotNull VRPose getEyePose(@NotNull EyeType eyeType) {
+    public @NotNull AtumVRPose getEyePose(@NotNull EyeType eyeType) {
         if(eyeType == EyeType.LEFT){
             return eyeLeftPose;
         }else{

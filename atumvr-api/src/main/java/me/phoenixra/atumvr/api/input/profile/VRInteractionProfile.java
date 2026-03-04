@@ -2,7 +2,7 @@ package me.phoenixra.atumvr.api.input.profile;
 
 import me.phoenixra.atumvr.api.enums.ControllerType;
 import me.phoenixra.atumvr.api.input.action.VRActionIdentifier;
-import me.phoenixra.atumvr.api.input.action.VRActionSet;
+import me.phoenixra.atumvr.api.input.action.AtumVRActionSet;
 import me.phoenixra.atumvr.api.input.action.data.VRActionData;
 import me.phoenixra.atumvr.api.input.action.data.VRActionDataButton;
 import me.phoenixra.atumvr.api.input.action.data.VRActionDataVec2;
@@ -27,7 +27,7 @@ import java.util.Collection;
  * @see ViveCosmosProfile
  * @see WindowsMotionProfile
  */
-public interface VRInteractionProfile extends VRActionSet {
+public interface VRInteractionProfile extends AtumVRActionSet {
 
     // ---------- COMMON ACTION IDENTIFIERS ----------
 

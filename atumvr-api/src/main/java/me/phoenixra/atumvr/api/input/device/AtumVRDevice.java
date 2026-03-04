@@ -1,13 +1,13 @@
 package me.phoenixra.atumvr.api.input.device;
 
-import me.phoenixra.atumvr.api.misc.pose.VRPose;
+import me.phoenixra.atumvr.api.misc.pose.AtumVRPose;
 import org.jetbrains.annotations.NotNull;
 
 /**
  * It is a holder of VR device data and operations with it.
  * (HMD, Controllers, Trackers)
  */
-public interface VRDevice {
+public interface AtumVRDevice {
 
     /**
      * Get VR device identifier
@@ -25,5 +25,5 @@ public interface VRDevice {
      * Get VR pose data
      */
     @NotNull
-    VRPose getPose();
+    AtumVRPose getPose();
 }

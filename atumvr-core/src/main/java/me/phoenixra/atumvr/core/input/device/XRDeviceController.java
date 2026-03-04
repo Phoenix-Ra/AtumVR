@@ -2,16 +2,16 @@ package me.phoenixra.atumvr.core.input.device;
 
 import lombok.Getter;
 import me.phoenixra.atumvr.api.enums.ControllerType;
-import me.phoenixra.atumvr.api.input.device.VRDeviceController;
-import me.phoenixra.atumvr.api.misc.pose.VRPose;
-import me.phoenixra.atumvr.api.misc.pose.VRPoseMutable;
+import me.phoenixra.atumvr.api.input.device.AtumVRDeviceController;
+import me.phoenixra.atumvr.api.misc.pose.AtumVRPose;
+import me.phoenixra.atumvr.api.misc.pose.AtumVRPoseMutable;
 import me.phoenixra.atumvr.core.XRProvider;
 import me.phoenixra.atumvr.core.input.action.types.HapticPulseAction;
 import me.phoenixra.atumvr.core.input.action.types.multi.PoseMultiAction;
 import org.jetbrains.annotations.NotNull;
 
 
-public class XRDeviceController extends XRDevice implements VRDeviceController {
+public class XRDeviceController extends XRDevice implements AtumVRDeviceController {
     public static final String ID_LEFT = "controller_left";
     public static final String ID_RIGHT = "controller_right";
 
@@ -22,7 +22,7 @@ public class XRDeviceController extends XRDevice implements VRDeviceController {
     private boolean gripActive;
 
     @Getter
-    private final VRPoseMutable gripPose = new VRPoseMutable();
+    private final AtumVRPoseMutable gripPose = new AtumVRPoseMutable();
 
 
     private final PoseMultiAction aimAction;
@@ -66,7 +66,7 @@ public class XRDeviceController extends XRDevice implements VRDeviceController {
     }
 
     @Override
-    public @NotNull VRPose getAimPose() {
+    public @NotNull AtumVRPose getAimPose() {
         return pose;
     }
 

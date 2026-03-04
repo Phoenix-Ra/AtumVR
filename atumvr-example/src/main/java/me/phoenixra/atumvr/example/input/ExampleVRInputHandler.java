@@ -1,7 +1,7 @@
 package me.phoenixra.atumvr.example.input;
 
 import lombok.Getter;
-import me.phoenixra.atumvr.api.input.device.VRDeviceController;
+import me.phoenixra.atumvr.api.input.device.AtumVRDeviceController;
 import me.phoenixra.atumvr.core.input.device.XRDeviceController;
 import me.phoenixra.atumvr.core.input.profile.XRProfileManager;
 import me.phoenixra.atumvr.example.ExampleHandEnum;
@@ -67,7 +67,7 @@ public class ExampleVRInputHandler extends XRInputHandler {
         }
 
         if(profileSet.getTriggerButton(type).isPressed()){
-            getDevice(VRDeviceController.getId(type), XRDeviceController.class)
+            getDevice(AtumVRDeviceController.getId(type), XRDeviceController.class)
                     .triggerHapticPulse(
                             160f,
                             1.0F,

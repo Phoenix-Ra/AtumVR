@@ -1,10 +1,10 @@
 package me.phoenixra.atumvr.api.rendering;
 
-import me.phoenixra.atumvr.api.VRProvider;
+import me.phoenixra.atumvr.api.AtumVRProvider;
 import org.jetbrains.annotations.NotNull;
 
 
-public interface VRScene {
+public interface AtumVRScene {
 
     /**
      * Initialize scene
@@ -16,7 +16,7 @@ public interface VRScene {
      *
      * @param context the render context
      */
-    void render(@NotNull VRRenderContext context);
+    void render(@NotNull AtumVRRenderContext context);
 
     /**
      * Destroy VR scene and release all associated resources
@@ -28,7 +28,7 @@ public interface VRScene {
      *
      * @return VRRenderer
      */
-    VRRenderer getRenderer();
+    AtumVRRenderer getRenderer();
 
     /**
      * Get VR provider associated with this instance
@@ -36,7 +36,7 @@ public interface VRScene {
      * @return VRProvider
      */
     @NotNull
-    default VRProvider getVrProvider(){
+    default AtumVRProvider getVrProvider(){
         return getRenderer().getVrProvider();
     }
 }

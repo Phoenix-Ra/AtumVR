@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
  *     and output (e.g. haptic)
  * </p>
  */
-public interface VRAction  {
+public interface AtumVRAction {
 
     /**
      * Get action identifier
@@ -23,7 +23,7 @@ public interface VRAction  {
      *
      * @return the action set
      */
-    @NotNull VRActionSet getActionSet();
+    @NotNull AtumVRActionSet getActionSet();
 
     /**
      * Get localized name

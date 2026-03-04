@@ -1,13 +1,13 @@
 package me.phoenixra.atumvr.api.input.device;
 
 import me.phoenixra.atumvr.api.enums.EyeType;
-import me.phoenixra.atumvr.api.misc.pose.VRPose;
+import me.phoenixra.atumvr.api.misc.pose.AtumVRPose;
 import org.jetbrains.annotations.NotNull;
 
 /**
  * VRDevice for Head-Mounted Display (HMD)
  */
-public interface VRDeviceHMD extends VRDevice{
+public interface AtumVRDeviceHMD extends AtumVRDevice {
     String ID = "hmd";
 
     /**
@@ -17,6 +17,6 @@ public interface VRDeviceHMD extends VRDevice{
      * @return VRPose
      */
     @NotNull
-    VRPose getEyePose(@NotNull EyeType eyeType);
+    AtumVRPose getEyePose(@NotNull EyeType eyeType);
 
 }

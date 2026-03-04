@@ -2,7 +2,7 @@ package me.phoenixra.atumvr.core.input.action;
 
 import lombok.Getter;
 import me.phoenixra.atumvr.api.input.action.VRActionIdentifier;
-import me.phoenixra.atumvr.api.input.action.VRAction;
+import me.phoenixra.atumvr.api.input.action.AtumVRAction;
 import me.phoenixra.atumvr.core.XRProvider;
 import me.phoenixra.atumvr.core.enums.XRInputActionType;
 import org.jetbrains.annotations.NotNull;
@@ -12,7 +12,7 @@ import org.lwjgl.openxr.XrAction;
 /**
  * Abstract base class for VR action.
  */
-public abstract class XRAction implements VRAction {
+public abstract class XRAction implements AtumVRAction {
 
     public static final String LEFT_HAND_PATH = "/user/hand/left";
     public static final String RIGHT_HAND_PATH = "/user/hand/right";

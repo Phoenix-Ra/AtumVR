@@ -5,7 +5,7 @@ import org.jetbrains.annotations.NotNull;
 /**
  * This class is responsible for tracking the current state of the VR session.
  */
-public interface VRState {
+public interface AtumVRState {
 
 
 
@@ -47,6 +47,6 @@ public interface VRState {
      * @return VRProvider
      */
     @NotNull
-    VRProvider getVrProvider();
+    AtumVRProvider getVrProvider();
 
 }

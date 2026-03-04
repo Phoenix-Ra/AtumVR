@@ -1,14 +1,14 @@
 package me.phoenixra.atumvr.core.rendering;
 
 import lombok.Getter;
-import me.phoenixra.atumvr.api.rendering.VRTexture;
+import me.phoenixra.atumvr.api.rendering.AtumVRTexture;
 import org.lwjgl.opengl.GL30;
 
 /**
- * XR implementation of {@link VRTexture}
+ * XR implementation of {@link AtumVRTexture}
  */
 @Getter
-public class XRTexture implements VRTexture {
+public class XRTexture implements AtumVRTexture {
 
     protected final int textureId;
 

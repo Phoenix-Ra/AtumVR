@@ -7,7 +7,7 @@ import org.joml.Vector3fc;
 /**
  * Base interface to hold pose data
  */
-public interface VRPose {
+public interface AtumVRPose {
 
     Matrix4fc matrix();
 

@@ -4,22 +4,22 @@ import org.jetbrains.annotations.NotNull;
 import org.joml.*;
 
 /**
- * Mutable representation of {@link VRPose}
+ * Mutable representation of {@link AtumVRPose}
  */
-public class VRPoseMutable implements VRPose{
+public class AtumVRPoseMutable implements AtumVRPose {
 
     private final Matrix4f matrix;
     private final Quaternionf orientation;
     private final Vector3f position;
 
-    public VRPoseMutable(){
+    public AtumVRPoseMutable(){
         this.matrix = new Matrix4f();
         this.orientation = new Quaternionf();
         this.position = new Vector3f();
     }
 
 
-    public void update(@NotNull VRPoseRecord pose){
+    public void update(@NotNull AtumVRPoseRecord pose){
         update(pose.matrix(), pose.orientation(), pose.position());
     }
 

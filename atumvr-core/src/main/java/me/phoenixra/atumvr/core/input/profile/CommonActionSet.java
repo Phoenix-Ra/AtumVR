@@ -1,10 +1,8 @@
 package me.phoenixra.atumvr.core.input.profile;
 
 import lombok.Getter;
-import me.phoenixra.atumvr.api.enums.ControllerType;
 import me.phoenixra.atumvr.api.input.action.VRActionIdentifier;
-import me.phoenixra.atumvr.api.input.profile.VRInteractionProfileType;
-import me.phoenixra.atumvr.api.misc.pose.VRPoseRecord;
+import me.phoenixra.atumvr.api.misc.pose.AtumVRPoseRecord;
 import me.phoenixra.atumvr.core.XRProvider;
 import me.phoenixra.atumvr.core.input.action.XRAction;
 import me.phoenixra.atumvr.core.input.action.XRActionSet;
@@ -54,12 +52,12 @@ public class CommonActionSet extends XRActionSet {
                         new PoseMultiAction.SubActionPose(
                                 POSE_HAND_AIM_LEFT,
                                 LEFT_HAND_PATH,
-                                VRPoseRecord.EMPTY
+                                AtumVRPoseRecord.EMPTY
                         ).putDefaultBindings(supportedProfiles, "input/aim/pose"),
                         new PoseMultiAction.SubActionPose(
                                 POSE_HAND_AIM_RIGHT,
                                 RIGHT_HAND_PATH,
-                                VRPoseRecord.EMPTY
+                                AtumVRPoseRecord.EMPTY
                         ).putDefaultBindings(supportedProfiles, "input/aim/pose")
                 )
         );
@@ -72,12 +70,12 @@ public class CommonActionSet extends XRActionSet {
                         new PoseMultiAction.SubActionPose(
                                 POSE_HAND_GRIP_LEFT,
                                 LEFT_HAND_PATH,
-                                VRPoseRecord.EMPTY
+                                AtumVRPoseRecord.EMPTY
                         ).putDefaultBindings(supportedProfiles, "input/grip/pose"),
                         new PoseMultiAction.SubActionPose(
                                 POSE_HAND_GRIP_RIGHT,
                                 RIGHT_HAND_PATH,
-                                VRPoseRecord.EMPTY
+                                AtumVRPoseRecord.EMPTY
                         ).putDefaultBindings(supportedProfiles, "input/grip/pose")
                 )
         );

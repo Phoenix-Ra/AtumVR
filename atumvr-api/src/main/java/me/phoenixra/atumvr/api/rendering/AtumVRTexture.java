@@ -5,10 +5,10 @@ package me.phoenixra.atumvr.api.rendering;
  * Represents a VR render target backed
  * by an OpenGL frameBuffer and texture array layer.
  * <p>
- *     Used by {@link VRRenderer} to render display for each eye.
+ *     Used by {@link AtumVRRenderer} to render display for each eye.
  * </p>
  */
-public interface VRTexture {
+public interface AtumVRTexture {
 
 
     /**
@@ -16,7 +16,7 @@ public interface VRTexture {
      *
      * @return the instance
      */
-    VRTexture init();
+    AtumVRTexture init();
 
     /**
      * Destroy VR texture and release all associated resources

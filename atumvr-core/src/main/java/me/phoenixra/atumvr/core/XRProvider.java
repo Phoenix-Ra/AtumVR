@@ -2,12 +2,12 @@ package me.phoenixra.atumvr.core;
 
 import lombok.Getter;
 import lombok.Setter;
-import me.phoenixra.atumvr.api.VRLogger;
-import me.phoenixra.atumvr.api.VRProvider;
-import me.phoenixra.atumvr.api.rendering.VRRenderer;
+import me.phoenixra.atumvr.api.AtumVRLogger;
+import me.phoenixra.atumvr.api.AtumVRProvider;
+import me.phoenixra.atumvr.api.rendering.AtumVRRenderer;
 import me.phoenixra.atumvr.core.enums.XREvent;
 import me.phoenixra.atumvr.api.exceptions.AtumVRException;
-import me.phoenixra.atumvr.api.rendering.VRRenderContext;
+import me.phoenixra.atumvr.api.rendering.AtumVRRenderContext;
 import me.phoenixra.atumvr.core.enums.XRActionResult;
 import me.phoenixra.atumvr.core.enums.XRSessionState;
 import me.phoenixra.atumvr.core.rendering.XRRenderer;
@@ -35,19 +35,19 @@ import static org.lwjgl.system.MemoryUtil.memUTF8;
  * </p>
  */
 @Getter
-public abstract class XRProvider implements VRProvider {
+public abstract class XRProvider implements AtumVRProvider {
 
     private final String appName;
 
 
-    private final VRLogger logger;
+    private final AtumVRLogger logger;
 
     /**The XR session handler*/
     protected XRSession session;
     protected XRState state;
 
     protected XRInputHandler inputHandler;
-    protected VRRenderer renderer;
+    protected AtumVRRenderer renderer;
 
 
 
@@ -59,7 +59,7 @@ public abstract class XRProvider implements VRProvider {
 
 
     public XRProvider(@NotNull String appName,
-                      @NotNull VRLogger logger){
+                      @NotNull AtumVRLogger logger){
         this.appName = appName;
         this.logger = logger;
         this.state = createStateHandler();
@@ -75,7 +75,7 @@ public abstract class XRProvider implements VRProvider {
      * <p>
      *     This is a special case.<br>
      *     For your rendering class, you have an option to extend {@link XRRenderer}
-     *     or implement interface {@link VRRenderer}.
+     *     or implement interface {@link AtumVRRenderer}.
      * </p>
      * <p>
      *     It is made this way, to help big projects make less mess while integrating AtumVR.<br>
@@ -86,7 +86,7 @@ public abstract class XRProvider implements VRProvider {
      *
      * @return new VRRenderer instance
      */
-    protected abstract @NotNull VRRenderer createRenderer();
+    protected abstract @NotNull AtumVRRenderer createRenderer();
 
     /**
      * Create input handler
@@ -222,7 +222,7 @@ public abstract class XRProvider implements VRProvider {
     }
 
     @Override
-    public void render(@NotNull VRRenderContext context) {
+    public void render(@NotNull AtumVRRenderContext context) {
         if(!state.isInitialized()){
             return;
         }

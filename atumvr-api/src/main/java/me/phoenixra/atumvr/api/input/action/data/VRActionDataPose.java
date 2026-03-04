@@ -1,6 +1,6 @@
 package me.phoenixra.atumvr.api.input.action.data;
 
-import me.phoenixra.atumvr.api.misc.pose.VRPoseRecord;
+import me.phoenixra.atumvr.api.misc.pose.AtumVRPoseRecord;
 import org.jetbrains.annotations.NotNull;
 
 
@@ -14,5 +14,5 @@ public interface VRActionDataPose extends VRActionData{
      *
      * @return the pose record
      */
-    @NotNull VRPoseRecord getPose();
+    @NotNull AtumVRPoseRecord getPose();
 }

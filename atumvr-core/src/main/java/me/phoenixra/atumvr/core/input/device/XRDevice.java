@@ -1,9 +1,8 @@
 package me.phoenixra.atumvr.core.input.device;
 
 import lombok.Getter;
-import me.phoenixra.atumvr.api.input.device.VRDevice;
-import me.phoenixra.atumvr.api.misc.pose.VRPose;
-import me.phoenixra.atumvr.api.misc.pose.VRPoseMutable;
+import me.phoenixra.atumvr.api.input.device.AtumVRDevice;
+import me.phoenixra.atumvr.api.misc.pose.AtumVRPoseMutable;
 import me.phoenixra.atumvr.core.XRProvider;
 import org.jetbrains.annotations.NotNull;
 
@@ -11,14 +10,14 @@ import org.jetbrains.annotations.NotNull;
  * Base abstract class for VR device
  */
 @Getter
-public abstract class XRDevice implements VRDevice {
+public abstract class XRDevice implements AtumVRDevice {
 
     protected final XRProvider vrProvider;
 
 
     private final String id;
 
-    protected final VRPoseMutable pose = new VRPoseMutable();
+    protected final AtumVRPoseMutable pose = new AtumVRPoseMutable();
 
 
     protected boolean active;

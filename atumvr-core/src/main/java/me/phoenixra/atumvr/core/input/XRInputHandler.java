@@ -3,8 +3,8 @@ package me.phoenixra.atumvr.core.input;
 import lombok.Getter;
 import me.phoenixra.atumconfig.api.tuples.PairRecord;
 import me.phoenixra.atumvr.api.exceptions.AtumVRException;
-import me.phoenixra.atumvr.api.input.VRInputHandler;
-import me.phoenixra.atumvr.api.input.device.VRDevice;
+import me.phoenixra.atumvr.api.input.AtumVRInputHandler;
+import me.phoenixra.atumvr.api.input.device.AtumVRDevice;
 import me.phoenixra.atumvr.core.XRProvider;
 import me.phoenixra.atumvr.api.input.action.data.VRActionData;
 import me.phoenixra.atumvr.api.input.profile.VRInteractionProfileType;
@@ -30,7 +30,7 @@ import static org.lwjgl.system.MemoryUtil.NULL;
 /**
  * Abstract base class for XR input
  */
-public abstract class XRInputHandler implements VRInputHandler {
+public abstract class XRInputHandler implements AtumVRInputHandler {
 
     @Getter
     private final XRProvider vrProvider;
@@ -223,12 +223,12 @@ public abstract class XRInputHandler implements VRInputHandler {
     }
 
     @Override
-    public  <T extends VRDevice> T getDevice(String id, Class<T> clazz){
+    public  <T extends AtumVRDevice> T getDevice(String id, Class<T> clazz){
         return (T) getDevice(id);
     }
 
     @Override
-    public void registerDevice(@NotNull VRDevice device) {
+    public void registerDevice(@NotNull AtumVRDevice device) {
         if(!(device instanceof XRDevice xrDevice)){
             throw new AtumVRException("Tried to register VRDevice that is not an instance of XRDevice! Id: "+device.getId());
         }

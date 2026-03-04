@@ -1,14 +1,14 @@
 package me.phoenixra.atumvr.api.input.device;
 
 import me.phoenixra.atumvr.api.enums.ControllerType;
-import me.phoenixra.atumvr.api.misc.pose.VRPose;
+import me.phoenixra.atumvr.api.misc.pose.AtumVRPose;
 import org.jetbrains.annotations.NotNull;
 
 
 /**
  * VRDevice for controllers
  */
-public interface VRDeviceController extends VRDevice{
+public interface AtumVRDeviceController extends AtumVRDevice {
     String ID_LEFT = "controller_left";
     String ID_RIGHT = "controller_right";
 
@@ -38,14 +38,14 @@ public interface VRDeviceController extends VRDevice{
      *
      * @return VRPose
      */
-    @NotNull VRPose getAimPose();
+    @NotNull AtumVRPose getAimPose();
 
     /**
      * Get grip pose of the controller.
      *
      * @return VRPose
      */
-    @NotNull VRPose getGripPose();
+    @NotNull AtumVRPose getGripPose();
 
     /**
      * If Grip pose action is active

@@ -1,13 +1,13 @@
 package me.phoenixra.atumvr.api.rendering;
 
-import me.phoenixra.atumvr.api.VRProvider;
+import me.phoenixra.atumvr.api.AtumVRProvider;
 
 /**
  * Context passed to VR rendering methods containing frame-specific data.
  *
- * @see VRProvider#render(VRRenderContext)
+ * @see AtumVRProvider#render(AtumVRRenderContext)
  */
-public interface VRRenderContext {
+public interface AtumVRRenderContext {
 
     /**
      * Returns the interpolation factor between the previous and current tick.

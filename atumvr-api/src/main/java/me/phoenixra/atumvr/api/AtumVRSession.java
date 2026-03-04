@@ -11,7 +11,7 @@ package me.phoenixra.atumvr.api;
  *     its only goal is to define this element in library structure
  * </p>
  */
-public interface VRSession {
+public interface AtumVRSession {
 
     void init();
 

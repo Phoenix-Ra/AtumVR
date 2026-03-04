@@ -3,7 +3,7 @@ package me.phoenixra.atumvr.core.input.action.types.single;
 import lombok.Getter;
 import me.phoenixra.atumvr.api.input.action.VRActionIdentifier;
 import me.phoenixra.atumvr.api.input.action.data.VRActionDataPose;
-import me.phoenixra.atumvr.api.misc.pose.VRPoseRecord;
+import me.phoenixra.atumvr.api.misc.pose.AtumVRPoseRecord;
 import me.phoenixra.atumvr.core.utils.XRUtils;
 import me.phoenixra.atumvr.core.XRProvider;
 import me.phoenixra.atumvr.core.enums.XRInputActionType;
@@ -19,7 +19,7 @@ import static org.lwjgl.openxr.XR10.XR_NULL_PATH;
 import static org.lwjgl.system.MemoryStack.stackCallocPointer;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
-public class PoseAction extends XRSingleAction<VRPoseRecord> implements VRActionDataPose {
+public class PoseAction extends XRSingleAction<AtumVRPoseRecord> implements VRActionDataPose {
 
 
 
@@ -31,7 +31,7 @@ public class PoseAction extends XRSingleAction<VRPoseRecord> implements VRAction
                       @NotNull VRActionIdentifier id,
                       @NotNull String localizedName) {
         super(vrProvider, actionSet, id, localizedName, XRInputActionType.POSE);
-        currentState = VRPoseRecord.EMPTY;
+        currentState = AtumVRPoseRecord.EMPTY;
 
     }
     @Override
@@ -80,9 +80,9 @@ public class PoseAction extends XRSingleAction<VRPoseRecord> implements VRAction
             );
 
             currentState = loc == null
-                    ? VRPoseRecord.EMPTY
+                    ? AtumVRPoseRecord.EMPTY
                     :
-                    new VRPoseRecord(
+                    new AtumVRPoseRecord(
                             XRUtils.normalizeXrPose(loc.pose()),
                             XRUtils.normalizeXrQuaternion(loc.pose().orientation()),
                             XRUtils.normalizeXrVector(loc.pose().position$())
@@ -97,7 +97,7 @@ public class PoseAction extends XRSingleAction<VRPoseRecord> implements VRAction
     }
 
     @Override
-    public @NotNull VRPoseRecord getPose() {
+    public @NotNull AtumVRPoseRecord getPose() {
         return currentState;
     }
 }

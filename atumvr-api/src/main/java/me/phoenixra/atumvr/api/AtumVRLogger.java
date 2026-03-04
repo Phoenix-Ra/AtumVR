@@ -8,11 +8,11 @@ import org.jetbrains.annotations.NotNull;
 /**
  * Logger interface used in VR-related logging throughout the AtumVR framework.
  */
-public interface VRLogger extends ConfigLogger {
+public interface AtumVRLogger extends ConfigLogger {
     /**
      * VR logger with no output
      */
-    VRLogger EMPTY = new VRLogger() {
+    AtumVRLogger EMPTY = new AtumVRLogger() {
         @Override
         public void logDebug(@NotNull String msg) {}
         @Override
@@ -22,13 +22,13 @@ public interface VRLogger extends ConfigLogger {
         @Override
         public void logError(@NotNull String msg) {}
         @Override
-        public @NotNull VRLogger setDebug(boolean flag) {return this;}
+        public @NotNull AtumVRLogger setDebug(boolean flag) {return this;}
     };
 
     /**
      * Simple VR logger, that uses System.out.println
      */
-    VRLogger SIMPLE = new VRLogger() {
+    AtumVRLogger SIMPLE = new AtumVRLogger() {
         private boolean debug;
         @Override
         public void logDebug(@NotNull String msg) {if(debug) System.out.println("DEBUG: "+msg);}
@@ -39,7 +39,7 @@ public interface VRLogger extends ConfigLogger {
         @Override
         public void logError(@NotNull String msg) {System.out.println("ERROR: "+msg);}
         @Override
-        public @NotNull VRLogger setDebug(boolean debug) {
+        public @NotNull AtumVRLogger setDebug(boolean debug) {
             this.debug = debug;
             return this;
         }
@@ -61,6 +61,6 @@ public interface VRLogger extends ConfigLogger {
      * @return this instance
      */
     @NotNull
-    VRLogger setDebug(boolean flag);
+    AtumVRLogger setDebug(boolean flag);
 
 }

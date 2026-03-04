@@ -2,7 +2,7 @@ package me.phoenixra.atumvr.core.input.action;
 
 import lombok.Getter;
 import me.phoenixra.atumconfig.api.tuples.PairRecord;
-import me.phoenixra.atumvr.api.input.action.VRActionSet;
+import me.phoenixra.atumvr.api.input.action.AtumVRActionSet;
 import me.phoenixra.atumvr.core.XRProvider;
 import me.phoenixra.atumvr.api.input.profile.VRInteractionProfileType;
 import me.phoenixra.atumvr.core.session.XRInstance;
@@ -25,7 +25,7 @@ import static org.lwjgl.system.MemoryUtil.memUTF8;
 /**
  * Abstract base class for VR action set
  */
-public abstract class XRActionSet implements VRActionSet {
+public abstract class XRActionSet implements AtumVRActionSet {
 
     private final XRProvider vrProvider;
     @Getter

@@ -1,16 +1,16 @@
 package me.phoenixra.atumvr.api;
 
 
-import me.phoenixra.atumvr.api.input.VRInputHandler;
-import me.phoenixra.atumvr.api.rendering.VRRenderContext;
-import me.phoenixra.atumvr.api.rendering.VRRenderer;
+import me.phoenixra.atumvr.api.input.AtumVRInputHandler;
+import me.phoenixra.atumvr.api.rendering.AtumVRRenderContext;
+import me.phoenixra.atumvr.api.rendering.AtumVRRenderer;
 import org.jetbrains.annotations.NotNull;
 
 
 /**
  * The entry point and manager of VR
  */
-public interface VRProvider {
+public interface AtumVRProvider {
 
     /**
      * Initialize VR session
@@ -45,13 +45,13 @@ public interface VRProvider {
      *
      * @param context the render context
      */
-    void render(@NotNull VRRenderContext context);
+    void render(@NotNull AtumVRRenderContext context);
 
 
     /**
      * Post render.
      * <p>
-     *     Called after {@link #render(VRRenderContext)}<br>
+     *     Called after {@link #render(AtumVRRenderContext)}<br>
      *     Do nothing by default, intended to be overwritten when needed
      * </p>
      */
@@ -70,7 +70,7 @@ public interface VRProvider {
      * @return the VR state
      */
     @NotNull
-    VRState getState();
+    AtumVRState getState();
 
     /**
      * Get VR session
@@ -78,7 +78,7 @@ public interface VRProvider {
      * @return the VR session
      */
     @NotNull
-    VRSession getSession();
+    AtumVRSession getSession();
 
     /**
      * Get VR Input Handler
@@ -86,7 +86,7 @@ public interface VRProvider {
      * @return the VR state
      */
     @NotNull
-    VRInputHandler getInputHandler();
+    AtumVRInputHandler getInputHandler();
 
     /**
      * Get VR Renderer
@@ -94,7 +94,7 @@ public interface VRProvider {
      * @return the VR state
      */
     @NotNull
-    VRRenderer getRenderer();
+    AtumVRRenderer getRenderer();
 
 
     /**
@@ -111,7 +111,7 @@ public interface VRProvider {
      * @return the VRLogger
      */
     @NotNull
-    VRLogger getLogger();
+    AtumVRLogger getLogger();
 
 
 }

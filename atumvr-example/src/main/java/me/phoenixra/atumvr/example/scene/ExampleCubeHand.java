@@ -1,8 +1,7 @@
 package me.phoenixra.atumvr.example.scene;
 
 import me.phoenixra.atumvr.api.enums.ControllerType;
-import me.phoenixra.atumvr.api.input.device.VRDeviceController;
-import me.phoenixra.atumvr.core.input.device.XRDeviceController;
+import me.phoenixra.atumvr.api.input.device.AtumVRDeviceController;
 import me.phoenixra.atumvr.example.ExampleVRProvider;
 import me.phoenixra.atumvr.example.texture.StbTexture;
 import org.joml.Matrix4f;
@@ -35,7 +34,7 @@ public class ExampleCubeHand extends ExampleCube{
 
         // 1) grab the controller’s world‐space pose
         Matrix4fc handPose = vrProvider.getInputHandler()
-                .getDevice(VRDeviceController.getId(type))
+                .getDevice(AtumVRDeviceController.getId(type))
                 .getPose().matrix();
 
         // 2) build a local transform: translate→rotate→scale

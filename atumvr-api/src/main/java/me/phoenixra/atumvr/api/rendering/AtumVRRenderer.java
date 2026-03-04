@@ -1,13 +1,13 @@
 package me.phoenixra.atumvr.api.rendering;
 
-import me.phoenixra.atumvr.api.VRProvider;
+import me.phoenixra.atumvr.api.AtumVRProvider;
 import me.phoenixra.atumvr.api.enums.EyeType;
 import org.jetbrains.annotations.NotNull;
 
 /**
  * Base class for VR rendering
  */
-public interface VRRenderer {
+public interface AtumVRRenderer {
 
     /**
      * Initialize VR rendering
@@ -24,7 +24,7 @@ public interface VRRenderer {
      *     associated with the VR runtime.
      * </p>
      * <p>
-     *     Has to be called at the beginning of {@link VRProvider#startFrame}
+     *     Has to be called at the beginning of {@link AtumVRProvider#startFrame}
      * </p>
      */
     void prepareFrame();
@@ -34,7 +34,7 @@ public interface VRRenderer {
      *
      * @param context the render context
      */
-    void renderFrame(@NotNull VRRenderContext context);
+    void renderFrame(@NotNull AtumVRRenderContext context);
 
     /**
      * Destroy VR renderer and release all resources attached
@@ -47,7 +47,7 @@ public interface VRRenderer {
      *
      * @return VR scene
      */
-    VRScene getCurrentScene();
+    AtumVRScene getCurrentScene();
 
 
 
@@ -56,14 +56,14 @@ public interface VRRenderer {
      *
      * @return VR texture
      */
-    VRTexture getTextureLeftEye();
+    AtumVRTexture getTextureLeftEye();
 
     /**
      * Get texture for right eye
      *
      * @return VR texture
      */
-    VRTexture getTextureRightEye();
+    AtumVRTexture getTextureRightEye();
 
 
 
@@ -107,5 +107,5 @@ public interface VRRenderer {
      * @return VRProvider
      */
     @NotNull
-    VRProvider getVrProvider();
+    AtumVRProvider getVrProvider();
 }
