@@ -430,7 +430,7 @@ public abstract class XRRenderer implements AtumVRRenderer {
                 }
 
                 hiddenArea.put(EyeType.fromIndex(eye), area);
-                System.out.println("Hidden-area mesh loaded for eye " + eye);
+                getVrProvider().getLogger().logInfo("Hidden-area mesh loaded for eye " + eye);
             }
         }
     }

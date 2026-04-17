@@ -82,7 +82,7 @@ public class VRShaderProgram {
 
         variables = new HashMap<>();
         initialized = true;
-        System.out.println("Successfully created shader program");
+        getVrProvider().getLogger().logInfo("Successfully created shader program");
     }
 
     public void useShader(){
