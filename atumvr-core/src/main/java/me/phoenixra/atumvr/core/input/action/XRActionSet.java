@@ -152,11 +152,11 @@ public abstract class XRActionSet implements AtumVRActionSet {
 
     @Override
     public final void destroy() {
-        if (handle != null) {
-            XR10.xrDestroyActionSet(handle);
-        }
         for (var action : getActions()) {
             action.destroy();
+        }
+        if (handle != null) {
+            XR10.xrDestroyActionSet(handle);
         }
     }
 

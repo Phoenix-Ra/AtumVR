@@ -64,7 +64,14 @@ public class HapticPulseAction extends XRAction {
                     .subactionPaths(paths);
 
             PointerBuffer pAction = stack.callocPointer(1);
-            xrCreateAction(actionSet.getHandle(), actionCreateInfo, pAction);
+            vrProvider.checkXRError(
+                    XR10.xrCreateAction(
+                            actionSet.getHandle(),
+                            actionCreateInfo,
+                            pAction
+                    ),
+                    "xrCreateAction"
+            );
             handle = new XrAction(pAction.get(0), actionSet.getHandle());
         }
     }

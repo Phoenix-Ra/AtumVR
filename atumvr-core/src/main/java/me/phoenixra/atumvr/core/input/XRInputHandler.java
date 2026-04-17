@@ -310,5 +310,6 @@ public abstract class XRInputHandler implements AtumVRInputHandler {
         actionSets.values().forEach(XRActionSet::destroy);
         actionSets.clear();
         devices.clear();
+        paths.clear();
     }
 }
