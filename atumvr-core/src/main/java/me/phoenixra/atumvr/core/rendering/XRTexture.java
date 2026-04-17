@@ -54,19 +54,19 @@ public class XRTexture implements AtumVRTexture {
     }
 
     private void checkStatus() {
-        int i = GL30.glCheckFramebufferStatus(36160);
-        if (i != 36053) {
-            if (i == 36054) {
+        int i = GL30.glCheckFramebufferStatus(GL30.GL_FRAMEBUFFER);
+        if (i != GL30.GL_FRAMEBUFFER_COMPLETE) {
+            if (i == GL30.GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT) {
                 throw new RuntimeException("GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT");
-            } else if (i == 36055) {
+            } else if (i == GL30.GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT) {
                 throw new RuntimeException("GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT");
-            } else if (i == 36059) {
+            } else if (i == GL30.GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER) {
                 throw new RuntimeException("GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER");
-            } else if (i == 36060) {
+            } else if (i == GL30.GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER) {
                 throw new RuntimeException("GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER");
-            } else if (i == 36061) {
+            } else if (i == GL30.GL_FRAMEBUFFER_UNSUPPORTED) {
                 throw new RuntimeException("GL_FRAMEBUFFER_UNSUPPORTED");
-            } else if (i == 1285) {
+            } else if (i == GL30.GL_OUT_OF_MEMORY) {
                 throw new RuntimeException("GL_OUT_OF_MEMORY");
             } else {
                 throw new RuntimeException("glCheckFramebufferStatus returned unknown status:" + i);
@@ -76,8 +76,8 @@ public class XRTexture implements AtumVRTexture {
 
 
     public void destroy(){
-        GL30.glDeleteTextures(textureId);
         GL30.glDeleteFramebuffers(frameBufferId);
+        GL30.glDeleteTextures(textureId);
     }
 
 }
