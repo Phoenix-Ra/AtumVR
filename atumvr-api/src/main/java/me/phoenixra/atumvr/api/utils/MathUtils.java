@@ -225,9 +225,9 @@ public class MathUtils {
         rotation.set(1,1, pose.get(1,1));
         rotation.set(1,2, pose.get(1,2));
         rotation.set(1,3, 0f);
-        rotation.set(2,0, pose.get(2,0));;
-        rotation.set(2,1, pose.get(2,1));;
-        rotation.set(2,2, pose.get(2,2));;
+        rotation.set(2,0, pose.get(2,0));
+        rotation.set(2,1, pose.get(2,1));
+        rotation.set(2,2, pose.get(2,2));
         rotation.set(2,3, 0f);
         rotation.set(3,0, 0f);
         rotation.set(3,1, 0f);

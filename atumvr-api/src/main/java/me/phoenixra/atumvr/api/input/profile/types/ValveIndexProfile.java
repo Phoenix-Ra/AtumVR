@@ -30,7 +30,7 @@ public class ValveIndexProfile  {
 
     public static final VRActionIdentifier BUTTON_GRIP_LEFT = new VRActionIdentifier("button.grip.left", ControllerType.LEFT);
     public static final VRActionIdentifier BUTTON_GRIP_RIGHT = new VRActionIdentifier("button.grip.right", ControllerType.RIGHT);
-    public static final VRActionIdentifier BUTTON_GRIP_FORCE_LEFT = new VRActionIdentifier("button.grip.force.left", ControllerType.LEFT);;
+    public static final VRActionIdentifier BUTTON_GRIP_FORCE_LEFT = new VRActionIdentifier("button.grip.force.left", ControllerType.LEFT);
     public static final VRActionIdentifier BUTTON_GRIP_FORCE_RIGHT = new VRActionIdentifier("button.grip.force.right", ControllerType.RIGHT);
 
 

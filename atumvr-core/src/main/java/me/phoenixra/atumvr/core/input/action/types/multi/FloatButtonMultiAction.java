@@ -75,7 +75,7 @@ public class FloatButtonMultiAction extends XRMultiAction<Float> {
                     newButtonState = v >= pressThreshold;
                 }
                 boolean buttonChanged = newButtonState != entry.isPressed();
-                long buttonLastChangeTime = entry.getButtonLastChangeTime();;
+                long buttonLastChangeTime = entry.getButtonLastChangeTime();
                 if (buttonChanged) {
                     buttonLastChangeTime = System.currentTimeMillis();
                 }
