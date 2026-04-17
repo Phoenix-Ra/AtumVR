@@ -69,7 +69,7 @@ public class PoseAction extends XRSingleAction<AtumVRPoseRecord> implements VRAc
                             getInfo,
                             state
                     ),
-                    "xrGetActionStateFloat"
+                    "xrGetActionStatePose"
             );
             this.changed = true;
             this.lastChangeTime = System.nanoTime();

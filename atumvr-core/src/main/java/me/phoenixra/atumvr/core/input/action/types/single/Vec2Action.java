@@ -42,7 +42,7 @@ public class Vec2Action extends XRSingleAction<Vector2f> implements VRActionData
                             getInfo,
                             state
                     ),
-                    "xrGetActionStateFloat"
+                    "xrGetActionStateVector2f"
             );
             this.currentState = XRUtils.normalizeXrVector(state.currentState());
             this.changed = state.changedSinceLastSync();

@@ -79,7 +79,7 @@ public class PoseMultiAction extends XRMultiAction<AtumVRPoseRecord> {
                                 getInfo,
                                 state
                         ),
-                        "xrGetActionStateFloat"
+                        "xrGetActionStatePose"
                 );
                 var loc = XRUtils.xrLocationFromSpace(
                         vrProvider, xrSpace.get(entry), stack

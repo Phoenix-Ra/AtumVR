@@ -54,7 +54,7 @@ public class Vec2MultiAction extends XRMultiAction<Vector2f> {
                                 getInfo,
                                 state
                         ),
-                        "xrGetActionStateFloat"
+                        "xrGetActionStateVector2f"
                 );
                 entry.update(
                         XRUtils.normalizeXrVector(state.currentState()),

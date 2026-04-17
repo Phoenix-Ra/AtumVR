@@ -51,7 +51,7 @@ public class BoolButtonMultiAction extends XRMultiAction<Boolean> {
                                 getInfo,
                                 state
                         ),
-                        "xrGetActionStateFloat"
+                        "xrGetActionStateBoolean"
                 );
                 entry.update(
                         state.currentState(),

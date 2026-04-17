@@ -42,7 +42,7 @@ public class BoolButtonAction extends XRSingleAction<Boolean> implements VRActio
                             getInfo,
                             state
                     ),
-                    "xrGetActionStateFloat"
+                    "xrGetActionStateBoolean"
             );
             this.currentState = state.currentState();
             this.changed = state.changedSinceLastSync();
