@@ -23,8 +23,8 @@ public class WindowsMotionProfile {
     public static final VRActionIdentifier BUTTON_THUMBSTICK_LEFT = new VRActionIdentifier("button.thumbstick.left", ControllerType.LEFT);
     public static final VRActionIdentifier BUTTON_THUMBSTICK_RIGHT = new VRActionIdentifier("button.thumbstick.right", ControllerType.RIGHT);
 
-    public static final VRActionIdentifier BUTTON_TRACKPAD_LEFT = new VRActionIdentifier("button.trackpad.touch.left", ControllerType.LEFT);
-    public static final VRActionIdentifier BUTTON_TRACKPAD_RIGHT = new VRActionIdentifier("button.trackpad.touch.right", ControllerType.RIGHT);
+    public static final VRActionIdentifier BUTTON_TRACKPAD_LEFT = new VRActionIdentifier("button.trackpad.left", ControllerType.LEFT);
+    public static final VRActionIdentifier BUTTON_TRACKPAD_RIGHT = new VRActionIdentifier("button.trackpad.right", ControllerType.RIGHT);
     public static final VRActionIdentifier BUTTON_TRACKPAD_TOUCH_LEFT = new VRActionIdentifier("button.trackpad.touch.left", ControllerType.LEFT);
     public static final VRActionIdentifier BUTTON_TRACKPAD_TOUCH_RIGHT = new VRActionIdentifier("button.trackpad.touch.right", ControllerType.RIGHT);
 
