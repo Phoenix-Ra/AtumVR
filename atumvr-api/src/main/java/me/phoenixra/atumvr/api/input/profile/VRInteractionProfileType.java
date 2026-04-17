@@ -37,16 +37,16 @@ public enum VRInteractionProfileType {
 
     private static final HashMap<String, VRInteractionProfileType> values = new HashMap<>();
 
+    static {
+        for(VRInteractionProfileType entry : values()){
+            values.put(entry.xrPath, entry);
+        }
+    }
 
     /**
      * Get enum from interaction profile path
      */
     public static @Nullable VRInteractionProfileType fromXRPath(@NotNull String path){
-        if(values.isEmpty()){
-            for(VRInteractionProfileType entry : values()){
-                values.put(entry.xrPath,entry);
-            }
-        }
         return values.get(path);
     }
 
