@@ -125,6 +125,7 @@ public class HapticPulseAction extends XRAction {
                     .amplitude(amplitude);
 
 
+            xrStopHapticFeedback(session, info);
             xrApplyHapticFeedback(session, info, XrHapticBaseHeader.create(vib.address()));
         }
     }
