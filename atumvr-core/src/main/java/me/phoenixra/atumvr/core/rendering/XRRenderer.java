@@ -4,24 +4,22 @@ import lombok.Getter;
 import me.phoenixra.atumvr.api.rendering.AtumVRRenderContext;
 import me.phoenixra.atumvr.api.rendering.AtumVRRenderer;
 import me.phoenixra.atumvr.api.rendering.AtumVRTexture;
+import me.phoenixra.atumvr.api.rendering.backend.XRGraphicsBackend;
+import me.phoenixra.atumvr.api.rendering.backend.XRSwapchainImages;
 import me.phoenixra.atumvr.core.XRProvider;
 import me.phoenixra.atumvr.api.enums.EyeType;
 import me.phoenixra.atumvr.api.exceptions.AtumVRException;
 import me.phoenixra.atumvr.core.input.device.XRDeviceHMD;
 import me.phoenixra.atumvr.api.utils.GLUtils;
+import me.phoenixra.atumvr.core.rendering.backend.DesktopOpenGLGraphicsBackend;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.PointerBuffer;
-import org.lwjgl.glfw.GLFWErrorCallback;
-import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.openxr.*;
 import org.lwjgl.system.MemoryStack;
 
 import java.nio.IntBuffer;
 import java.util.HashMap;
-
-import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
-import static org.lwjgl.glfw.GLFW.*;
 
 
 /**
@@ -40,6 +38,13 @@ public abstract class XRRenderer implements AtumVRRenderer {
     protected int resolutionHeight;
 
 
+    /**
+     * Optional GLFW window handle, kept for backward compatibility with hosts
+     * that pre-set their own GL context on this field. New code should drive
+     * the desktop backend via
+     * {@link DesktopOpenGLGraphicsBackend#setExternalWindowHandle(long)} and
+     * read the handle back from the backend.
+     */
     @Getter
     protected long windowHandle;
 
@@ -268,41 +273,29 @@ public abstract class XRRenderer implements AtumVRRenderer {
 
 
     /**
-     * Setup OpenGL context for VR.
+     * Setup the host graphics context for VR.
      * <p>
-     *     Optional to use.<br>
-     *     If you already have OpenGL context for your app,
-     *     set its {@link #windowHandle} for the field instead
+     *     Optional to use. If you already have a graphics context for your app,
+     *     hand it to the active {@link XRGraphicsBackend} (for desktop:
+     *     {@link DesktopOpenGLGraphicsBackend#setExternalWindowHandle(long)})
+     *     before calling this.
+     * </p>
+     * <p>
+     *     Delegates to {@link XRGraphicsBackend#setupHostContext(String)}; the
+     *     backend chooses the right host machinery for its platform (GLFW on
+     *     desktop, EGL/Android Activity on Quest).
      * </p>
      */
     public void setupGLContext() {
         glContextCreated = true;
-        GLFWErrorCallback.createPrint(System.out).set();
-
-        if (!glfwInit()) {
-            throw new IllegalStateException("Unable to initialize GLFW");
+        XRGraphicsBackend backend = vrProvider.getGraphicsBackend();
+        if (windowHandle != 0L && backend instanceof DesktopOpenGLGraphicsBackend) {
+            ((DesktopOpenGLGraphicsBackend) backend).setExternalWindowHandle(windowHandle);
         }
-
-
-        glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
-        glfwWindowHint(GLFW_DEPTH_BITS, 24);
-        glfwWindowHint(GLFW_STENCIL_BITS, 8);
-
-        windowHandle = glfwCreateWindow(640, 480, vrProvider.getAppName(), 0L, 0L);
-        if (windowHandle == 0L) {
-            throw new RuntimeException("Failed to create the GLFW window");
+        backend.setupHostContext(vrProvider.getAppName());
+        if (backend instanceof DesktopOpenGLGraphicsBackend) {
+            this.windowHandle = ((DesktopOpenGLGraphicsBackend) backend).getWindowHandle();
         }
-
-        glfwMakeContextCurrent(windowHandle);
-        glfwSwapInterval(1);
-
-        GL.createCapabilities();
-        GL30.glEnable(GL30.GL_DEPTH_TEST);
-
-        //texture staff, better be moved to a renderers of objects
-        GL30.glEnable(GL30.GL_CULL_FACE);
-        GL30.glCullFace(GL30.GL_BACK);
-
     }
 
     /**
@@ -316,7 +309,11 @@ public abstract class XRRenderer implements AtumVRRenderer {
 
 
     /**
-     * Setup Eye textures and swapChains
+     * Setup Eye textures and swapChains.
+     * <p>
+     * Uses the active {@link XRGraphicsBackend} to allocate swapchain images
+     * in the right struct layout (GL vs GLES vs Vulkan), then wires each
+     * image into per-eye framebuffers.
      */
     protected void setupEyes() {
 
@@ -329,28 +326,27 @@ public abstract class XRRenderer implements AtumVRRenderer {
 
             // Now we know the amount, create the image buffer
             int imageCount = intBuffer.get(0);
-            XrSwapchainImageOpenGLKHR.Buffer swapchainImageBuffer = vrProvider
-                    .getSession().getSwapChain().createImageBuffers(imageCount,
-                            stack);
+            XRSwapchainImages images = vrProvider
+                    .getSession().getSwapChain().createImageBuffers(imageCount, stack);
 
             error = XR10.xrEnumerateSwapchainImages(vrProvider.getSession().getSwapChain().getHandle(), intBuffer,
-                    XrSwapchainImageBaseHeader.create(swapchainImageBuffer.address(), swapchainImageBuffer.capacity()));
+                    XrSwapchainImageBaseHeader.create(images.address(), images.capacity()));
             vrProvider.checkXRError(error, "xrEnumerateSwapchainImages", "get images");
 
             this.leftFramebuffers = new AtumVRTexture[imageCount];
             this.rightFramebuffers = new AtumVRTexture[imageCount];
 
             for (int i = 0; i < imageCount; i++) {
-                XrSwapchainImageOpenGLKHR openxrImage = swapchainImageBuffer.get(i);
+                int textureId = images.getImageId(i);
                 this.leftFramebuffers[i] = createTexture(
                         resolutionWidth, resolutionHeight,
-                        openxrImage.image(),
+                        textureId,
                         0
                 ).init();
                 GLUtils.checkGLError("Left Eye " + i + " framebuffer setup");
                 this.rightFramebuffers[i] = createTexture(
                         resolutionWidth, resolutionHeight,
-                        openxrImage.image(),
+                        textureId,
                         1
                 ).init();
                 GLUtils.checkGLError("Right Eye " + i + " framebuffer setup");
@@ -467,10 +463,8 @@ public abstract class XRRenderer implements AtumVRRenderer {
     public void destroy() {
         getCurrentScene().destroy();
         if(glContextCreated) {
-            glfwFreeCallbacks(windowHandle);
-            glfwDestroyWindow(windowHandle);
-
-            glfwTerminate();
+            vrProvider.getGraphicsBackend().destroyHostContext();
+            windowHandle = 0L;
         }
     }
 

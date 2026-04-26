@@ -66,8 +66,7 @@ public class XRSession implements AtumVRSession {
         Struct<?> graphicsBind = system.createGraphicsBinding(
                 stack,
                 instance.getHandle(),
-                systemId,
-                vrProvider.getRenderer().getWindowHandle()
+                systemId
         );
         var sessionInfo = XrSessionCreateInfo.calloc(stack)
                 .type(XR10.XR_TYPE_SESSION_CREATE_INFO)

@@ -5,17 +5,17 @@ import lombok.Setter;
 import me.phoenixra.atumvr.api.AtumVRLogger;
 import me.phoenixra.atumvr.api.AtumVRProvider;
 import me.phoenixra.atumvr.api.rendering.AtumVRRenderer;
+import me.phoenixra.atumvr.api.rendering.backend.XRGraphicsBackend;
 import me.phoenixra.atumvr.core.enums.XREvent;
 import me.phoenixra.atumvr.api.exceptions.AtumVRException;
 import me.phoenixra.atumvr.api.rendering.AtumVRRenderContext;
 import me.phoenixra.atumvr.core.enums.XRActionResult;
 import me.phoenixra.atumvr.core.enums.XRSessionState;
 import me.phoenixra.atumvr.core.rendering.XRRenderer;
+import me.phoenixra.atumvr.core.rendering.backend.DesktopOpenGLGraphicsBackend;
 import me.phoenixra.atumvr.core.session.XRSession;
 import me.phoenixra.atumvr.core.input.XRInputHandler;
 import org.jetbrains.annotations.NotNull;
-import org.lwjgl.opengl.GL30;
-import org.lwjgl.opengl.GL31;
 import org.lwjgl.openxr.*;
 import org.lwjgl.system.MemoryStack;
 
@@ -49,6 +49,9 @@ public abstract class XRProvider implements AtumVRProvider {
     protected XRInputHandler inputHandler;
     protected AtumVRRenderer renderer;
 
+    /** Graphics backend used to bind OpenXR to the host's GL/GLES/Vulkan context. */
+    protected final XRGraphicsBackend graphicsBackend;
+
 
 
     /**
@@ -62,9 +65,19 @@ public abstract class XRProvider implements AtumVRProvider {
                       @NotNull AtumVRLogger logger){
         this.appName = appName;
         this.logger = logger;
+        this.graphicsBackend = createGraphicsBackend();
         this.state = createStateHandler();
         this.renderer = createRenderer();
         this.inputHandler = createInputHandler();
+    }
+
+    /**
+     * Create the graphics backend that will bind OpenXR to the host's GL/GLES
+     * context. Defaults to a desktop OpenGL backend; override on Quest /
+     * Android-side providers to return an {@code AndroidGLESGraphicsBackend}.
+     */
+    protected @NotNull XRGraphicsBackend createGraphicsBackend(){
+        return new DesktopOpenGLGraphicsBackend();
     }
 
 
@@ -147,48 +160,16 @@ public abstract class XRProvider implements AtumVRProvider {
     }
 
     /**
-     * Retrieves the list of supported swap chain formats.
+     * Retrieves the list of supported swap chain formats, in priority order.
+     * The first format in the list that the runtime advertises will be used.
      * <p>
-     *     The first format in the list that is supported
-     *     by the user's hardware will be applied during initialization,
-     *     starting from index 0.
+     * Defaults to the active {@link XRGraphicsBackend}'s preferred format list
+     * (desktop GL constants for desktop, GLES constants on Android, etc.).
+     * Override to customize.
      * </p>
-     *
-     * By default, the following swap chain formats are included, in order of priority:
-     * <ul>
-     *     <li>{@code GL21.GL_SRGB8_ALPHA8}</li>
-     *     <li>{@code GL21.GL_SRGB8}</li>
-     *     <li>{@code GL11.GL_RGB10_A2}</li>
-     *     <li>{@code GL30.GL_RGBA16F}</li>
-     *     <li>{@code GL30.GL_RGB16F}</li>
-     *     <li>Fallback formats:
-     *         <ul>
-     *             <li>{@code GL11.GL_RGBA8}</li>
-     *             <li>{@code GL31.GL_RGBA8_SNORM}</li>
-     *         </ul>
-     *     </li>
-     * </ul>
-     *
-     * <p>
-     *     Override if you need to specify
-     *     a different list of formats or modify their apply priority.
-     * </p>
-     *
-     * @return list of integers representing swap chain formats.
      */
     public @NotNull List<Integer> getSwapChainFormats(){
-        return List.of(
-                GL30.GL_SRGB8_ALPHA8,
-                GL30.GL_SRGB8,
-                // others
-                GL30.GL_RGB10_A2,
-                GL30.GL_RGBA16F,
-                GL30.GL_RGB16F,
-
-                // Fallback
-                GL30.GL_RGBA8,
-                GL31.GL_RGBA8_SNORM
-        );
+        return graphicsBackend.getDefaultSwapchainFormats();
     }
 
     // -------- LIFECYCLE --------

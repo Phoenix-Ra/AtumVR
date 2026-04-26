@@ -18,8 +18,6 @@ import java.util.Set;
  * XR session instance (low-level OpenXR stuff)
  */
 public class XRInstance {
-    private final static String GRAPHICS_EXTENSION = KHROpenGLEnable.XR_KHR_OPENGL_ENABLE_EXTENSION_NAME;
-
     private final XRProvider vrProvider;
 
     @Getter
@@ -125,8 +123,9 @@ public class XRInstance {
 
 
         // 2) Define desired extensions in priority order
+        String graphicsExtension = vrProvider.getGraphicsBackend().getRequiredExtensionName();
         List<String> desiredExtensions = new ArrayList<>(List.of(
-                GRAPHICS_EXTENSION,
+                graphicsExtension,
 
                 EXTDebugUtils.XR_EXT_DEBUG_UTILS_EXTENSION_NAME,
                 FBDisplayRefreshRate.XR_FB_DISPLAY_REFRESH_RATE_EXTENSION_NAME,
@@ -135,9 +134,9 @@ public class XRInstance {
         desiredExtensions.addAll(vrProvider.getXRAppExtensions());
 
         // Ensure graphics extension is present
-        if (!availableExtensions.contains(GRAPHICS_EXTENSION)) {
+        if (!availableExtensions.contains(graphicsExtension)) {
             throw new AtumVRException(
-                    "Missing required graphics extension: " + GRAPHICS_EXTENSION
+                    "Missing required graphics extension: " + graphicsExtension
             );
         }
 

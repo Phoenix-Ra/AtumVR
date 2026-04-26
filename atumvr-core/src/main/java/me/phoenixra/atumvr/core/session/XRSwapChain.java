@@ -1,6 +1,7 @@
 package me.phoenixra.atumvr.core.session;
 
 import lombok.Getter;
+import me.phoenixra.atumvr.api.rendering.backend.XRSwapchainImages;
 import me.phoenixra.atumvr.core.XRProvider;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.PointerBuffer;
@@ -158,13 +159,8 @@ public class XRSwapChain {
 
 
 
-    public XrSwapchainImageOpenGLKHR.Buffer createImageBuffers(int imageCount, MemoryStack stack) {
-        var swapchainImageBuffer = XrSwapchainImageOpenGLKHR.calloc(imageCount, stack);
-        for (XrSwapchainImageOpenGLKHR image : swapchainImageBuffer) {
-            image.type(KHROpenGLEnable.XR_TYPE_SWAPCHAIN_IMAGE_OPENGL_KHR);
-        }
-
-        return swapchainImageBuffer;
+    public XRSwapchainImages createImageBuffers(int imageCount, MemoryStack stack) {
+        return vrProvider.getGraphicsBackend().allocateSwapchainImages(imageCount, stack);
     }
 
 

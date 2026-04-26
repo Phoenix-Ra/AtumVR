@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Library manifest for the AtumVR Android runtime.
+
+    Apps that depend on atumvr-android still need their own AndroidManifest.xml
+    that declares an XR-capable launcher activity (extending XrActivity from
+    this module). The bits below are the minimum library-level metadata so the
+    Meta OpenXR loader recognises this AAR as an XR module.
+-->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          package="me.phoenixra.atumvr.android">
+
+    <!-- Quest hardware feature. Required so the Horizon OS store / launcher
+         identifies the consumer app as a VR title. -->
+    <uses-feature android:name="android.hardware.vr.headtracking"
+                  android:version="1"
+                  android:required="true"/>
+
+    <!-- OpenXR runtime hand-off marker for the Meta loader. -->
+    <uses-feature android:name="org.khronos.openxr.feature.handtracking"
+                  android:required="false"/>
+
+    <queries>
+        <!-- Required for OpenXR runtime discovery (Meta loader spec). -->
+        <provider android:authorities="org.khronos.openxr.runtime_broker;org.khronos.openxr.system_runtime_broker" />
+    </queries>
+
+</manifest>

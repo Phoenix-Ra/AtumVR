@@ -1,0 +1,53 @@
+// Android library that provides the Quest / Android-side AtumVR runtime:
+// the OpenGL ES graphics backend, an Activity helper that wires up an EGL
+// surface, and the Meta OpenXR Mobile loader hookup.
+//
+// IMPORTANT: this module requires the Android Gradle Plugin and an installed
+// Android SDK. It is intentionally NOT included in the root settings.gradle
+// by default so the desktop build keeps working in CI environments without
+// the Android toolchain. To enable it, add the Android Gradle Plugin to the
+// root buildscript and uncomment the corresponding `include` line in
+// settings.gradle. See atumvr-android/README-ANDROID.md for the full setup.
+
+plugins {
+    // Apply with: id 'com.android.library' version '8.2.0'
+    // (declared in the root buildscript classpath when the module is enabled)
+    id 'com.android.library'
+}
+
+android {
+    namespace 'me.phoenixra.atumvr.android'
+    compileSdk 34
+
+    defaultConfig {
+        minSdk 29              // Quest 2/3 ship with Android 10 (API 29) at minimum
+        targetSdk 32           // Meta recommends targetSdk 32 for current store policy
+
+        ndk {
+            // Quest devices are arm64 only; ship a single ABI to keep the APK small.
+            abiFilters 'arm64-v8a'
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    buildFeatures {
+        prefab true            // Required to consume the Meta OpenXR loader AAR's prefab package
+    }
+}
+
+dependencies {
+    api(project(':atumvr-api'))
+    api(project(':atumvr-core'))
+
+    // Meta OpenXR Mobile loader (provides libopenxr_loader.so for Quest).
+    // Pull this from the Meta XR SDK Maven release that matches your target
+    // Horizon OS version, e.g.:
+    //   implementation 'org.khronos.openxr:openxr_loader_for_android:1.1.36'
+    // (left commented because it requires the host project to add Meta's
+    // Maven repo or vendor the AAR locally.)
+    // implementation 'org.khronos.openxr:openxr_loader_for_android:1.1.36'
+}
