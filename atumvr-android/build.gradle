@@ -2,12 +2,13 @@
 // the OpenGL ES graphics backend, an Activity helper that wires up an EGL
 // surface, and the Meta OpenXR Mobile loader hookup.
 //
-// IMPORTANT: this module requires the Android Gradle Plugin and an installed
-// Android SDK. It is intentionally NOT included in the root settings.gradle
-// by default so the desktop build keeps working in CI environments without
-// the Android toolchain. To enable it, add the Android Gradle Plugin to the
-// root buildscript and uncomment the corresponding `include` line in
-// settings.gradle. See atumvr-android/README-ANDROID.md for the full setup.
+// IMPORTANT: this module requires the Android Gradle Plugin, the Android
+// SDK, and the Android NDK + CMake. It is intentionally NOT included in the
+// root settings.gradle by default so the desktop build keeps working in CI
+// environments without the Android toolchain. To enable it, add the Android
+// Gradle Plugin to the root buildscript and uncomment the corresponding
+// `include` line in settings.gradle. See atumvr-android/README-ANDROID.md
+// for the full setup.
 
 plugins {
     // Apply with: id 'com.android.library' version '8.2.0'
@@ -19,6 +20,10 @@ android {
     namespace 'me.phoenixra.atumvr.android'
     compileSdk 34
 
+    // NDK version pinned to a recent r26 LTS line. Override in
+    // local.properties (ndk.dir) if your machine has a different one.
+    ndkVersion '26.1.10909125'
+
     defaultConfig {
         minSdk 29              // Quest 2/3 ship with Android 10 (API 29) at minimum
         targetSdk 32           // Meta recommends targetSdk 32 for current store policy
@@ -26,6 +31,14 @@ android {
         ndk {
             // Quest devices are arm64 only; ship a single ABI to keep the APK small.
             abiFilters 'arm64-v8a'
+        }
+
+        externalNativeBuild {
+            cmake {
+                cppFlags '-std=c++17', '-fexceptions', '-frtti', '-Wall', '-Werror'
+                arguments '-DANDROID_STL=c++_shared',
+                          '-DANDROID_PLATFORM=android-29'
+            }
         }
     }
 
@@ -37,17 +50,34 @@ android {
     buildFeatures {
         prefab true            // Required to consume the Meta OpenXR loader AAR's prefab package
     }
+
+    externalNativeBuild {
+        cmake {
+            path 'src/main/cpp/CMakeLists.txt'
+            version '3.22.1'
+        }
+    }
+
+    packagingOptions {
+        // The Meta OpenXR Mobile loader ships libopenxr_loader.so. Allow it
+        // to be picked up from any consuming module without conflicts.
+        jniLibs {
+            useLegacyPackaging false
+        }
+    }
 }
 
 dependencies {
+    // Only depend on the platform-neutral API surface. atumvr-core is
+    // desktop-only (LWJGL JNI bindings won't load on Android); the
+    // Quest-side OpenXR implementation lives in this module's native layer.
     api(project(':atumvr-api'))
-    api(project(':atumvr-core'))
 
     // Meta OpenXR Mobile loader (provides libopenxr_loader.so for Quest).
-    // Pull this from the Meta XR SDK Maven release that matches your target
-    // Horizon OS version, e.g.:
+    // Pull this from the Khronos / Meta XR SDK Maven release that matches
+    // your target Horizon OS version, e.g.:
     //   implementation 'org.khronos.openxr:openxr_loader_for_android:1.1.36'
-    // (left commented because it requires the host project to add Meta's
-    // Maven repo or vendor the AAR locally.)
+    // (left commented because it requires the host project to add the
+    // appropriate Maven repo or vendor the AAR locally.)
     // implementation 'org.khronos.openxr:openxr_loader_for_android:1.1.36'
 }

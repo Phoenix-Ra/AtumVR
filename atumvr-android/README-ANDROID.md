@@ -1,89 +1,131 @@
 # atumvr-android — Quest 3 / standalone XR runtime (scaffold)
 
-This module is the Android-side counterpart to `atumvr-core`. It plugs an
-OpenGL ES graphics backend into the new `XRGraphicsBackend` abstraction
-defined in `atumvr-api`, so the existing `XRRenderer` / `XRSession` /
-`XRSwapChain` code in `atumvr-core` can drive a Quest 3 standalone build.
+This module is the Android-side counterpart to `atumvr-core`. Because the
+existing core is bound to LWJGL desktop natives (which don't load on
+Android), the Quest port doesn't share the OpenXR call sites in `atumvr-core`
+— it owns its own native (NDK) OpenXR implementation and exposes it through
+a thin Java bridge. Only `atumvr-api` (platform-neutral types: enums,
+poses, controller profiles) is shared.
 
 ## Status
 
-**Scaffold only.** The Java/Kotlin glue, manifest, `XrActivity` and
-`AndroidGLESGraphicsBackend` skeleton are in place; the four mobile-only
-OpenXR entry points (`xrInitializeLoaderKHR`,
-`xrGetOpenGLESGraphicsRequirementsKHR`,
-`XrGraphicsBindingOpenGLESAndroidKHR`,
-`XrSwapchainImageOpenGLESKHR`) are not implemented yet — LWJGL doesn't ship
-those bindings on its desktop artifacts, so they need to be reached either
-via a small JNI shim around the Meta OpenXR Mobile loader, or via a custom
-LWJGL build with the `openxr-mobile` extensions enabled.
+**Step 1 — NDK + CMake plumbing complete.** This commit lands:
+
+- `build.gradle` configured for `com.android.library` + `externalNativeBuild`
+  with CMake 3.22 and NDK r26 LTS, arm64-v8a only.
+- `src/main/cpp/CMakeLists.txt` building `libatumvr_native.so`, linking
+  EGL / GLESv3 / log / android. Optionally links the Meta OpenXR Mobile
+  loader via prefab when `ATUMVR_WITH_OPENXR_LOADER` is on.
+- `src/main/cpp/atumvr_jni.cpp` with `JNI_OnLoad`, an ABI-version probe,
+  and a build-info string. No OpenXR calls yet.
+- `me.phoenixra.atumvr.android.nativebridge.NativeXRBridge` Java surface
+  that loads the shared library and exposes the probes for sample apps.
+
+Still **scaffolded** (`AndroidGLESGraphicsBackend`, `XrActivity`) — these
+hold the eventual GLES backend, but their `LWJGL`-typed signatures will be
+refactored in a later step once `atumvr-api` is split into a
+platform-neutral subset and an LWJGL-bound subset.
 
 ## Enabling the module
 
 `atumvr-android` is intentionally NOT included in the root `settings.gradle`
 yet. The desktop build keeps working in CI environments without the Android
-toolchain. To enable it:
+toolchain. To enable it locally:
 
-1. Install the Android SDK locally and set `ANDROID_HOME`.
-2. Add the Android Gradle Plugin to the root `build.gradle`:
+1. Install Android Studio (or the SDK + cmdline-tools) and set
+   `ANDROID_HOME`. Accept SDK licenses (`yes | sdkmanager --licenses`).
+2. Install **NDK r26.1** and **CMake 3.22** through `sdkmanager` (or the
+   IDE's SDK Manager). The Gradle config pins to `26.1.10909125`; override
+   `ndkVersion` in `atumvr-android/build.gradle` if your machine has a
+   different NDK installed.
+3. Add the Android Gradle Plugin to the root `build.gradle`:
 
    ```groovy
    buildscript {
-       dependencies {
-           classpath 'com.android.tools.build:gradle:8.2.0'
-       }
-       repositories {
-           google()
-           mavenCentral()
+       repositories { google(); mavenCentral() }
+       dependencies { classpath 'com.android.tools.build:gradle:8.2.0' }
+   }
+   allprojects { repositories { google() } }
+   ```
+
+4. Uncomment / add `include 'atumvr-android'` in `settings.gradle`.
+5. (Step 2+) Add the Meta OpenXR Mobile loader dependency:
+
+   ```groovy
+   // atumvr-android/build.gradle
+   dependencies {
+       implementation 'org.khronos.openxr:openxr_loader_for_android:1.1.36'
+   }
+   android {
+       defaultConfig {
+           externalNativeBuild {
+               cmake {
+                   arguments '-DATUMVR_WITH_OPENXR_LOADER=ON'
+               }
+           }
        }
    }
    ```
 
-3. Add Google's Maven repo under `allprojects { repositories { ... } }`.
-4. Uncomment / add `include 'atumvr-android'` in `settings.gradle`.
-5. Add the Meta OpenXR Mobile loader dependency in
-   `atumvr-android/build.gradle`:
+   The CMake module already knows how to consume this AAR via prefab.
 
-   ```groovy
-   implementation 'org.khronos.openxr:openxr_loader_for_android:1.1.36'
-   ```
+## Verifying the native build
 
-6. Sync. The module should configure under the Android library plugin.
+Once the module is enabled, the following should produce
+`libatumvr_native.so` packed inside the AAR:
+
+```bash
+./gradlew :atumvr-android:assembleDebug
+```
+
+Quick smoke test from a consuming app:
+
+```java
+import me.phoenixra.atumvr.android.nativebridge.NativeXRBridge;
+
+// In your Activity#onCreate:
+NativeXRBridge.verifyAbi();
+Log.i("AtumVR", NativeXRBridge.buildInfo());
+// Expected logcat:
+//   I/AtumVR-Native: AtumVR native loaded (variant=debug, abi=1, openxr=stub)
+//   I/AtumVR:        atumvr_native debug (openxr=stub)
+```
+
+If the linker complains about missing `libopenxr_loader.so`, you're past
+step 1 and into step 2 — at that point flip `ATUMVR_WITH_OPENXR_LOADER` on
+and add the Meta AAR.
 
 ## Architecture
 
 ```
-atumvr-api
-└── XRGraphicsBackend       (interface)
-    XRSwapchainImages       (interface)
+atumvr-api  (platform-neutral)
+├── input profiles, math, enums, poses
+└── (future) split out atumvr-api-openxr for LWJGL-bound types
 
 atumvr-core (desktop, JVM)
-└── DesktopOpenGLGraphicsBackend  (GLFW + KHR_opengl_enable)
+└── DesktopOpenGLGraphicsBackend  (GLFW + KHR_opengl_enable, LWJGL)
 
 atumvr-android (Quest, Android)
-├── XrActivity                    (NativeActivity + EGL bring-up)
-└── AndroidGLESGraphicsBackend    (KHR_opengl_es_enable + Android binding)
+├── src/main/cpp/                    (this step)
+│   ├── CMakeLists.txt
+│   └── atumvr_jni.cpp               → libatumvr_native.so
+├── nativebridge/NativeXRBridge      (Java surface over the native lib)
+├── activity/XrActivity              (NativeActivity + EGL bring-up; scaffold)
+└── rendering/backend/AndroidGLESGraphicsBackend (GLES backend; scaffold)
 ```
 
-`XRProvider#createGraphicsBackend()` is overridden on the Quest provider to
-return an `AndroidGLESGraphicsBackend`. `XRRenderer`, `XRSystem`,
-`XRSwapChain`, and `XRInstance` already route everything graphics-API
-specific through the backend, so no further changes are required in
-`atumvr-core` once the Android-side methods are filled in.
+## Roadmap
 
-## Outstanding work
-
-1. JNI shim (or LWJGL fork) for the four `XR_KHR_opengl_es_enable` /
-   `XR_KHR_android_create_instance` entry points.
-2. `System.loadLibrary("openxr_loader")` and the
-   `xrInitializeLoaderKHR(jvm, activity)` handshake at the top of
-   `XrActivity#onCreate`.
-3. Real `EGLObjectHandle#getNativeHandle()` extraction in
-   `XrActivity#handleToLong` (currently a placeholder).
-4. Replacement for `atumvr-core`'s `GLUtils#checkGLError` and `XRTexture`'s
-   `GL30.gl*` calls — these are still desktop GL. Either:
-   - move the GL calls behind a per-backend texture factory
-     (`XRGraphicsBackend#createTexture`), or
-   - duplicate `XRTexture` as `AndroidXRTexture` using `GLES30.gl*` and
-     have the Quest renderer override `XRRenderer#createTexture`.
-5. Quest-specific `XRProvider` subclass (under e.g. `atumvr-android-example`)
-   that wires the activity, the backend, and the renderer.
+1. **NDK + CMake plumbing.** ✅ (this commit)
+2. **OpenXR bring-up in native.** Loader init via
+   `xrInitializeLoaderKHR`, instance, system, GLES session via
+   `XrGraphicsBindingOpenGLESAndroidKHR`, swapchain, frame loop.
+3. **Java render-loop wiring.** `XrActivity` drives EGL + a render thread
+   that calls `NativeXRBridge.beginFrame()` / `submitFrame()`; clear-color
+   per eye to validate the pipeline end-to-end on Quest 3.
+4. **Input / pose surface.** Expose HMD + controller poses from native into
+   the existing `AtumVRInputHandler` API in `atumvr-api`.
+5. **GL → GLES rendering port.** Move `XRTexture` / `GLUtils` / framebuffer
+   setup behind a backend hook so the example's cubes render on-device.
+6. **`atumvr-android-example`.** Manifest + launcher activity + a tiny
+   `XRProvider` subclass that ties everything together for sideloading.
