@@ -112,30 +112,47 @@ public class XRSystem {
                     GLFWNativeWGL.glfwGetWGLContext(windowHandle)
             );
         } else if (Platform.get() == Platform.LINUX) {
-            long xDisplay = GLFWNativeX11.glfwGetX11Display();
+            try {
+                long xDisplay = GLFWNativeX11.glfwGetX11Display();
 
-            long glXContext = GLFWNativeGLX.glfwGetGLXContext(windowHandle);
-            long glXWindowHandle = GLFWNativeGLX.glfwGetGLXWindow(windowHandle);
+                if (xDisplay == 0L) {
+                    throw new AtumVRException(
+                            "X11 display is null! Visor currently only supports X11/XWayland on Linux. " +
+                                    "If you are using Wayland, please force Minecraft to run through XWayland"
+                    );
+                }
 
-            int fbXID = glXQueryDrawable(xDisplay, glXWindowHandle, GLX_FBCONFIG_ID);
-            PointerBuffer fbConfigBuf = glXChooseFBConfig(
-                    xDisplay, X11.XDefaultScreen(xDisplay),
-                    stackInts(GLX_FBCONFIG_ID, fbXID, 0)
-            );
-            if (fbConfigBuf == null) {
-                throw new AtumVRException("Framebuffer config is null");
+                long glXContext = GLFWNativeGLX.glfwGetGLXContext(windowHandle);
+                long glXWindowHandle = GLFWNativeGLX.glfwGetGLXWindow(windowHandle);
+
+                int fbXID = glXQueryDrawable(xDisplay, glXWindowHandle, GLX_FBCONFIG_ID);
+                PointerBuffer fbConfigBuf = glXChooseFBConfig(
+                        xDisplay, X11.XDefaultScreen(xDisplay),
+                        stackInts(GLX_FBCONFIG_ID, fbXID, 0)
+                );
+
+                if (fbConfigBuf == null) {
+                    throw new AtumVRException("Framebuffer config is null");
+                }
+
+                long fbConfig = fbConfigBuf.get();
+                return XrGraphicsBindingOpenGLXlibKHR.calloc(stack).set(
+                        KHROpenGLEnable.XR_TYPE_GRAPHICS_BINDING_OPENGL_XLIB_KHR,
+                        NULL,
+                        xDisplay,
+                        (int) Objects.requireNonNull(glXGetVisualFromFBConfig(xDisplay, fbConfig)).visualid(),
+                        fbConfig,
+                        glXWindowHandle,
+                        glXContext
+                );
+            } catch (AtumVRException e) {
+                throw e;
+            } catch (Throwable t) {
+                throw new AtumVRException(
+                        "Failed to initialize Linux graphics binding. Ensure you are running under X11/XWayland, not native Wayland",
+                        t
+                );
             }
-            long fbConfig = fbConfigBuf.get();
-
-            return XrGraphicsBindingOpenGLXlibKHR.calloc(stack).set(
-                    KHROpenGLEnable.XR_TYPE_GRAPHICS_BINDING_OPENGL_XLIB_KHR,
-                    NULL,
-                    xDisplay,
-                    (int) Objects.requireNonNull(glXGetVisualFromFBConfig(xDisplay, fbConfig)).visualid(),
-                    fbConfig,
-                    glXWindowHandle,
-                    glXContext
-            );
         } else {
             throw new AtumVRException("MacOS not supported");
         }

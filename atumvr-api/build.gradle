@@ -18,10 +18,16 @@ dependencies {
     api("org.lwjgl:lwjgl-openxr")
 
 
+    // Windows natives
     api("org.lwjgl:lwjgl::natives-windows")
     api("org.lwjgl:lwjgl-opengl::natives-windows")
     api("org.lwjgl:lwjgl-glfw::natives-windows")
     api("org.lwjgl:lwjgl-openxr::natives-windows")
+
+    // Linux natives
+    api("org.lwjgl:lwjgl::natives-linux")
+    api("org.lwjgl:lwjgl-opengl::natives-linux")
+    api("org.lwjgl:lwjgl-glfw::natives-linux")
     api("org.lwjgl:lwjgl-openxr::natives-linux")
 }
 
