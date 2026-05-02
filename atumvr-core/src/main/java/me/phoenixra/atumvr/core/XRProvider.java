@@ -57,6 +57,8 @@ public abstract class XRProvider implements AtumVRProvider {
     @Setter
     protected long xrDisplayTime;
 
+    @Getter
+    private volatile boolean shuttingDown = false;
 
     public XRProvider(@NotNull String appName,
                       @NotNull AtumVRLogger logger){
@@ -198,7 +200,6 @@ public abstract class XRProvider implements AtumVRProvider {
         if (state.isInitialized()) {
             throw new AtumVRException("Already initialized!");
         }
-
         session = createSessionHandler();
         session.init();
         state.init();
@@ -321,14 +322,42 @@ public abstract class XRProvider implements AtumVRProvider {
     // -------- DESTROY --------
 
 
+    @Override
+    public void prepareDestroy(){
+        shuttingDown = true;
+        if (inputHandler != null) {
+            try { inputHandler.stopActiveHaptics(); } catch (Throwable t) {
+                logger.logError("inputHandler.stopActiveHaptics() failed: " + t.getMessage());
+            }
+        }
+    }
+
+    @Override
     public void destroy() {
-        if(renderer != null){
-            renderer.destroy();
+        shuttingDown = true;
+        if (inputHandler != null) {
+            inputHandler.stopActiveHaptics();
         }
-        if(inputHandler != null){
-            inputHandler.destroy();
+        if (renderer != null) {
+            try { renderer.destroy(); } catch (Throwable t) {
+                logger.logError("renderer.destroy() failed: " + t.getMessage());
+            }
         }
-        session.destroy();
-        state.destroy();
+        if (inputHandler != null) {
+            try { inputHandler.destroy(); } catch (Throwable t) {
+                logger.logError("inputHandler.destroy() failed: " + t.getMessage());
+            }
+        }
+        if (session != null) {
+            try { session.destroy(); } catch (Throwable t) {
+                logger.logError("session.destroy() failed: " + t.getMessage());
+            }
+        }
+        if (state != null) {
+            try { state.destroy(); } catch (Throwable t) {
+                logger.logError("state.destroy() failed: " + t.getMessage());
+            }
+        }
+        shuttingDown = false;
     }
 }

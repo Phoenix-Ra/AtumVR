@@ -99,6 +99,9 @@ public class HapticPulseAction extends XRAction {
         if(handle == null){
             throw new AtumVRException("Tried to apply haptic pulse before action initialized");
         }
+        if (vrProvider.isShuttingDown()) {
+            return;
+        }
         XrSession session = vrProvider.getSession().getHandle();
         XRInputHandler inputHandler = vrProvider.getInputHandler();
 
@@ -127,6 +130,46 @@ public class HapticPulseAction extends XRAction {
 
             xrStopHapticFeedback(session, info);
             xrApplyHapticFeedback(session, info, XrHapticBaseHeader.create(vib.address()));
+        }
+    }
+
+    /**
+     * Cancels any in-progress vibration on both controllers for this action.
+     * Called during input-handler teardown so controllers do not keep buzzing
+     * after the OpenXR session is destroyed.
+     */
+    public void stop() {
+        if (handle == null) {
+            return;
+        }
+        XrSession session = vrProvider.getSession().getHandle();
+        if (session == null) {
+            return;
+        }
+        XRInputHandler inputHandler = vrProvider.getInputHandler();
+
+        try (MemoryStack stack = MemoryStack.stackPush()) {
+            for (String handPath : new String[]{ LEFT_HAND_PATH, RIGHT_HAND_PATH }) {
+                long subPath;
+                try {
+                    subPath = inputHandler.convertStringToXrPath(handPath);
+                } catch (Throwable t) {
+                    continue;
+                }
+
+                XrHapticActionInfo info = XrHapticActionInfo
+                        .calloc(stack)
+                        .next(NULL)
+                        .type(XR_TYPE_HAPTIC_ACTION_INFO)
+                        .action(handle)
+                        .subactionPath(subPath);
+
+                try {
+                    xrStopHapticFeedback(session, info);
+                } catch (Throwable ignored) {
+                    // Runtime may already be tearing down — never throw out of teardown.
+                }
+            }
         }
     }
 

@@ -10,6 +10,7 @@ import me.phoenixra.atumvr.api.input.action.data.VRActionData;
 import me.phoenixra.atumvr.api.input.profile.VRInteractionProfileType;
 import me.phoenixra.atumvr.core.input.action.XRAction;
 import me.phoenixra.atumvr.core.input.action.XRActionSet;
+import me.phoenixra.atumvr.core.input.action.types.HapticPulseAction;
 import me.phoenixra.atumvr.core.input.device.XRDevice;
 import me.phoenixra.atumvr.core.input.profile.XRInteractionProfile;
 import me.phoenixra.atumvr.core.input.profile.types.*;
@@ -307,9 +308,30 @@ public abstract class XRInputHandler implements AtumVRInputHandler {
 
     @Override
     public void destroy() {
+        // Cancel any vibration that is still running on the controllers
+        stopActiveHaptics();
+
         actionSets.values().forEach(XRActionSet::destroy);
         actionSets.clear();
         devices.clear();
         paths.clear();
     }
+
+    public void stopActiveHaptics() {
+        if (vrProvider.getSession().getHandle() == null) {
+            return;
+        }
+        for (XRActionSet actionSet : actionSets.values()) {
+            for (XRAction action : actionSet.getActions()) {
+                if (action instanceof HapticPulseAction haptic) {
+                    try {
+                        haptic.stop();
+                    } catch (Throwable ignored) {
+                        // Never throw out of teardown.
+                    }
+                }
+            }
+        }
+    }
 }
+

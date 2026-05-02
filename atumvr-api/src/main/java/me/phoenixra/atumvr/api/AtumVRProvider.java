@@ -59,6 +59,14 @@ public interface AtumVRProvider {
 
 
     /**
+     * Prepares destroy, by stopping any active things that may be incorrectly destroyed if done late.
+     * Usually, this method can be ignored, but
+     * if you noticed for example haptic pulse incorrectly working during app shutdown,
+     * then use this method at early app shutdown process
+     */
+    void prepareDestroy();
+
+    /**
      * Destroy VR session and release all associated resources
      */
     void destroy();

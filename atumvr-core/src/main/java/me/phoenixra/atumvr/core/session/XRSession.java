@@ -144,32 +144,107 @@ public class XRSession implements AtumVRSession {
     }
 
     public void destroy(){
-        swapChain.destroy();
-        if (this.xrAppSpace != null) {
-            vrProvider.checkXRError(
-                    false,
-                    XR10.xrDestroySpace(this.xrAppSpace),
-                    "xrDestroySpace",
-                    "xrAppSpace"
-            );
-        }
-        if (this.xrViewSpace != null) {
-            vrProvider.checkXRError(
-                    false,
-                    XR10.xrDestroySpace(this.xrViewSpace),
-                    "xrDestroySpace",
-                    "xrViewSpace"
-            );
-        }
+
+        requestExitAndDrain();
+
+        try {
+            swapChain.destroy();
+        } catch (Throwable ignored) {}
+
+        destroySpaceQuietly(this.xrAppSpace, "xrAppSpace");
+        this.xrAppSpace = null;
+
+        destroySpaceQuietly(this.xrViewSpace, "xrViewSpace");
+        this.xrViewSpace = null;
+
         if (this.handle != null) {
+            try {
+                vrProvider.checkXRError(
+                        false,
+                        XR10.xrDestroySession(this.handle),
+                        "xrDestroySession",
+                        "session"
+                );
+            } catch (Throwable ignored) {}
+            this.handle = null;
+        }
+
+        try { system.destroy(); }   catch (Throwable ignored) {}
+        try { instance.destroy(); } catch (Throwable ignored) {}
+    }
+
+    private void destroySpaceQuietly(XrSpace space, String label) {
+        if (space == null) return;
+        try {
             vrProvider.checkXRError(
                     false,
-                    XR10.xrDestroySession(this.handle),
-                    "xrDestroySession",
-                    "xrAppSpace"
+                    XR10.xrDestroySpace(space),
+                    "xrDestroySpace",
+                    label
             );
+        } catch (Throwable ignored) {}
+    }
+
+
+    private void requestExitAndDrain() {
+        if (handle == null || instance == null || instance.getHandle() == null) {
+            return;
         }
-        system.destroy();
-        instance.destroy();
+        try {
+            XR10.xrRequestExitSession(handle);
+        } catch (Throwable ignored) {
+            // Session may already be in IDLE / EXITING — that's fine.
+        }
+
+        XrEventDataBuffer eventBuffer = instance.getXrEventBuffer();
+        boolean ended = false;
+        long deadline = System.currentTimeMillis() + 500L;
+
+        while (System.currentTimeMillis() < deadline) {
+            eventBuffer.clear();
+            eventBuffer.type(XR10.XR_TYPE_EVENT_DATA_BUFFER);
+
+            int err;
+            try {
+                err = XR10.xrPollEvent(instance.getHandle(), eventBuffer);
+            } catch (Throwable t) {
+                break;
+            }
+            if (err != XR10.XR_SUCCESS) {
+                try {
+                    Thread.sleep(2);
+                } catch (InterruptedException ie) {
+                    Thread.currentThread().interrupt();
+                    break;
+                }
+                continue;
+            }
+
+            var header = XrEventDataBaseHeader.create(eventBuffer.address());
+            if (header.type() != XR10.XR_TYPE_EVENT_DATA_SESSION_STATE_CHANGED) {
+                continue;
+            }
+
+            var ev = XrEventDataSessionStateChanged.create(header.address());
+            int state = ev.state();
+
+            if (!ended && state == XR10.XR_SESSION_STATE_STOPPING) {
+                try {
+                    XR10.xrEndSession(handle);
+                } catch (Throwable ignored) {}
+                ended = true;
+            }
+            if (state == XR10.XR_SESSION_STATE_EXITING
+                    || state == XR10.XR_SESSION_STATE_LOSS_PENDING
+                    || state == XR10.XR_SESSION_STATE_IDLE) {
+                // Safe to destroy from here.
+                if (!ended) {
+                    // STOPPING may have been missed (already in IDLE/EXITING).
+                    try { XR10.xrEndSession(handle); } catch (Throwable ignored) {}
+                    ended = true;
+                }
+                break;
+            }
+        }
     }
 }
