@@ -4,11 +4,17 @@ import lombok.Getter;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.stb.STBImage;
 import org.lwjgl.system.MemoryStack;
+import org.lwjgl.system.MemoryUtil;
 
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 
 public class StbTexture {
+    private static final String DATA_DIR = "data/";
+
+    private static final int FALLBACK_SIZE = 64;
+    private static final int FALLBACK_CELL = 8;
+
     @Getter
     private int textureId;
     @Getter
@@ -24,16 +30,24 @@ public class StbTexture {
 
             // Use STBImage to load the texture
             ByteBuffer image = STBImage.stbi_load(
-                    path,
+                    DATA_DIR + path,
                     widthPointer, heightPointer,
                     comp,
                     4
             );
-            if (image == null) {
-                throw new RuntimeException("Failed to load a texture file: " + path + "\n" + STBImage.stbi_failure_reason());
+            boolean loaded = image != null;
+            ByteBuffer fallback = null;
+            if (loaded) {
+                this.width = widthPointer.get(0);
+                this.height = heightPointer.get(0);
+            } else {
+                System.err.println("Failed to load a texture file: " + path
+                        + " (" + STBImage.stbi_failure_reason() + "), using fallback");
+                this.width = FALLBACK_SIZE;
+                this.height = FALLBACK_SIZE;
+                fallback = createFallbackImage();
+                image = fallback;
             }
-            this.width = widthPointer.get(0);
-            this.height = heightPointer.get(0);
 
             // Generate a new OpenGL texture
             int textureId = GL30.glGenTextures();
@@ -58,9 +72,29 @@ public class StbTexture {
             GL30.glTexParameteri(GL30.GL_TEXTURE_2D, GL30.GL_TEXTURE_MAG_FILTER, GL30.GL_LINEAR);
 
             // Free the image memory
-            STBImage.stbi_image_free(image);
+            if (loaded) {
+                STBImage.stbi_image_free(image);
+            } else {
+                MemoryUtil.memFree(fallback);
+            }
 
             this.textureId = textureId;
         }
+    }
+
+
+    private static ByteBuffer createFallbackImage() {
+        ByteBuffer buffer = MemoryUtil.memAlloc(FALLBACK_SIZE * FALLBACK_SIZE * 4);
+        for (int y = 0; y < FALLBACK_SIZE; y++) {
+            for (int x = 0; x < FALLBACK_SIZE; x++) {
+                boolean magenta = ((x / FALLBACK_CELL) + (y / FALLBACK_CELL)) % 2 == 0;
+                buffer.put((byte) (magenta ? 255 : 0)); // R
+                buffer.put((byte) 0);                    // G
+                buffer.put((byte) (magenta ? 255 : 0)); // B
+                buffer.put((byte) 255);                  // A
+            }
+        }
+        buffer.flip();
+        return buffer;
     }
 }

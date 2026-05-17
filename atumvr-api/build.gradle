@@ -17,12 +17,17 @@ dependencies {
     api("org.lwjgl:lwjgl-glfw")
     api("org.lwjgl:lwjgl-openxr")
 
-
     api("org.lwjgl:lwjgl::natives-windows")
     api("org.lwjgl:lwjgl-opengl::natives-windows")
     api("org.lwjgl:lwjgl-glfw::natives-windows")
     api("org.lwjgl:lwjgl-openxr::natives-windows")
+
+    api("org.lwjgl:lwjgl::natives-linux")
+    api("org.lwjgl:lwjgl-opengl::natives-linux")
+    api("org.lwjgl:lwjgl-glfw::natives-linux")
     api("org.lwjgl:lwjgl-openxr::natives-linux")
+
+    api("org.lwjgl:lwjgl-stb::natives-linux")
 }
 
 task javadocJar(type: Jar, dependsOn: javadoc) {

@@ -27,6 +27,12 @@ public class ExampleVRApp {
 
 
     public static void main(String[] args) {
+        appInstance = new ExampleVRApp();
+        ExampleResources.extractAll(
+                appInstance.getDataFolder(),
+                AtumVRLogger.SIMPLE.setDebug(true)
+        );
+
         Thread updateThread = getThread();
         updateThread.start();
 

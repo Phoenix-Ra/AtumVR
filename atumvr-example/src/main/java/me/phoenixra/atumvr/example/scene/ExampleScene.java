@@ -35,7 +35,7 @@ public class ExampleScene extends XRScene {
                 0
         );
         floorCube =  new ExampleCube(
-                new StbTexture("textures/test1.png"),
+                new StbTexture("textures/test.png"),
                 new Vector3f(0f,0f,0f),
                 new Vector3f(2f,1f,2f),
                 new Vector3f(0f,0f,0f)
