@@ -19,5 +19,18 @@ public class GLUtils {
             throw new RuntimeException(message+" OpenGL Error Code: " + error);
         }
     }
-
+    public static int drainGLErrors() {
+        int first = 0;
+        int error;
+        int guard = 0;
+        while ((error = GL11.glGetError()) != 0) {
+            if (first == 0) {
+                first = error;
+            }
+            if (++guard > 64) {
+                break; // safety against a wedged/lost context
+            }
+        }
+        return first;
+    }
 }
