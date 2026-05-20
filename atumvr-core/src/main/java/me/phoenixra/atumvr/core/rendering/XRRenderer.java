@@ -9,6 +9,7 @@ import me.phoenixra.atumvr.api.enums.EyeType;
 import me.phoenixra.atumvr.api.exceptions.AtumVRException;
 import me.phoenixra.atumvr.core.input.device.XRDeviceHMD;
 import me.phoenixra.atumvr.api.utils.GLUtils;
+import me.phoenixra.atumvr.core.utils.XRUtils;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.glfw.GLFWErrorCallback;
@@ -108,7 +109,7 @@ public abstract class XRRenderer implements AtumVRRenderer {
 
     @Override
     public void init() throws Throwable{
-        steamVRLinuxWorkaround = detectSteamVRLinux();
+        steamVRLinuxWorkaround = XRUtils.detectSteamVRLinux(vrProvider);
 
         restoreGLContext();
         setupResolution();
@@ -309,33 +310,6 @@ public abstract class XRRenderer implements AtumVRRenderer {
         }
     }
 
-
-    protected boolean detectSteamVRLinux() {
-        if (Platform.get() != Platform.LINUX) {
-            return false;
-        }
-        String runtime = null;
-        try {
-            runtime = vrProvider.getSession().getInstance().getRuntimeName();
-        } catch (Throwable ignored) {
-            // Session/instance not reachable - treat as "not SteamVR".
-        }
-        boolean isSteamVR = runtime != null
-                && runtime.toLowerCase(Locale.ROOT).contains("steamvr");
-        if (isSteamVR) {
-            vrProvider.getLogger().logInfo(
-                    "Detected SteamVR runtime on Linux ('" + runtime + "') - "
-                            + "enabling GL context-restore + interop error-drain "
-                            + "workaround"
-            );
-        } else {
-            vrProvider.getLogger().logDebug(
-                    "(runtime='" + runtime
-                            + "', os=" + Platform.get() + ")"
-            );
-        }
-        return isSteamVR;
-    }
 
     /**
      * Setup OpenGL context for VR.

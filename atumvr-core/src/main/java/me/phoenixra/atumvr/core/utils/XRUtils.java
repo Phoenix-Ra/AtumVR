@@ -7,6 +7,9 @@ import org.joml.*;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.openxr.*;
 import org.lwjgl.system.MemoryStack;
+import org.lwjgl.system.Platform;
+
+import java.util.Locale;
 
 import static org.lwjgl.system.MemoryUtil.NULL;
 
@@ -112,5 +115,33 @@ public class XRUtils {
                 xrVector.z(),
                 xrVector.w()
         );
+    }
+
+
+    public static boolean detectSteamVRLinux(XRProvider vrProvider) {
+        if (Platform.get() != Platform.LINUX) {
+            return false;
+        }
+        String runtime = null;
+        try {
+            runtime = vrProvider.getSession().getInstance().getRuntimeName();
+        } catch (Throwable ignored) {
+            // Session/instance not reachable - treat as "not SteamVR".
+        }
+        boolean isSteamVR = runtime != null
+                && runtime.toLowerCase(Locale.ROOT).contains("steamvr");
+        if (isSteamVR) {
+            vrProvider.getLogger().logInfo(
+                    "Detected SteamVR runtime on Linux ('" + runtime + "') - "
+                            + "enabling GL context-restore + interop error-drain "
+                            + "workaround"
+            );
+        } else {
+            vrProvider.getLogger().logDebug(
+                    "(runtime='" + runtime
+                            + "', os=" + Platform.get() + ")"
+            );
+        }
+        return isSteamVR;
     }
 }
