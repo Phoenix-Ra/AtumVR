@@ -32,19 +32,15 @@ public class ExampleCubeHand extends ExampleCube{
             }
         }
 
-        // 1) grab the controller’s world‐space pose
         Matrix4fc handPose = vrProvider.getInputHandler()
                 .getDevice(AtumVRDeviceController.getId(type))
                 .getPose().matrix();
 
-        // 2) build a local transform: translate→rotate→scale
         Matrix4f local = new Matrix4f()
-                .translate(position)              // your offset from the hand origin
-                .rotateXYZ(rotation.x, rotation.y, rotation.z) // your extra orientation
-                .scale(scale);                    // your size
+                .translate(position)
+                .rotateXYZ(rotation.x, rotation.y, rotation.z)
+                .scale(scale);
 
-        // 3) combine them: handPose * local
-        //    (i.e. apply your offset _in_ the controller’s coordinate frame)
         return new Matrix4f(handPose).mul(local);
     }
 }

@@ -2,11 +2,13 @@ package me.phoenixra.atumvr.core.input.profile;
 
 import lombok.Getter;
 import me.phoenixra.atumvr.api.input.action.VRActionIdentifier;
+import me.phoenixra.atumvr.api.input.profile.VRInteractionProfileType;
 import me.phoenixra.atumvr.api.misc.pose.AtumVRPoseRecord;
 import me.phoenixra.atumvr.core.XRProvider;
 import me.phoenixra.atumvr.core.input.action.XRAction;
 import me.phoenixra.atumvr.core.input.action.XRActionSet;
 import me.phoenixra.atumvr.core.input.action.types.HapticPulseAction;
+import me.phoenixra.atumvr.core.input.action.types.HapticPulseControllerAction;
 import me.phoenixra.atumvr.core.input.action.types.multi.PoseMultiAction;
 import org.jetbrains.annotations.NotNull;
 
@@ -23,7 +25,7 @@ import static me.phoenixra.atumvr.core.input.action.XRAction.RIGHT_HAND_PATH;
 public class CommonActionSet extends XRActionSet {
 
     // Haptics
-    private HapticPulseAction hapticPulse;
+    private HapticPulseControllerAction hapticPulse;
 
     // Hand poses
     private PoseMultiAction handPoseAim;
@@ -36,9 +38,13 @@ public class CommonActionSet extends XRActionSet {
 
     @Override
     protected List<XRAction> loadActions(@NotNull XRProvider vrProvider) {
-        var supportedProfiles = vrProvider.getInputHandler().getSupportedProfileTypes();
+
+        var supportedProfiles = vrProvider.getInputHandler()
+                .getSupportedProfileTypes(
+                        VRInteractionProfileType.Kind.CONTROLLER
+                );
         // -------- HAPTICS --------
-        hapticPulse = new HapticPulseAction(
+        hapticPulse = new HapticPulseControllerAction(
                 vrProvider, this,
                 "haptic_pulse", "Haptic Pulse"
         ).putDefaultBindings(supportedProfiles, "output/haptic");

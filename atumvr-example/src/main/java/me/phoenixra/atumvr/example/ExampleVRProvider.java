@@ -3,6 +3,7 @@ package me.phoenixra.atumvr.example;
 
 import lombok.Getter;
 import me.phoenixra.atumvr.api.AtumVRLogger;
+import me.phoenixra.atumvr.api.input.profile.tracker.ViveTrackerRole;
 import me.phoenixra.atumvr.core.XRState;
 import me.phoenixra.atumvr.core.XRProvider;
 import me.phoenixra.atumvr.core.enums.XRSessionState;
@@ -11,6 +12,8 @@ import me.phoenixra.atumvr.core.rendering.XRRenderer;
 import me.phoenixra.atumvr.example.input.ExampleVRInputHandler;
 import me.phoenixra.atumvr.example.rendering.ExampleVRRenderer;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.List;
 
 public class ExampleVRProvider extends XRProvider {
 
@@ -52,4 +55,5 @@ public class ExampleVRProvider extends XRProvider {
     public @NotNull ExampleVRInputHandler getInputHandler() {
         return (ExampleVRInputHandler) super.getInputHandler();
     }
+
 }

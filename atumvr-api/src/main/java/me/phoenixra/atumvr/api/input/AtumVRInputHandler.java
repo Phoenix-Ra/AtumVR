@@ -78,6 +78,16 @@ public interface AtumVRInputHandler {
     @NotNull List<VRInteractionProfileType> getSupportedProfileTypes();
 
     /**
+     * Get supported interaction profile types by the user's hardware of specified kind
+     */
+    default @NotNull List<VRInteractionProfileType> getSupportedProfileTypes(@NotNull VRInteractionProfileType.Kind kind){
+        return getSupportedProfileTypes()
+                .stream()
+                .filter(profile -> profile.getKind() == kind)
+                .toList();
+    }
+
+    /**
      * Get VR provider associated with this instance
      *
      * @return VRProvider

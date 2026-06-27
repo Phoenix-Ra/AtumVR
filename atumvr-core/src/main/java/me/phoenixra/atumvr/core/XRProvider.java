@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import me.phoenixra.atumvr.api.AtumVRLogger;
 import me.phoenixra.atumvr.api.AtumVRProvider;
+import me.phoenixra.atumvr.api.input.profile.tracker.ViveTrackerRole;
 import me.phoenixra.atumvr.api.rendering.AtumVRRenderer;
 import me.phoenixra.atumvr.core.enums.XREvent;
 import me.phoenixra.atumvr.api.exceptions.AtumVRException;
@@ -131,10 +132,14 @@ public abstract class XRProvider implements AtumVRProvider {
      *     <li>{@link EXTHPMixedRealityController#XR_EXT_HP_MIXED_REALITY_CONTROLLER_EXTENSION_NAME}</li>
      *     <li>{@link HTCViveCosmosControllerInteraction#XR_HTC_VIVE_COSMOS_CONTROLLER_INTERACTION_EXTENSION_NAME}</li>
      *     <li>{@link BDControllerInteraction#XR_BD_CONTROLLER_INTERACTION_EXTENSION_NAME}</li>
+     *     <li>{@link HTCXViveTrackerInteraction#XR_HTCX_VIVE_TRACKER_INTERACTION_EXTENSION_NAME}</li>
      * </ul>
      *
      * <p>
-     *     Override if you need different OpenXR extensions
+     *     Each extension is only enabled if the active runtime supports it
+     * </p>
+     * <p>
+     *     Override if you need different OpenXR extensions.
      * </p>
      *
      * @return list of XR extensions
@@ -143,10 +148,12 @@ public abstract class XRProvider implements AtumVRProvider {
         return List.of(
                 EXTHPMixedRealityController.XR_EXT_HP_MIXED_REALITY_CONTROLLER_EXTENSION_NAME,
                 HTCViveCosmosControllerInteraction.XR_HTC_VIVE_COSMOS_CONTROLLER_INTERACTION_EXTENSION_NAME,
-                BDControllerInteraction.XR_BD_CONTROLLER_INTERACTION_EXTENSION_NAME
+                BDControllerInteraction.XR_BD_CONTROLLER_INTERACTION_EXTENSION_NAME,
+                HTCXViveTrackerInteraction.XR_HTCX_VIVE_TRACKER_INTERACTION_EXTENSION_NAME
 
         );
     }
+
 
     /**
      * Retrieves the list of supported swap chain formats.
@@ -261,6 +268,11 @@ public abstract class XRProvider implements AtumVRProvider {
      * @param state the new session state
      */
     protected void onXREventReceived(@NotNull XREvent state){
+
+    }
+
+
+    protected void onViveTrackerConnected(@NotNull XrEventDataViveTrackerConnectedHTCX event){
 
     }
 

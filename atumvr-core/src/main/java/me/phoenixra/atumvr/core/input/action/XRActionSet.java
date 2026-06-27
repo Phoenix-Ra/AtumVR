@@ -131,18 +131,16 @@ public abstract class XRActionSet implements AtumVRActionSet {
                     ));
                 }
             }else if(action instanceof HapticPulseAction hapticPulseAction){
-                var bind = hapticPulseAction.getDefaultBindings(profile);
-                if(bind == null) {
+                var binds = hapticPulseAction.getDefaultBindings(profile);
+                if(binds == null) {
                     continue;
                 }
-                out.add(new PairRecord<>(
-                        action,
-                        bind.first()
-                ));
-                out.add(new PairRecord<>(
-                        action,
-                        bind.second()
-                ));
+                for(String bind : binds){
+                    out.add(new PairRecord<>(
+                            action,
+                            bind
+                    ));
+                }
             }
         }
         return out;

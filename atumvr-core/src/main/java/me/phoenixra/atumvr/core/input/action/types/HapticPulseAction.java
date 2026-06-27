@@ -1,7 +1,6 @@
 package me.phoenixra.atumvr.core.input.action.types;
 
-import me.phoenixra.atumconfig.api.tuples.PairRecord;
-import me.phoenixra.atumvr.api.enums.ControllerType;
+import lombok.Getter;
 import me.phoenixra.atumvr.api.exceptions.AtumVRException;
 import me.phoenixra.atumvr.api.input.action.VRActionIdentifier;
 import me.phoenixra.atumvr.core.XRProvider;
@@ -17,6 +16,7 @@ import org.lwjgl.openxr.*;
 import org.lwjgl.system.MemoryStack;
 
 import java.nio.LongBuffer;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,24 +24,28 @@ import java.util.Map;
 import static org.lwjgl.openxr.XR10.*;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
+
 public class HapticPulseAction extends XRAction {
 
+    @Getter
+    private final List<String> subActionPaths;
 
+    protected Map<VRInteractionProfileType, List<String>> defaultBindings = new LinkedHashMap<>();
 
-    protected Map<VRInteractionProfileType, PairRecord<String,String>> defaultBindings = new LinkedHashMap<>();
 
 
     public HapticPulseAction(XRProvider vrProvider,
                              XRActionSet actionSet,
                              String id,
-                             String localizedName) {
+                             String localizedName,
+                             @NotNull List<String> subActionPaths) {
         super(vrProvider,
                 actionSet,
                 new VRActionIdentifier(id),
                 localizedName,
                 XRInputActionType.HAPTIC
         );
-
+        this.subActionPaths = List.copyOf(subActionPaths);
     }
 
 
@@ -49,9 +53,10 @@ public class HapticPulseAction extends XRAction {
     public void init(@NotNull XRActionSet actionSet) {
         XRInputHandler inputHandler = vrProvider.getInputHandler();
         try (MemoryStack stack = MemoryStack.stackPush()) {
-            LongBuffer paths = stack.callocLong(2);
-            paths.put(0, inputHandler.convertStringToXrPath(LEFT_HAND_PATH));
-            paths.put(1, inputHandler.convertStringToXrPath(RIGHT_HAND_PATH));
+            LongBuffer paths = stack.callocLong(subActionPaths.size());
+            for (int i = 0; i < subActionPaths.size(); i++) {
+                paths.put(i, inputHandler.convertStringToXrPath(subActionPaths.get(i)));
+            }
 
             XrActionCreateInfo actionCreateInfo = XrActionCreateInfo
                     .calloc(stack)
@@ -60,7 +65,7 @@ public class HapticPulseAction extends XRAction {
                     .actionType(actionType.getId())
                     .actionName(stack.UTF8(id.getValue()))
                     .localizedActionName(stack.UTF8(localizedName))
-                    .countSubactionPaths(2)
+                    .countSubactionPaths(subActionPaths.size())
                     .subactionPaths(paths);
 
             PointerBuffer pAction = stack.callocPointer(1);
@@ -82,22 +87,28 @@ public class HapticPulseAction extends XRAction {
     }
 
 
-    public void triggerHapticPulse(ControllerType controllerType,
+
+    public void triggerHapticPulse(@NotNull String userPath,
                                    float frequency, float amplitude,
-                                   float durationSeconds){
+                                   float durationSeconds) {
         triggerHapticPulse(
-                controllerType,
+                userPath,
                 frequency,
                 amplitude,
                 (long) (durationSeconds * 1_000_000_000)
         );
     }
 
-    public void triggerHapticPulse(ControllerType controllerType,
+    public void triggerHapticPulse(@NotNull String userPath,
                                    float frequency, float amplitude,
-                                   long durationNanoSec){
-        if(handle == null){
+                                   long durationNanoSec) {
+        if (handle == null) {
             throw new AtumVRException("Tried to apply haptic pulse before action initialized");
+        }
+        if (!subActionPaths.contains(userPath)) {
+            throw new AtumVRException(
+                    "Haptic action '" + id.getValue() + "' has no target user path: " + userPath
+            );
         }
         if (vrProvider.isShuttingDown()) {
             return;
@@ -105,12 +116,8 @@ public class HapticPulseAction extends XRAction {
         XrSession session = vrProvider.getSession().getHandle();
         XRInputHandler inputHandler = vrProvider.getInputHandler();
 
-        try(MemoryStack stack = MemoryStack.stackPush()) {
-            long subPath = inputHandler.convertStringToXrPath(
-                    controllerType == ControllerType.LEFT
-                            ? LEFT_HAND_PATH
-                            : RIGHT_HAND_PATH
-            );
+        try (MemoryStack stack = MemoryStack.stackPush()) {
+            long subPath = inputHandler.convertStringToXrPath(userPath);
 
             XrHapticActionInfo info = XrHapticActionInfo
                     .calloc(stack)
@@ -133,11 +140,7 @@ public class HapticPulseAction extends XRAction {
         }
     }
 
-    /**
-     * Cancels any in-progress vibration on both controllers for this action.
-     * Called during input-handler teardown so controllers do not keep buzzing
-     * after the OpenXR session is destroyed.
-     */
+
     public void stop() {
         if (handle == null) {
             return;
@@ -149,10 +152,10 @@ public class HapticPulseAction extends XRAction {
         XRInputHandler inputHandler = vrProvider.getInputHandler();
 
         try (MemoryStack stack = MemoryStack.stackPush()) {
-            for (String handPath : new String[]{ LEFT_HAND_PATH, RIGHT_HAND_PATH }) {
+            for (String userPath : subActionPaths) {
                 long subPath;
                 try {
-                    subPath = inputHandler.convertStringToXrPath(handPath);
+                    subPath = inputHandler.convertStringToXrPath(userPath);
                 } catch (Throwable t) {
                     continue;
                 }
@@ -167,42 +170,34 @@ public class HapticPulseAction extends XRAction {
                 try {
                     xrStopHapticFeedback(session, info);
                 } catch (Throwable ignored) {
-                    // Runtime may already be tearing down — never throw out of teardown.
                 }
             }
         }
     }
 
 
+    // -------- DEFAULT BINDINGS --------
+
     public HapticPulseAction putDefaultBindings(@NotNull VRInteractionProfileType profile,
-                                                @Nullable String source){
-        defaultBindings.put(profile,
-                new PairRecord<>(
-                        LEFT_HAND_PATH+"/"+source,
-                        RIGHT_HAND_PATH+"/"+source
-                )
-        );
+                                                @Nullable String source) {
+        List<String> binds = new ArrayList<>(subActionPaths.size());
+        for (String path : subActionPaths) {
+            binds.add(path + "/" + source);
+        }
+        defaultBindings.put(profile, binds);
         return this;
     }
 
     public HapticPulseAction putDefaultBindings(@NotNull List<VRInteractionProfileType> profiles,
-                                                @Nullable String source){
-        for(VRInteractionProfileType profile : profiles){
-            defaultBindings.put(
-                    profile,
-                    new PairRecord<>(
-                            LEFT_HAND_PATH+"/"+source,
-                            RIGHT_HAND_PATH+"/"+source
-                    )
-            );
+                                                @Nullable String source) {
+        for (VRInteractionProfileType profile : profiles) {
+            putDefaultBindings(profile, source);
         }
-
-
         return this;
     }
 
     @Nullable
-    public PairRecord<String,String> getDefaultBindings(VRInteractionProfileType profile){
+    public List<String> getDefaultBindings(VRInteractionProfileType profile) {
         return defaultBindings.get(profile);
     }
 }

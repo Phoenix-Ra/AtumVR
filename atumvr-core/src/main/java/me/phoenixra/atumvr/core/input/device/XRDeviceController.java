@@ -7,6 +7,7 @@ import me.phoenixra.atumvr.api.misc.pose.AtumVRPose;
 import me.phoenixra.atumvr.api.misc.pose.AtumVRPoseMutable;
 import me.phoenixra.atumvr.core.XRProvider;
 import me.phoenixra.atumvr.core.input.action.types.HapticPulseAction;
+import me.phoenixra.atumvr.core.input.action.types.HapticPulseControllerAction;
 import me.phoenixra.atumvr.core.input.action.types.multi.PoseMultiAction;
 import org.jetbrains.annotations.NotNull;
 
@@ -27,13 +28,13 @@ public class XRDeviceController extends XRDevice implements AtumVRDeviceControll
 
     private final PoseMultiAction aimAction;
     private final PoseMultiAction gripAction;
-    private final HapticPulseAction hapticPulseAction;
+    private final HapticPulseControllerAction hapticPulseAction;
 
     public XRDeviceController(@NotNull XRProvider vrProvider,
                               @NotNull ControllerType controllerType,
                               @NotNull PoseMultiAction aimAction,
                               @NotNull PoseMultiAction gripAction,
-                              @NotNull HapticPulseAction hapticPulseAction) {
+                              @NotNull HapticPulseControllerAction hapticPulseAction) {
         super(vrProvider, controllerType==ControllerType.LEFT ? ID_LEFT : ID_RIGHT);
         this.type = controllerType;
         this.aimAction = aimAction;

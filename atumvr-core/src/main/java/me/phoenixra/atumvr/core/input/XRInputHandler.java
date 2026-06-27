@@ -91,7 +91,7 @@ public abstract class XRInputHandler implements AtumVRInputHandler {
             }
 
             //suggest defaults before attaching action sets
-            suggestDefaultBindings(stack);
+            suggestDefaultBindings();
 
             //attach action sets
             XrSessionActionSetsAttachInfo attach_info = XrSessionActionSetsAttachInfo.calloc(stack).set(
@@ -165,7 +165,7 @@ public abstract class XRInputHandler implements AtumVRInputHandler {
         //your implementation
     }
 
-    private void suggestDefaultBindings(@NotNull MemoryStack stack) {
+    private void suggestDefaultBindings() {
 
         XrInstance xrInstance = vrProvider.getSession().getInstance().getHandle();
         List<VRInteractionProfileType> supportedProfiles = getSupportedProfileTypes();
@@ -179,8 +179,50 @@ public abstract class XRInputHandler implements AtumVRInputHandler {
             }
             if(bindingsSet.isEmpty()) continue;
 
-            var bindings = XrActionSuggestedBinding.calloc(bindingsSet.size(), stack);
+            // Suggest whole bindings set
+            int result = trySuggestBindings(xrInstance, profileType.getXrPath(), bindingsSet);
+            if (result == XR10.XR_SUCCESS) {
+                continue;
+            }
+            if (result != XR10.XR_ERROR_PATH_UNSUPPORTED) {
+                vrProvider.checkXRError(result, "xrSuggestInteractionProfileBindings", profileType.getXrPath());
+                continue;
+            }
 
+            //Fallback
+            List<PairRecord<XRAction, String>> supported = new ArrayList<>();
+            for (PairRecord<XRAction, String> binding : bindingsSet) {
+                if (trySuggestBindings(xrInstance, profileType.getXrPath(), List.of(binding)) == XR10.XR_SUCCESS) {
+                    supported.add(binding);
+                } else {
+                    vrProvider.getLogger().logWarn(
+                            "Dropping unsupported binding for " + profileType + ": " + binding.second()
+                    );
+                }
+            }
+
+            if (supported.isEmpty()) {
+                vrProvider.getLogger().logWarn(
+                        "No supported bindings for interaction profile " + profileType
+                                + " (" + profileType.getXrPath() + ") - skipping"
+                );
+                continue;
+            }
+
+            // Re-suggest the supported subset
+            vrProvider.checkXRError(
+                    trySuggestBindings(xrInstance, profileType.getXrPath(), supported),
+                    "xrSuggestInteractionProfileBindings", profileType.getXrPath()
+            );
+        }
+    }
+
+
+    private int trySuggestBindings(@NotNull XrInstance xrInstance,
+                                   @NotNull String profilePath,
+                                   @NotNull List<PairRecord<XRAction, String>> bindingsSet) {
+        try (MemoryStack stack = stackPush()) {
+            var bindings = XrActionSuggestedBinding.calloc(bindingsSet.size(), stack);
             for (int i = 0; i < bindingsSet.size(); i++) {
                 var binding = bindingsSet.get(i);
                 bindings.get(i).set(
@@ -193,19 +235,13 @@ public abstract class XRInputHandler implements AtumVRInputHandler {
                     .set(
                             XR10.XR_TYPE_INTERACTION_PROFILE_SUGGESTED_BINDING,
                             NULL,
-                            convertStringToXrPath(profileType.getXrPath()),
+                            convertStringToXrPath(profilePath),
                             bindings
                     );
 
-            vrProvider.checkXRError(
-                    XR10.xrSuggestInteractionProfileBindings(
-                            xrInstance,
-                            suggested_binds
-                    ),
-                    "xrSuggestInteractionProfileBindings"
-            );
+            return XR10.xrSuggestInteractionProfileBindings(xrInstance, suggested_binds);
         }
-    };
+    }
 
     // -------- API --------
     @Override
@@ -279,6 +315,9 @@ public abstract class XRInputHandler implements AtumVRInputHandler {
         if(instance.getHandle().getCapabilities().XR_HTC_vive_cosmos_controller_interaction){
             list.add(VIVE_COSMOS);
         }
+        if(instance.getHandle().getCapabilities().XR_HTCX_vive_tracker_interaction){
+            list.add(VIVE_TRACKER);
+        }
 
         return list;
     }
@@ -327,7 +366,7 @@ public abstract class XRInputHandler implements AtumVRInputHandler {
                     try {
                         haptic.stop();
                     } catch (Throwable ignored) {
-                        // Never throw out of teardown.
+
                     }
                 }
             }

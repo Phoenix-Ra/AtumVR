@@ -6,41 +6,85 @@ import me.phoenixra.atumvr.api.input.profile.types.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 /**
  * The enum, that represents supported interaction profiles
  */
 public enum VRInteractionProfileType {
 
-    VALVE_INDEX("/interaction_profiles/valve/index_controller"),
+    VALVE_INDEX("/interaction_profiles/valve/index_controller", Kind.CONTROLLER),
 
-    OCULUS_TOUCH("/interaction_profiles/oculus/touch_controller"),
+    OCULUS_TOUCH("/interaction_profiles/oculus/touch_controller", Kind.CONTROLLER),
 
-    VIVE("/interaction_profiles/htc/vive_controller"),
+    VIVE("/interaction_profiles/htc/vive_controller", Kind.CONTROLLER),
 
-    VIVE_COSMOS("/interaction_profiles/htc/vive_cosmos_controller"),
+    VIVE_COSMOS("/interaction_profiles/htc/vive_cosmos_controller", Kind.CONTROLLER),
 
-    HP_MIXED_REALITY("/interaction_profiles/hp/mixed_reality_controller"),
+    HP_MIXED_REALITY("/interaction_profiles/hp/mixed_reality_controller", Kind.CONTROLLER),
 
-    WINDOWS_MOTION("/interaction_profiles/microsoft/motion_controller");
+    WINDOWS_MOTION("/interaction_profiles/microsoft/motion_controller", Kind.CONTROLLER),
+
+    VIVE_TRACKER("/interaction_profiles/htc/vive_tracker_htcx", Kind.TRACKER);
+
+
+    public enum Kind {
+        CONTROLLER,
+        TRACKER
+    }
 
     @Getter
     private final String xrPath;
 
-    VRInteractionProfileType(String xrPath){
+    @Getter
+    private final Kind kind;
+
+    private static final HashMap<String, VRInteractionProfileType> values = new HashMap<>();
+    private static final VRInteractionProfileType[] valuesControllers;
+
+    static {
+        var list = new ArrayList<VRInteractionProfileType>();
+        for(VRInteractionProfileType entry : values()){
+            values.put(entry.xrPath, entry);
+            if(entry.isController()){
+                list.add(entry);
+            }
+        }
+        valuesControllers = list.toArray(new VRInteractionProfileType[0]);
+    }
+
+    VRInteractionProfileType(String xrPath, Kind kind){
         this.xrPath = xrPath;
+        this.kind = kind;
+    }
+
+    /**
+     * Whether this is a controller profile.
+     *
+     * @return true/false
+     */
+    public boolean isController(){
+        return kind == Kind.CONTROLLER;
+    }
+
+    /**
+     * Whether this is a tracker profile.
+     *
+     * @return true/false
+     */
+    public boolean isTracker(){
+        return kind == Kind.TRACKER;
     }
 
 
-
-    private static final HashMap<String, VRInteractionProfileType> values = new HashMap<>();
-
-    static {
-        for(VRInteractionProfileType entry : values()){
-            values.put(entry.xrPath, entry);
-        }
+    /**
+     * Get values with controllers only types
+     *
+     * @return list of controllers only interaction profile types
+     */
+    @NotNull
+    public static VRInteractionProfileType[] valuesController(){
+        return valuesControllers;
     }
 
     /**
@@ -71,6 +115,8 @@ public enum VRInteractionProfileType {
             case VIVE -> ViveProfile.ALL_ACTION_IDS;
 
             case WINDOWS_MOTION -> WindowsMotionProfile.ALL_ACTION_IDS;
+
+            case VIVE_TRACKER ->  List.of();
         };
     }
 
@@ -93,6 +139,8 @@ public enum VRInteractionProfileType {
             case VIVE -> ViveProfile.BUTTON_IDS;
 
             case WINDOWS_MOTION -> WindowsMotionProfile.BUTTON_IDS;
+
+            case VIVE_TRACKER ->  List.of();
         };
     }
 
@@ -115,6 +163,8 @@ public enum VRInteractionProfileType {
             case VIVE -> ViveProfile.VEC2_IDS;
 
             case WINDOWS_MOTION -> WindowsMotionProfile.VEC2_IDS;
+
+            case VIVE_TRACKER ->  List.of();
         };
     }
 }

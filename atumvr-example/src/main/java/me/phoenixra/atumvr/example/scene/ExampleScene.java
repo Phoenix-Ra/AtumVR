@@ -1,6 +1,7 @@
 package me.phoenixra.atumvr.example.scene;
 
 import me.phoenixra.atumvr.api.enums.EyeType;
+import me.phoenixra.atumvr.api.input.profile.tracker.ViveTrackerRole;
 import me.phoenixra.atumvr.core.rendering.XRRenderer;
 import me.phoenixra.atumvr.core.rendering.XRScene;
 import me.phoenixra.atumvr.example.ExampleVRProvider;
@@ -21,6 +22,10 @@ public class ExampleScene extends XRScene {
 
     private List<ExampleCube> exampleCubes = new ArrayList<>();
     private ExampleCube floorCube;
+
+    private final List<ExampleMannequinPart> mannequinParts = new ArrayList<>();
+    private final Vector3f mannequinOffset = new Vector3f(0f, 0f, 2.5f);
+    private int lastActiveTrackerCount = -1;
 
     private float timer;
     public ExampleScene(@NotNull XRRenderer vrRenderer) {
@@ -86,7 +91,27 @@ public class ExampleScene extends XRScene {
             cube.init();
         }
 
+        initMannequin();
+
         System.out.println("Successfully attached vertices to frame buffer");
+    }
+
+
+    private void initMannequin() {
+        StbTexture mannequinTexture = new StbTexture("textures/test.png");
+        for (ViveTrackerRole role : getProvider().getInputHandler().getTrackerManager().getRoles()) {
+            ExampleMannequinPart part = new ExampleMannequinPart(
+                    getProvider(),
+                    role,
+                    mannequinTexture,
+                    mannequinOffset
+            );
+            part.init();
+            mannequinParts.add(part);
+        }
+        getProvider().getLogger().logInfo(
+                "Mannequin initialized with " + mannequinParts.size() + " tracker body part(s)"
+        );
     }
 
     @Override
@@ -110,7 +135,34 @@ public class ExampleScene extends XRScene {
 
             exampleCube.render();
         }
+
+        for(ExampleMannequinPart part : mannequinParts){
+            if(!part.isTrackerActive()){
+                continue;
+            }
+            updateShaderVariables(eyeType, part.getModelMatrix());
+            part.render();
+        }
+        if(eyeType == EyeType.LEFT){
+            logActiveTrackerCountIfChanged();
+        }
+
         GL30.glUseProgram(0);
+    }
+
+    private void logActiveTrackerCountIfChanged(){
+        int activeNow = 0;
+        for(ExampleMannequinPart part : mannequinParts){
+            if(part.isTrackerActive()){
+                activeNow++;
+            }
+        }
+        if(activeNow != lastActiveTrackerCount){
+            lastActiveTrackerCount = activeNow;
+            getProvider().getLogger().logInfo(
+                    "Active Vive trackers: " + activeNow + " / " + mannequinParts.size()
+            );
+        }
     }
     private void updateShaderVariables(EyeType eyeType, Matrix4f modelMatrix){
         int timerLocation = shaderProgram.getShaderVariableLocation("iTimer");
@@ -175,6 +227,10 @@ public class ExampleScene extends XRScene {
     @Override
     public void destroy() {
         //release all resources attached to scene
+        for(ExampleMannequinPart part : mannequinParts){
+            part.destroy();
+        }
+        mannequinParts.clear();
     }
 
     @Override
