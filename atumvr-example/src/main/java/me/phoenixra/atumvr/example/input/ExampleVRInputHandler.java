@@ -35,8 +35,6 @@ public class ExampleVRInputHandler extends XRInputHandler {
     @Override
     protected @NotNull List<? extends XRActionSet> generateActionSets(@NotNull MemoryStack stack) {
         profileSetHolder = new XRProfileManager(getVrProvider());
-        // Uses the provider's getEnabledTrackerRoles() (default full-body set).
-        // Inert if the runtime has no XR_HTCX_vive_tracker_interaction support.
         trackerManager = new ViveTrackerManager(getVrProvider());
 
         List<XRActionSet> actionSets = new ArrayList<>(profileSetHolder.getAllActionSets());
@@ -62,7 +60,7 @@ public class ExampleVRInputHandler extends XRInputHandler {
                 profileSetHolder.getCommonSet().getHandPoseGrip(),
                 profileSetHolder.getCommonSet().getHapticPulse()
         ));
-        // One XRDeviceTracker per configured role (e.g. "tracker_waist").
+        trackerManager.setEmulated(true);
         devices.addAll(trackerManager.createDevices());
         return devices;
     }

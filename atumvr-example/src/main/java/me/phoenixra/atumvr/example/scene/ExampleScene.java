@@ -160,7 +160,7 @@ public class ExampleScene extends XRScene {
         if(activeNow != lastActiveTrackerCount){
             lastActiveTrackerCount = activeNow;
             getProvider().getLogger().logInfo(
-                    "Active Vive trackers: " + activeNow + " / " + mannequinParts.size()
+                    "Active trackers: " + activeNow + " / " + mannequinParts.size()
             );
         }
     }

@@ -12,6 +12,7 @@ import org.jetbrains.annotations.Nullable;
 @Getter
 public class XRDeviceTracker extends XRDevice implements AtumVRDeviceTracker {
 
+    @Nullable
     private final PoseMultiAction.SubActionPose poseSubAction;
 
     @Nullable
@@ -26,8 +27,26 @@ public class XRDeviceTracker extends XRDevice implements AtumVRDeviceTracker {
         this.hapticPulseAction = hapticPulseAction;
     }
 
+    /**
+     * No OpenXR pose action.
+     * Subclasses must override update() to drive the pose
+     *
+     * @param vrProvider the VR provider
+     * @param deviceId   the device ID
+     */
+    protected XRDeviceTracker(@NotNull XRProvider vrProvider,
+                              @NotNull String deviceId) {
+        super(vrProvider, deviceId);
+        this.poseSubAction = null;
+        this.hapticPulseAction = null;
+    }
+
     @Override
     public void update() {
+        if (poseSubAction == null) {
+            active = false;
+            return;
+        }
         pose.update(poseSubAction.getPose());
         active = poseSubAction.isActive();
     }
