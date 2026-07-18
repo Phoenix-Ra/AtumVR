@@ -410,6 +410,13 @@ public abstract class XRRenderer implements AtumVRRenderer {
      */
     protected void setupHiddenArea(){
         try(MemoryStack stack = MemoryStack.stackPush()) {
+            if (!getVrProvider().getSession().getInstance()
+                    .getHandle().getCapabilities().XR_KHR_visibility_mask) {
+                getVrProvider().getLogger().logInfo(
+                        "XR_KHR_visibility_mask not supported by runtime, skipping hidden-area mesh"
+                );
+                return;
+            }
             XrSession xrSession = getVrProvider().getSession().getHandle();
             for (int eye = 0; eye < 2; ++eye) {
                 // 1) Allocate the mask struct
@@ -476,6 +483,12 @@ public abstract class XRRenderer implements AtumVRRenderer {
                 hiddenArea.put(EyeType.fromIndex(eye), area);
                 getVrProvider().getLogger().logInfo("Hidden-area mesh loaded for eye " + eye);
             }
+        } catch (Throwable e) {
+            hiddenArea.clear();
+            getVrProvider().getLogger().logError(
+                    "Failed to load hidden-area mesh, continuing without it: "
+                            + e.getClass().getSimpleName() + ": " + e.getMessage()
+            );
         }
     }
 
