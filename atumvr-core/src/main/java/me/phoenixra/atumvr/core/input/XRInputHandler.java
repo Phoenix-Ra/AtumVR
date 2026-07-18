@@ -315,6 +315,9 @@ public abstract class XRInputHandler implements AtumVRInputHandler {
         if(instance.getHandle().getCapabilities().XR_HTC_vive_cosmos_controller_interaction){
             list.add(VIVE_COSMOS);
         }
+        if(instance.getHandle().getCapabilities().XR_HTC_vive_focus3_controller_interaction){
+            list.add(VIVE_FOCUS3);
+        }
         if(instance.getHandle().getCapabilities().XR_HTCX_vive_tracker_interaction){
             list.add(VIVE_TRACKER);
         }
@@ -339,6 +342,8 @@ public abstract class XRInputHandler implements AtumVRInputHandler {
         if(supported.contains(VIVE)) out.add(new ViveXRProfile(vrProvider));
 
         if(supported.contains(VIVE_COSMOS)) out.add(new ViveCosmosXRProfile(vrProvider));
+
+        if(supported.contains(VIVE_FOCUS3)) out.add(new ViveFocus3XRProfile(vrProvider));
 
         return out;
     }
