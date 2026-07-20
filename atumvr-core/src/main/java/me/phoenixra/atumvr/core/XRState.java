@@ -78,6 +78,11 @@ public class XRState implements AtumVRState {
                 continue;
             }
 
+            if (vrEvent == XREvent.INTERACTION_PROFILE_CHANGED) {
+                vrProvider.onInteractionProfileChanged();
+                continue;
+            }
+
             if (vrEvent == XREvent.VIVE_TRACKER_CONNECTED_HTCX) {
                 vrProvider.onViveTrackerConnected(
                         XrEventDataViveTrackerConnectedHTCX.create(event.address())

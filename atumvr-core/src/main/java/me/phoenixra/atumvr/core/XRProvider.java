@@ -277,6 +277,10 @@ public abstract class XRProvider implements AtumVRProvider {
 
     }
 
+    protected void onInteractionProfileChanged(){
+        inputHandler.logCurrentInteractionProfiles();
+    }
+
 
 
     // -------- HELPER METHODS --------

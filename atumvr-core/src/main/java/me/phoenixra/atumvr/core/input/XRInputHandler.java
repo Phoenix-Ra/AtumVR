@@ -16,6 +16,7 @@ import me.phoenixra.atumvr.core.input.profile.XRInteractionProfile;
 import me.phoenixra.atumvr.core.input.profile.types.*;
 import me.phoenixra.atumvr.core.session.XRInstance;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.lwjgl.openxr.*;
 import org.lwjgl.system.MemoryStack;
 
@@ -27,6 +28,7 @@ import static me.phoenixra.atumvr.api.input.profile.VRInteractionProfileType.VIV
 import static org.lwjgl.openxr.XR10.*;
 import static org.lwjgl.system.MemoryStack.*;
 import static org.lwjgl.system.MemoryUtil.NULL;
+import static org.lwjgl.system.MemoryUtil.memUTF8;
 
 /**
  * Abstract base class for XR input
@@ -298,6 +300,102 @@ public abstract class XRInputHandler implements AtumVRInputHandler {
         });
     }
 
+    /**
+     * Converts an OpenXR path handle back to its path string
+     *
+     * @param path the OpenXR path handle
+     * @return the path string, or null if the handle could not be resolved
+     */
+    public @Nullable String convertXrPathToString(long path) {
+        XrInstance xrInstance = vrProvider.getSession().getInstance().getHandle();
+        try (MemoryStack stack = stackPush()) {
+            var sizeBuf = stack.callocInt(1);
+
+            int xrResult = XR10.xrPathToString(xrInstance, path, sizeBuf, null);
+            if (xrResult < 0) {
+                vrProvider.checkXRError(false, xrResult, "xrPathToString", "size");
+                return null;
+            }
+
+            int size = sizeBuf.get(0);
+            var valueBuf = stack.calloc(size);
+            xrResult = XR10.xrPathToString(xrInstance, path, sizeBuf, valueBuf);
+            if (xrResult < 0) {
+                vrProvider.checkXRError(false, xrResult, "xrPathToString", "value");
+                return null;
+            }
+
+            return memUTF8(valueBuf, size - 1);
+        }
+    }
+
+
+    /**
+     * Get the interaction profile the runtime currently has bound to a top level user path.
+     *
+     * <p>
+     *     Requires action sets to be attached, returns null before that
+     * </p>
+     *
+     * @param userPath top level user path, e.g. {@link XRAction#LEFT_HAND_PATH}
+     * @return the interaction profile path, or null if nothing is bound
+     */
+    public @Nullable String getCurrentInteractionProfilePath(@NotNull String userPath){
+        try (MemoryStack stack = stackPush()) {
+            var state = XrInteractionProfileState.calloc(stack)
+                    .type(XR10.XR_TYPE_INTERACTION_PROFILE_STATE);
+
+            int result = XR10.xrGetCurrentInteractionProfile(
+                    vrProvider.getSession().getHandle(),
+                    convertStringToXrPath(userPath),
+                    state
+            );
+            if (result < 0) {
+                vrProvider.checkXRError(false, result, "xrGetCurrentInteractionProfile", userPath);
+                return null;
+            }
+
+            long profilePath = state.interactionProfile();
+            return profilePath == XR10.XR_NULL_PATH
+                    ? null
+                    : convertXrPathToString(profilePath);
+        }
+    }
+
+    /**
+     * Log the interaction profile bound to each hand.
+     *
+     * <p>
+     *     Reports profiles the runtime picked that this app suggested no bindings for -
+     *     those leave every action inactive, which reads as dead controllers
+     * </p>
+     */
+    public void logCurrentInteractionProfiles(){
+        for (String userPath : List.of(XRAction.LEFT_HAND_PATH, XRAction.RIGHT_HAND_PATH)) {
+            String profilePath = getCurrentInteractionProfilePath(userPath);
+
+            if (profilePath == null) {
+                vrProvider.getLogger().logInfo(
+                        "Interaction profile for " + userPath + ": none (controller off or not bound)"
+                );
+                continue;
+            }
+
+            var type = VRInteractionProfileType.fromXRPath(profilePath);
+            if (type == null) {
+                vrProvider.getLogger().logWarn(
+                        "Interaction profile for " + userPath + ": " + profilePath
+                                + " - UNSUPPORTED, no bindings were suggested for it,"
+                                + " input from this controller will stay inactive"
+                );
+                continue;
+            }
+
+            vrProvider.getLogger().logInfo(
+                    "Interaction profile for " + userPath + ": " + profilePath + " (" + type + ")"
+            );
+        }
+    }
 
     @Override
     public @NotNull List<VRInteractionProfileType> getSupportedProfileTypes(){
