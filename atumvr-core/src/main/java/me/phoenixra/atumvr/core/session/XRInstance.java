@@ -11,6 +11,7 @@ import org.lwjgl.system.MemoryStack;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -34,6 +35,12 @@ public class XRInstance {
     private long runtimeVersion;
     @Getter
     private String runtimeVersionString;
+
+
+    @Getter
+    private Set<String> availableExtensions = Set.of();
+    @Getter
+    private Set<String> enabledExtensions = Set.of();
 
     private XrDebugUtilsMessengerEXT debugMessenger;
 
@@ -118,10 +125,11 @@ public class XRInstance {
         );
 
         // Collect supported extension names
-        Set<String> availableExtensions = new HashSet<>(extCount);
+        Set<String> available = new HashSet<>(extCount);
         for (XrExtensionProperties prop : extProperties) {
-            availableExtensions.add(prop.extensionNameString());
+            available.add(prop.extensionNameString());
         }
+        availableExtensions = Set.copyOf(available);
 
 
         // 2) Define desired extensions in priority order
@@ -141,15 +149,40 @@ public class XRInstance {
             );
         }
 
-        // Build PointerBuffer of only the extensions actually supported
-        var enabledExtensions = stack.mallocPointer(desiredExtensions.size());
+        // Keep only what the runtime offers, preserving priority order and dropping duplicates
+        Set<String> enabled = new LinkedHashSet<>();
+        List<String> skipped = new ArrayList<>();
         for (String extName : desiredExtensions) {
             if (availableExtensions.contains(extName)) {
-                enabledExtensions.put(stack.UTF8(extName));
+                enabled.add(extName);
+            } else if (!skipped.contains(extName)) {
+                skipped.add(extName);
             }
         }
-        enabledExtensions.flip();
-        return enabledExtensions;
+        enabledExtensions = Set.copyOf(enabled);
+
+        if (!skipped.isEmpty()) {
+            vrProvider.getLogger().logDebug(
+                    "Requested XR extensions unsupported by the runtime, skipping: " + skipped
+            );
+        }
+
+        var extensionsPointer = stack.mallocPointer(enabled.size());
+        for (String extName : enabled) {
+            extensionsPointer.put(stack.UTF8(extName));
+        }
+        extensionsPointer.flip();
+        return extensionsPointer;
+    }
+
+
+    public boolean isExtensionEnabled(@NotNull String extensionName){
+        return enabledExtensions.contains(extensionName);
+    }
+
+
+    public boolean isExtensionAvailable(@NotNull String extensionName){
+        return availableExtensions.contains(extensionName);
     }
 
     private void setupDebugMessenger(XRProvider vrProvider, MemoryStack stack) {
