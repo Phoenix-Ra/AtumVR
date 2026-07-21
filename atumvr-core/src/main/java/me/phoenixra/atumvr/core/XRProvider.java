@@ -130,7 +130,6 @@ public abstract class XRProvider implements AtumVRProvider {
      * <ul>
      *     <li>{@link EXTHPMixedRealityController#XR_EXT_HP_MIXED_REALITY_CONTROLLER_EXTENSION_NAME}</li>
      *     <li>{@link HTCViveCosmosControllerInteraction#XR_HTC_VIVE_COSMOS_CONTROLLER_INTERACTION_EXTENSION_NAME}</li>
-     *     <li>{@link HTCViveFocus3ControllerInteraction#XR_HTC_VIVE_FOCUS3_CONTROLLER_INTERACTION_EXTENSION_NAME}</li>
      *     <li>{@link BDControllerInteraction#XR_BD_CONTROLLER_INTERACTION_EXTENSION_NAME}</li>
      *     <li>{@link HTCXViveTrackerInteraction#XR_HTCX_VIVE_TRACKER_INTERACTION_EXTENSION_NAME}</li>
      * </ul>
@@ -148,7 +147,6 @@ public abstract class XRProvider implements AtumVRProvider {
         return List.of(
                 EXTHPMixedRealityController.XR_EXT_HP_MIXED_REALITY_CONTROLLER_EXTENSION_NAME,
                 HTCViveCosmosControllerInteraction.XR_HTC_VIVE_COSMOS_CONTROLLER_INTERACTION_EXTENSION_NAME,
-                HTCViveFocus3ControllerInteraction.XR_HTC_VIVE_FOCUS3_CONTROLLER_INTERACTION_EXTENSION_NAME,
                 BDControllerInteraction.XR_BD_CONTROLLER_INTERACTION_EXTENSION_NAME,
                 HTCXViveTrackerInteraction.XR_HTCX_VIVE_TRACKER_INTERACTION_EXTENSION_NAME
 

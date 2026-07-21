@@ -21,8 +21,6 @@ public enum VRInteractionProfileType {
 
     VIVE_COSMOS("/interaction_profiles/htc/vive_cosmos_controller", Kind.CONTROLLER),
 
-    VIVE_FOCUS3("/interaction_profiles/htc/vive_focus3_controller", Kind.CONTROLLER),
-
     HP_MIXED_REALITY("/interaction_profiles/hp/mixed_reality_controller", Kind.CONTROLLER),
 
     WINDOWS_MOTION("/interaction_profiles/microsoft/motion_controller", Kind.CONTROLLER),
@@ -114,8 +112,6 @@ public enum VRInteractionProfileType {
 
             case VIVE_COSMOS -> ViveCosmosProfile.ALL_ACTION_IDS;
 
-            case VIVE_FOCUS3 -> ViveFocus3Profile.ALL_ACTION_IDS;
-
             case VIVE -> ViveProfile.ALL_ACTION_IDS;
 
             case WINDOWS_MOTION -> WindowsMotionProfile.ALL_ACTION_IDS;
@@ -140,8 +136,6 @@ public enum VRInteractionProfileType {
 
             case VIVE_COSMOS -> ViveCosmosProfile.BUTTON_IDS;
 
-            case VIVE_FOCUS3 -> ViveFocus3Profile.BUTTON_IDS;
-
             case VIVE -> ViveProfile.BUTTON_IDS;
 
             case WINDOWS_MOTION -> WindowsMotionProfile.BUTTON_IDS;
@@ -165,8 +159,6 @@ public enum VRInteractionProfileType {
             case VALVE_INDEX -> ValveIndexProfile.VEC2_IDS;
 
             case VIVE_COSMOS -> ViveCosmosProfile.VEC2_IDS;
-
-            case VIVE_FOCUS3 -> ViveFocus3Profile.VEC2_IDS;
 
             case VIVE -> ViveProfile.VEC2_IDS;
 

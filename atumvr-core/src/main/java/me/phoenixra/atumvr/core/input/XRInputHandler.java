@@ -44,6 +44,9 @@ public abstract class XRInputHandler implements AtumVRInputHandler {
     private final Map<String, XRActionSet> actionSets = new LinkedHashMap<>();
     private final Map<String, XRDevice> devices = new LinkedHashMap<>();
 
+    // Last interaction profile logged per user path, "" means none. Suppresses repeat events
+    private final Map<String, String> lastLoggedInteractionProfile = new HashMap<>();
+
 
     public XRInputHandler(@NotNull XRProvider vrProvider){
         this.vrProvider = vrProvider;
@@ -373,6 +376,12 @@ public abstract class XRInputHandler implements AtumVRInputHandler {
     public void logCurrentInteractionProfiles(){
         for (String userPath : List.of(XRAction.LEFT_HAND_PATH, XRAction.RIGHT_HAND_PATH)) {
             String profilePath = getCurrentInteractionProfilePath(userPath);
+            String key = profilePath == null ? "" : profilePath;
+
+            // The runtime can fire this event repeatedly, only log actual changes
+            if (key.equals(lastLoggedInteractionProfile.put(userPath, key))) {
+                continue;
+            }
 
             if (profilePath == null) {
                 vrProvider.getLogger().logInfo(
@@ -413,9 +422,6 @@ public abstract class XRInputHandler implements AtumVRInputHandler {
         if(instance.getHandle().getCapabilities().XR_HTC_vive_cosmos_controller_interaction){
             list.add(VIVE_COSMOS);
         }
-        if(instance.getHandle().getCapabilities().XR_HTC_vive_focus3_controller_interaction){
-            list.add(VIVE_FOCUS3);
-        }
         if(instance.getHandle().getCapabilities().XR_HTCX_vive_tracker_interaction){
             list.add(VIVE_TRACKER);
         }
@@ -441,8 +447,6 @@ public abstract class XRInputHandler implements AtumVRInputHandler {
 
         if(supported.contains(VIVE_COSMOS)) out.add(new ViveCosmosXRProfile(vrProvider));
 
-        if(supported.contains(VIVE_FOCUS3)) out.add(new ViveFocus3XRProfile(vrProvider));
-
         return out;
     }
 
@@ -457,6 +461,7 @@ public abstract class XRInputHandler implements AtumVRInputHandler {
         actionSets.clear();
         devices.clear();
         paths.clear();
+        lastLoggedInteractionProfile.clear();
     }
 
     public void stopActiveHaptics() {
