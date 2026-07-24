@@ -37,12 +37,12 @@ public class XRTexture implements AtumVRTexture {
         frameBufferId = GL30.glGenFramebuffers();
 
         GL30.glBindFramebuffer(GL30.GL_FRAMEBUFFER, this.frameBufferId);
-        GL30.glFramebufferTextureLayer(
+        GL30.glFramebufferTexture2D(
                 GL30.GL_FRAMEBUFFER,
                 GL30.GL_COLOR_ATTACHMENT0,
+                GL30.GL_TEXTURE_2D,
                 textureId,
-                0,
-                textureIndex
+                0
         );
 
         checkStatus();

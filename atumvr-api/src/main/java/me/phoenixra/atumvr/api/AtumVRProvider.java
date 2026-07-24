@@ -59,6 +59,23 @@ public interface AtumVRProvider {
 
 
     /**
+     * Run one frame loop cycle without rendering,
+     * submitting an empty frame to the VR runtime.
+     * <p>
+     *     Has to be called every loop iteration while the session
+     *     is running but the app is not rendering VR
+     *     (instead of {@link #startFrame} and {@link #render}).
+     *     Keeps the session synchronized with the runtime,
+     *     so it can be promoted back to visible/focused later.
+     * </p>
+     * <p>
+     *     Does nothing if the session is not running
+     * </p>
+     */
+    void idleFrame();
+
+
+    /**
      * Prepares destroy, by stopping any active things that may be incorrectly destroyed if done late.
      * Usually, this method can be ignored, but
      * if you noticed for example haptic pulse incorrectly working during app shutdown,

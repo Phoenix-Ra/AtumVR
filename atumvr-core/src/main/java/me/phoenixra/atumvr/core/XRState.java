@@ -22,6 +22,7 @@ public class XRState implements AtumVRState {
     /**
      * If VR session is ready (initialized) on VR runtime side
      */
+    @Getter
     protected boolean ready = false;
 
 
@@ -120,9 +121,13 @@ public class XRState implements AtumVRState {
 
             case STOPPING -> {
                 ready = false;
-                initialized = false;
                 active = false;
-
+                vrProvider.checkXRError(
+                        false,
+                        XR10.xrEndSession(vrProvider.getSession().getHandle()),
+                        "xrEndSession", "XRStateChangeSTOPPING"
+                );
+                vrProvider.getLogger().logInfo("OpenXR session is STOPPED");
             }
 
             case VISIBLE, FOCUSED -> active = true;

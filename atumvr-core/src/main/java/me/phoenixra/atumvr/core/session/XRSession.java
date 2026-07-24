@@ -190,6 +190,9 @@ public class XRSession implements AtumVRSession {
         if (handle == null || instance == null || instance.getHandle() == null) {
             return;
         }
+        if (!vrProvider.getState().isReady()) {
+            return;
+        }
         try {
             XR10.xrRequestExitSession(handle);
         } catch (Throwable ignored) {

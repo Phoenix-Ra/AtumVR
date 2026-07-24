@@ -28,8 +28,8 @@ public class XRSwapChain {
     private final List<Integer> desiredSwapChainFormats;
 
 
-    @Getter
-    private XrSwapchain handle;
+
+    private XrSwapchain[] handles;
 
     @Getter
     private XrView.Buffer xrViewBuffer;
@@ -58,7 +58,10 @@ public class XRSwapChain {
 
             long chosenFormat = pickSwapchainFormat(session, stack);
 
-            this.handle       = createSwapchain(session, viewConfigs.get(0), chosenFormat, stack);
+            this.handles = new XrSwapchain[viewCount];
+            for (int i = 0; i < viewCount; i++) {
+                handles[i] = createSwapchain(session, viewConfigs.get(i), chosenFormat, stack);
+            }
             this.eyeWidth = viewConfigs.get(0).recommendedImageRectWidth();
             this.eyeHeight = viewConfigs.get(0).recommendedImageRectHeight();
 
@@ -68,11 +71,21 @@ public class XRSwapChain {
                 xrViewBuffer.get(i).type(XR_TYPE_VIEW).next(NULL);
             }
 
-            vrProvider.getLogger().logInfo(String.format("Swapchain created: %s×%s pixels, format 0x%s",
-                    eyeWidth, eyeHeight, Long.toHexString(chosenFormat))
+            vrProvider.getLogger().logInfo(String.format("Swapchains created: %s × %s×%s pixels, format 0x%s",
+                    viewCount, eyeWidth, eyeHeight, Long.toHexString(chosenFormat))
             );
         }
 
+    }
+
+    /**
+     * Get swapchain handle of the specified eye
+     *
+     * @param eyeIndex the eye index (0 - left, 1 - right)
+     * @return the swapchain handle
+     */
+    public XrSwapchain getHandle(int eyeIndex) {
+        return handles[eyeIndex];
     }
 
     private int enumerateViewCount(XrInstance instance, long systemId, MemoryStack stack) {
@@ -145,7 +158,7 @@ public class XRSwapChain {
                 .width(viewConfig.recommendedImageRectWidth())
                 .height(viewConfig.recommendedImageRectHeight())
                 .faceCount(1)
-                .arraySize(2)    // stereo
+                .arraySize(1)
                 .mipCount(1);
 
         PointerBuffer handlePtr = stack.callocPointer(1);
@@ -175,11 +188,15 @@ public class XRSwapChain {
     }
 
     private void destroySwapchainQuietly() {
-        if (handle == null) return;
-        int err = xrDestroySwapchain(handle);
-        vrProvider.checkXRError(false, err, "xrDestroySwapchain", "ignoring on teardown");
-        handle = null;
-        vrProvider.getLogger().logDebug("Swapchain destroyed");
+        if (handles == null) return;
+        for (int i = 0; i < handles.length; i++) {
+            if (handles[i] == null) continue;
+            int err = xrDestroySwapchain(handles[i]);
+            vrProvider.checkXRError(false, err, "xrDestroySwapchain", "eye " + i);
+            handles[i] = null;
+        }
+        handles = null;
+        vrProvider.getLogger().logDebug("Swapchains destroyed");
     }
 
     private void destroyViewBuffer() {

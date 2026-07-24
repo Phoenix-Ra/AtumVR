@@ -221,7 +221,7 @@ public abstract class XRProvider implements AtumVRProvider {
 
     @Override
     public void startFrame() {
-        if(!state.isInitialized()){
+        if(!state.isInitialized() || !state.isReady()){
             return;
         }
         renderer.prepareFrame();
@@ -230,10 +230,49 @@ public abstract class XRProvider implements AtumVRProvider {
 
     @Override
     public void render(@NotNull AtumVRRenderContext context) {
-        if(!state.isInitialized()){
+        if(!state.isInitialized() || !state.isReady()){
             return;
         }
         renderer.renderFrame(context);
+    }
+
+    @Override
+    public void idleFrame() {
+        if(!state.isInitialized() || !state.isReady()){
+            return;
+        }
+        try (MemoryStack stack = MemoryStack.stackPush()) {
+            XrFrameState frameState = XrFrameState.calloc(stack)
+                    .type(XR10.XR_TYPE_FRAME_STATE);
+
+            checkXRError(
+                    XR10.xrWaitFrame(
+                            session.getHandle(),
+                            XrFrameWaitInfo.calloc(stack)
+                                    .type(XR10.XR_TYPE_FRAME_WAIT_INFO),
+                            frameState
+                    ),
+                    "xrWaitFrame", "idleFrame"
+            );
+            checkXRError(
+                    XR10.xrBeginFrame(
+                            session.getHandle(),
+                            XrFrameBeginInfo.calloc(stack)
+                                    .type(XR10.XR_TYPE_FRAME_BEGIN_INFO)
+                    ),
+                    "xrBeginFrame", "idleFrame"
+            );
+            checkXRError(
+                    XR10.xrEndFrame(
+                            session.getHandle(),
+                            XrFrameEndInfo.calloc(stack)
+                                    .type(XR10.XR_TYPE_FRAME_END_INFO)
+                                    .displayTime(frameState.predictedDisplayTime())
+                                    .environmentBlendMode(XR10.XR_ENVIRONMENT_BLEND_MODE_OPAQUE)
+                    ),
+                    "xrEndFrame", "idleFrame"
+            );
+        }
     }
 
     @Override
