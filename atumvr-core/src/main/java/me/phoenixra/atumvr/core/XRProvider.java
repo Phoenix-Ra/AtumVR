@@ -13,6 +13,7 @@ import me.phoenixra.atumvr.core.enums.XRSessionState;
 import me.phoenixra.atumvr.core.rendering.XRRenderer;
 import me.phoenixra.atumvr.core.session.XRSession;
 import me.phoenixra.atumvr.core.input.XRInputHandler;
+import me.phoenixra.atumvr.core.input.profile.tracker.FBBodyTrackingProvider;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.GL31;
@@ -132,6 +133,7 @@ public abstract class XRProvider implements AtumVRProvider {
      *     <li>{@link HTCViveCosmosControllerInteraction#XR_HTC_VIVE_COSMOS_CONTROLLER_INTERACTION_EXTENSION_NAME}</li>
      *     <li>{@link BDControllerInteraction#XR_BD_CONTROLLER_INTERACTION_EXTENSION_NAME}</li>
      *     <li>{@link HTCXViveTrackerInteraction#XR_HTCX_VIVE_TRACKER_INTERACTION_EXTENSION_NAME}</li>
+     *     <li>{@link FBBodyTracking#XR_FB_BODY_TRACKING_EXTENSION_NAME} with the META full body and fidelity additions</li>
      * </ul>
      *
      * <p>
@@ -148,8 +150,11 @@ public abstract class XRProvider implements AtumVRProvider {
                 EXTHPMixedRealityController.XR_EXT_HP_MIXED_REALITY_CONTROLLER_EXTENSION_NAME,
                 HTCViveCosmosControllerInteraction.XR_HTC_VIVE_COSMOS_CONTROLLER_INTERACTION_EXTENSION_NAME,
                 BDControllerInteraction.XR_BD_CONTROLLER_INTERACTION_EXTENSION_NAME,
-                HTCXViveTrackerInteraction.XR_HTCX_VIVE_TRACKER_INTERACTION_EXTENSION_NAME
+                HTCXViveTrackerInteraction.XR_HTCX_VIVE_TRACKER_INTERACTION_EXTENSION_NAME,
 
+                FBBodyTrackingProvider.EXTENSION_NAME,
+                FBBodyTrackingProvider.EXTENSION_FULL_BODY_META,
+                FBBodyTrackingProvider.EXTENSION_FIDELITY_META
         );
     }
 
