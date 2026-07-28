@@ -71,23 +71,28 @@ public class XRUtils {
 
 
     public static Matrix4f normalizeXrPose(@NotNull XrPosef xrPose){
+        return normalizeXrPose(xrPose, new Matrix4f());
+    }
 
+
+    public static Matrix4f normalizeXrPose(@NotNull XrPosef xrPose,
+                                           @NotNull Matrix4f dest){
         XrQuaternionf orientation = xrPose.orientation();
         XrVector3f position = xrPose.position$();
 
-        Quaternionf rotation = new Quaternionf(
-                orientation.x(),
-                orientation.y(),
-                orientation.z(),
-                orientation.w()
+        return dest.translationRotate(
+                position.x(), position.y(), position.z(),
+                orientation.x(), orientation.y(), orientation.z(), orientation.w()
         );
-        return new Matrix4f().identity()
-                .translate(position.x(), position.y(), position.z())
-                .rotate(rotation);
     }
 
     public static Quaternionf normalizeXrQuaternion(@NotNull XrQuaternionf xrQuaternion){
-        return new Quaternionf(
+        return normalizeXrQuaternion(xrQuaternion, new Quaternionf());
+    }
+
+    public static Quaternionf normalizeXrQuaternion(@NotNull XrQuaternionf xrQuaternion,
+                                                    @NotNull Quaternionf dest){
+        return dest.set(
                 xrQuaternion.x(),
                 xrQuaternion.y(),
                 xrQuaternion.z(),
@@ -96,20 +101,37 @@ public class XRUtils {
     }
 
     public static Vector2f normalizeXrVector(@NotNull XrVector2f xrVector){
-        return new Vector2f(
+        return normalizeXrVector(xrVector, new Vector2f());
+    }
+
+    public static Vector2f normalizeXrVector(@NotNull XrVector2f xrVector,
+                                             @NotNull Vector2f dest){
+        return dest.set(
                 xrVector.x(),
                 xrVector.y()
         );
     }
+
     public static Vector3f normalizeXrVector(@NotNull XrVector3f xrVector){
-        return new Vector3f(
+        return normalizeXrVector(xrVector, new Vector3f());
+    }
+
+    public static Vector3f normalizeXrVector(@NotNull XrVector3f xrVector,
+                                             @NotNull Vector3f dest){
+        return dest.set(
                 xrVector.x(),
                 xrVector.y(),
                 xrVector.z()
         );
     }
+
     public static Vector4f normalizeXrVector(@NotNull XrVector4f xrVector){
-        return new Vector4f(
+        return normalizeXrVector(xrVector, new Vector4f());
+    }
+
+    public static Vector4f normalizeXrVector(@NotNull XrVector4f xrVector,
+                                             @NotNull Vector4f dest){
+        return dest.set(
                 xrVector.x(),
                 xrVector.y(),
                 xrVector.z(),

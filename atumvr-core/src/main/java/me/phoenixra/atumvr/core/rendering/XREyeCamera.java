@@ -21,10 +21,13 @@ public class XREyeCamera {
 
 
     @Getter
-    protected Matrix4f viewMatrix = new Matrix4f();
+    protected final Matrix4f viewMatrix = new Matrix4f();
 
     @Getter
-    protected Matrix4f projectionMatrix = new Matrix4f();
+    protected final Matrix4f projectionMatrix = new Matrix4f();
+
+    private final Quaternionf scratchOrientation = new Quaternionf();
+    private final Vector3f scratchPosition = new Vector3f();
 
 
     public XREyeCamera(XRProvider vrProvider) {
@@ -35,22 +38,22 @@ public class XREyeCamera {
         XrPosef p = vrProvider.getInputHandler()
                 .getDevice(XRDeviceHMD.ID, XRDeviceHMD.class)
                 .getXrView(eyeType).pose();
-        Quaternionf q = new Quaternionf(
+        scratchOrientation.set(
                 p.orientation().x(),
                 p.orientation().y(),
                 p.orientation().z(),
                 p.orientation().w()
         ).conjugate();
 
-        Vector3f pos = new Vector3f(
+        scratchPosition.set(
                 p.position$().x(),
                 p.position$().y(),
                 p.position$().z()
         );
 
         viewMatrix.identity()
-                .rotate(q)
-                .translate(-pos.x, -pos.y, -pos.z);
+                .rotate(scratchOrientation)
+                .translate(-scratchPosition.x, -scratchPosition.y, -scratchPosition.z);
     }
 
     public void updateProjectionMatrix(EyeType eyeType,
@@ -59,14 +62,13 @@ public class XREyeCamera {
                 .getDevice(XRDeviceHMD.ID, XRDeviceHMD.class)
                 .getXrView(eyeType).fov();
 
-        projectionMatrix =  new Matrix4f()
-                .setPerspectiveOffCenterFov(
-                        fov.angleLeft(),
-                        fov.angleRight(),
-                        fov.angleDown(),
-                        fov.angleUp(),
-                        nearClip,
-                        farClip
-                );
+        projectionMatrix.setPerspectiveOffCenterFov(
+                fov.angleLeft(),
+                fov.angleRight(),
+                fov.angleDown(),
+                fov.angleUp(),
+                nearClip,
+                farClip
+        );
     }
 }

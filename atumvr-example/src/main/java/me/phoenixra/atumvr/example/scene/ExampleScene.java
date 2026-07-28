@@ -1,7 +1,7 @@
 package me.phoenixra.atumvr.example.scene;
 
 import me.phoenixra.atumvr.api.enums.EyeType;
-import me.phoenixra.atumvr.api.input.profile.tracker.ViveTrackerRole;
+import me.phoenixra.atumvr.api.input.body.AtumVRBodyJoint;
 import me.phoenixra.atumvr.core.rendering.XRRenderer;
 import me.phoenixra.atumvr.core.rendering.XRScene;
 import me.phoenixra.atumvr.example.ExampleVRProvider;
@@ -25,7 +25,7 @@ public class ExampleScene extends XRScene {
 
     private final List<ExampleMannequinPart> mannequinParts = new ArrayList<>();
     private final Vector3f mannequinOffset = new Vector3f(0f, 0f, 2.5f);
-    private int lastActiveTrackerCount = -1;
+    private int lastTrackedJointCount = -1;
 
     private float timer;
     public ExampleScene(@NotNull XRRenderer vrRenderer) {
@@ -99,10 +99,11 @@ public class ExampleScene extends XRScene {
 
     private void initMannequin() {
         StbTexture mannequinTexture = new StbTexture("textures/test.png");
-        for (ViveTrackerRole role : getProvider().getInputHandler().getTrackerManager().getRoles()) {
+        // a part per joint, whichever ones the body ends up delivering
+        for (AtumVRBodyJoint joint : AtumVRBodyJoint.values()) {
             ExampleMannequinPart part = new ExampleMannequinPart(
                     getProvider(),
-                    role,
+                    joint,
                     mannequinTexture,
                     mannequinOffset
             );
@@ -110,7 +111,7 @@ public class ExampleScene extends XRScene {
             mannequinParts.add(part);
         }
         getProvider().getLogger().logInfo(
-                "Mannequin initialized with " + mannequinParts.size() + " tracker body part(s)"
+                "Mannequin initialized with " + mannequinParts.size() + " body part(s)"
         );
     }
 
@@ -137,30 +138,26 @@ public class ExampleScene extends XRScene {
         }
 
         for(ExampleMannequinPart part : mannequinParts){
-            if(!part.isTrackerActive()){
+            if(!part.isJointTracked()){
                 continue;
             }
             updateShaderVariables(eyeType, part.getModelMatrix());
             part.render();
         }
         if(eyeType == EyeType.LEFT){
-            logActiveTrackerCountIfChanged();
+            logTrackedJointCountIfChanged();
         }
 
         GL30.glUseProgram(0);
     }
 
-    private void logActiveTrackerCountIfChanged(){
-        int activeNow = 0;
-        for(ExampleMannequinPart part : mannequinParts){
-            if(part.isTrackerActive()){
-                activeNow++;
-            }
-        }
-        if(activeNow != lastActiveTrackerCount){
-            lastActiveTrackerCount = activeNow;
+    private void logTrackedJointCountIfChanged(){
+        int trackedNow = getProvider().getInputHandler().getVRBody()
+                .getTrackedJoints().size();
+        if(trackedNow != lastTrackedJointCount){
+            lastTrackedJointCount = trackedNow;
             getProvider().getLogger().logInfo(
-                    "Active trackers: " + activeNow + " / " + mannequinParts.size()
+                    "Tracked body joints: " + trackedNow + " / " + mannequinParts.size()
             );
         }
     }

@@ -1,9 +1,24 @@
 package me.phoenixra.atumvr.api.input.device;
 
+import me.phoenixra.atumvr.api.input.AtumVRInputHandler;
+import me.phoenixra.atumvr.api.input.body.AtumVRBodyJoint;
+import org.jetbrains.annotations.Nullable;
+
 /**
  * Abstract VRDevice for tracker
  */
 public interface AtumVRDeviceTracker extends AtumVRDevice {
+
+    /**
+     * Get the body joint this tracker is attached to.
+     * <p>
+     *     Trackers that report a joint are handled in
+     *     {@link AtumVRInputHandler#getVRBody() the VR Body view}
+     * </p>
+     *
+     * @return the joint, or null for a tracker that is not on the body (for example camera)
+     */
+    @Nullable AtumVRBodyJoint getBodyJoint();
 
     /**
      * Trigger a haptic pulse on the tracker,

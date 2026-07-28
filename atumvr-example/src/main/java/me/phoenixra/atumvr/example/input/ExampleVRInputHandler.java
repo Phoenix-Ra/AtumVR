@@ -1,10 +1,12 @@
 package me.phoenixra.atumvr.example.input;
 
 import lombok.Getter;
+import me.phoenixra.atumvr.api.input.body.AtumVRBodyView;
 import me.phoenixra.atumvr.api.input.device.AtumVRDeviceController;
+import me.phoenixra.atumvr.core.input.body.XRCommonBodyView;
 import me.phoenixra.atumvr.core.input.device.XRDeviceController;
 import me.phoenixra.atumvr.core.input.profile.XRProfileManager;
-import me.phoenixra.atumvr.core.input.profile.tracker.ViveTrackerManager;
+import me.phoenixra.atumvr.core.input.profile.tracker.ViveTrackerProvider;
 import me.phoenixra.atumvr.example.ExampleHandEnum;
 import me.phoenixra.atumvr.api.enums.ControllerType;
 import me.phoenixra.atumvr.core.XRProvider;
@@ -22,7 +24,7 @@ public class ExampleVRInputHandler extends XRInputHandler {
     @Getter
     private XRProfileManager profileSetHolder;
     @Getter
-    private ViveTrackerManager trackerManager;
+    private ViveTrackerProvider trackerProvider;
 
     private final ExampleHandEnum pulsatingHand = ExampleHandEnum.MAIN;
     @Getter
@@ -35,11 +37,19 @@ public class ExampleVRInputHandler extends XRInputHandler {
     @Override
     protected @NotNull List<? extends XRActionSet> generateActionSets(@NotNull MemoryStack stack) {
         profileSetHolder = new XRProfileManager(getVrProvider());
-        trackerManager = new ViveTrackerManager(getVrProvider());
+        return profileSetHolder.getAllActionSets();
+    }
 
-        List<XRActionSet> actionSets = new ArrayList<>(profileSetHolder.getAllActionSets());
-        actionSets.addAll(trackerManager.getActionSets());
-        return actionSets;
+    @Override
+    protected @NotNull List<? extends AtumVRBodyView> generateBodyViews(@NotNull MemoryStack stack) {
+        trackerProvider = new ViveTrackerProvider(getVrProvider());
+        // no real trackers needed to see the mannequin move
+        trackerProvider.setEmulated(true);
+
+        return List.of(
+                new XRCommonBodyView(getVrProvider()),
+                trackerProvider
+        );
     }
 
     @Override
@@ -60,8 +70,6 @@ public class ExampleVRInputHandler extends XRInputHandler {
                 profileSetHolder.getCommonSet().getHandPoseGrip(),
                 profileSetHolder.getCommonSet().getHapticPulse()
         ));
-        trackerManager.setEmulated(true);
-        devices.addAll(trackerManager.createDevices());
         return devices;
     }
 

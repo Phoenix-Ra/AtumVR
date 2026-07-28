@@ -2,6 +2,7 @@ package me.phoenixra.atumvr.api.input;
 
 import me.phoenixra.atumvr.api.AtumVRProvider;
 import me.phoenixra.atumvr.api.input.action.AtumVRActionSet;
+import me.phoenixra.atumvr.api.input.body.AtumVRBodyView;
 import me.phoenixra.atumvr.api.input.device.AtumVRDevice;
 import me.phoenixra.atumvr.api.input.profile.VRInteractionProfileType;
 import org.jetbrains.annotations.NotNull;
@@ -70,6 +71,13 @@ public interface AtumVRInputHandler {
      * @return collection of devices
      */
     Collection<? extends AtumVRDevice> getDevices();
+
+    /**
+     * Get VR Body view
+     *
+     * @return the VR Body view
+     */
+    @NotNull AtumVRBodyView getVRBody();
 
 
     /**

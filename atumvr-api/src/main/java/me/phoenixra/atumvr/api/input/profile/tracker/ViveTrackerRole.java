@@ -1,6 +1,7 @@
 package me.phoenixra.atumvr.api.input.profile.tracker;
 
 import lombok.Getter;
+import me.phoenixra.atumvr.api.input.body.AtumVRBodyJoint;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -10,33 +11,33 @@ import java.util.List;
 public enum ViveTrackerRole {
 
     // Body Main
-    WAIST("waist"),
-    CHEST("chest"),
+    WAIST("waist", AtumVRBodyJoint.WAIST),
+    CHEST("chest", AtumVRBodyJoint.CHEST),
 
     // Body Legs
-    LEFT_FOOT("left_foot"),
-    RIGHT_FOOT("right_foot"),
+    LEFT_FOOT("left_foot", AtumVRBodyJoint.LEFT_FOOT),
+    RIGHT_FOOT("right_foot", AtumVRBodyJoint.RIGHT_FOOT),
 
-    LEFT_ANKLE("left_ankle"),
-    RIGHT_ANKLE("right_ankle"),
+    LEFT_ANKLE("left_ankle", AtumVRBodyJoint.LEFT_ANKLE),
+    RIGHT_ANKLE("right_ankle", AtumVRBodyJoint.RIGHT_ANKLE),
 
-    LEFT_KNEE("left_knee"),
-    RIGHT_KNEE("right_knee"),
+    LEFT_KNEE("left_knee", AtumVRBodyJoint.LEFT_KNEE),
+    RIGHT_KNEE("right_knee", AtumVRBodyJoint.RIGHT_KNEE),
 
     // Body Arms
-    LEFT_WRIST("left_wrist"),
-    RIGHT_WRIST("right_wrist"),
+    LEFT_WRIST("left_wrist", AtumVRBodyJoint.LEFT_WRIST),
+    RIGHT_WRIST("right_wrist", AtumVRBodyJoint.RIGHT_WRIST),
 
-    LEFT_ELBOW("left_elbow"),
-    RIGHT_ELBOW("right_elbow"),
+    LEFT_ELBOW("left_elbow", AtumVRBodyJoint.LEFT_ELBOW),
+    RIGHT_ELBOW("right_elbow", AtumVRBodyJoint.RIGHT_ELBOW),
 
-    LEFT_SHOULDER("left_shoulder"),
-    RIGHT_SHOULDER("right_shoulder"),
+    LEFT_SHOULDER("left_shoulder", AtumVRBodyJoint.LEFT_SHOULDER),
+    RIGHT_SHOULDER("right_shoulder", AtumVRBodyJoint.RIGHT_SHOULDER),
 
     // Non-body trackers
-    HANDHELD_OBJECT("handheld_object"),
-    CAMERA("camera"),
-    KEYBOARD("keyboard");
+    HANDHELD_OBJECT("handheld_object", null),
+    CAMERA("camera", null),
+    KEYBOARD("keyboard", null);
 
 
     public static final String USER_PATH_PREFIX = "/user/vive_tracker_htcx/role/";
@@ -46,11 +47,16 @@ public enum ViveTrackerRole {
     private final String userPath;
     private final String deviceId;
 
-    ViveTrackerRole(String key) {
+    @Nullable
+    private final AtumVRBodyJoint bodyJoint;
+
+    ViveTrackerRole(String key, @Nullable AtumVRBodyJoint bodyJoint) {
         this.key = key;
         this.userPath = USER_PATH_PREFIX + key;
         this.deviceId = DEVICE_ID_PREFIX + key;
+        this.bodyJoint = bodyJoint;
     }
+
 
 
     /**

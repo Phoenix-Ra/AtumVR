@@ -11,8 +11,11 @@ import me.phoenixra.atumvr.api.input.profile.VRInteractionProfileType;
 import me.phoenixra.atumvr.core.input.action.XRAction;
 import me.phoenixra.atumvr.core.input.action.XRActionSet;
 import me.phoenixra.atumvr.core.input.action.types.HapticPulseAction;
+import me.phoenixra.atumvr.api.input.body.AtumVRBodyView;
+import me.phoenixra.atumvr.core.input.body.XRBody;
 import me.phoenixra.atumvr.core.input.device.XRDevice;
 import me.phoenixra.atumvr.core.input.profile.XRInteractionProfile;
+import me.phoenixra.atumvr.core.input.profile.tracker.XRTrackerProvider;
 import me.phoenixra.atumvr.core.input.profile.types.*;
 import me.phoenixra.atumvr.core.session.XRInstance;
 import org.jetbrains.annotations.NotNull;
@@ -44,12 +47,18 @@ public abstract class XRInputHandler implements AtumVRInputHandler {
     private final Map<String, XRActionSet> actionSets = new LinkedHashMap<>();
     private final Map<String, XRDevice> devices = new LinkedHashMap<>();
 
-    // Last interaction profile logged per user path, "" means none. Suppresses repeat events
+    private final List<XRTrackerProvider> trackerProviders = new ArrayList<>();
+    private final List<XRTrackerProvider> trackerProvidersView =
+            Collections.unmodifiableList(trackerProviders);
+
+    private final XRBody vrBody;
+
     private final Map<String, String> lastLoggedInteractionProfile = new HashMap<>();
 
 
     public XRInputHandler(@NotNull XRProvider vrProvider){
         this.vrProvider = vrProvider;
+        this.vrBody = new XRBody();
     }
 
     // -------- SETTING UP --------
@@ -71,6 +80,11 @@ public abstract class XRInputHandler implements AtumVRInputHandler {
     protected abstract @NotNull List<? extends XRDevice> generateDevices(@NotNull MemoryStack stack);
 
 
+    protected @NotNull List<? extends AtumVRBodyView> generateBodyViews(@NotNull MemoryStack stack){
+        return List.of();
+    }
+
+
     // -------- LIFECYCLE --------
 
     @Override
@@ -84,7 +98,26 @@ public abstract class XRInputHandler implements AtumVRInputHandler {
 
             //LOAD ACTION SETS
             actionSets.clear();
-            var loadedActionSets = generateActionSets(stack);
+            List<XRActionSet> loadedActionSets = new ArrayList<>(generateActionSets(stack));
+
+            //LOAD BODY VIEWS
+            trackerProviders.clear();
+            vrBody.clearSources();
+            for(AtumVRBodyView bodyView : generateBodyViews(stack)){
+                if(bodyView instanceof XRTrackerProvider provider){
+                    if(!provider.isSupported()){
+                        vrProvider.getLogger().logInfo(
+                                "Tracker provider " + provider.getClass().getSimpleName()
+                                        + " is unsupported by the user's hardware - skipping"
+                        );
+                        continue;
+                    }
+                    trackerProviders.add(provider);
+                    loadedActionSets.addAll(provider.getActionSets());
+                }
+                vrBody.addSource(bodyView);
+            }
+
             loadedActionSets.forEach(XRActionSet::init);
 
             long[] actionSetsArray = new long[loadedActionSets.size()];
@@ -110,10 +143,17 @@ public abstract class XRInputHandler implements AtumVRInputHandler {
             );
 
 
+            trackerProviders.forEach(XRTrackerProvider::onAttached);
+
             //LOAD DEVICES
             devices.clear();
             for(XRDevice entry : generateDevices(stack)){
                 devices.put(entry.getId(), entry);
+            }
+            for(XRTrackerProvider provider : trackerProviders){
+                for(XRDevice entry : provider.getDevices()){
+                    devices.put(entry.getId(), entry);
+                }
             }
 
         }
@@ -151,9 +191,13 @@ public abstract class XRInputHandler implements AtumVRInputHandler {
         for (XRActionSet entry : actionSets.values()) {
             entry.update();
         }
+        for (XRTrackerProvider entry : trackerProviders) {
+            entry.update();
+        }
         for (XRDevice entry : devices.values()) {
             entry.update();
         }
+        vrBody.update();
 
     }
 
@@ -257,6 +301,36 @@ public abstract class XRInputHandler implements AtumVRInputHandler {
     @Override
     public Collection<? extends XRDevice> getDevices() {
         return devices.values();
+    }
+
+    @Override
+    public @NotNull XRBody getVRBody() {
+        return vrBody;
+    }
+
+    /**
+     * Get the tracker providers that survived {@link XRTrackerProvider#isSupported()}
+     *
+     * @return the immutable view of active providers
+     */
+    public @NotNull List<XRTrackerProvider> getTrackerProviders() {
+        return trackerProvidersView;
+    }
+
+    /**
+     * Get an active tracker provider by its type
+     *
+     * @param type the provider class
+     * @param <T>  the provider type
+     * @return the provider, or null if it is not active
+     */
+    public <T extends XRTrackerProvider> @Nullable T getTrackerProvider(@NotNull Class<T> type) {
+        for (XRTrackerProvider provider : trackerProviders) {
+            if (type.isInstance(provider)) {
+                return type.cast(provider);
+            }
+        }
+        return null;
     }
 
     @Override
@@ -454,8 +528,19 @@ public abstract class XRInputHandler implements AtumVRInputHandler {
 
     @Override
     public void destroy() {
-        // Cancel any vibration that is still running on the controllers
         stopActiveHaptics();
+
+        for (XRTrackerProvider provider : trackerProviders) {
+            try {
+                provider.destroy();
+            } catch (Throwable t) {
+                vrProvider.getLogger().logError(
+                        provider.getClass().getSimpleName() + ".destroy() failed: " + t.getMessage()
+                );
+            }
+        }
+        trackerProviders.clear();
+        vrBody.clearSources();
 
         actionSets.values().forEach(XRActionSet::destroy);
         actionSets.clear();

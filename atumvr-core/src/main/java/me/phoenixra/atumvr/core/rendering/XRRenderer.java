@@ -57,8 +57,11 @@ public abstract class XRRenderer implements AtumVRRenderer {
     /** FrameBuffers for right eye. */
     protected AtumVRTexture[] rightFramebuffers;
 
-    /** Projection layer views for frame submission. */
+    /** Projection layer views for frame submission. Allocated once, reused every frame. */
     protected XrCompositionLayerProjectionView.Buffer projectionLayerViews;
+
+    /** Number of projection layer views, one per eye. */
+    protected static final int PROJECTION_LAYER_VIEWS = 2;
 
     /** Whether the runtime wants this frame rendered (false when the headset is off/idle). */
     protected boolean frameShouldRender;
@@ -113,6 +116,10 @@ public abstract class XRRenderer implements AtumVRRenderer {
     @Override
     public void init() throws Throwable{
         steamVRLinuxWorkaround = XRUtils.detectSteamVRLinux(vrProvider);
+
+        if (projectionLayerViews == null) {
+            projectionLayerViews = XrCompositionLayerProjectionView.calloc(PROJECTION_LAYER_VIEWS);
+        }
 
         restoreGLContext();
         setupResolution();
@@ -208,7 +215,6 @@ public abstract class XRRenderer implements AtumVRRenderer {
         }
 
 
-        this.projectionLayerViews = XrCompositionLayerProjectionView.calloc(2);
         try (MemoryStack stack = MemoryStack.stackPush()) {
 
             IntBuffer intBuf2 = stack.callocInt(1);
@@ -312,10 +318,6 @@ public abstract class XRRenderer implements AtumVRRenderer {
                     XR10.xrEndFrame(vrProvider.getSession().getHandle(), frameEndInfo),
                     "xrEndFrame", ""
             );
-
-            if (frameShouldRender) {
-                this.projectionLayerViews.close();
-            }
         }
 
         if (steamVRLinuxWorkaround) {
@@ -544,6 +546,10 @@ public abstract class XRRenderer implements AtumVRRenderer {
 
     public void destroy() {
         getCurrentScene().destroy();
+        if (projectionLayerViews != null) {
+            projectionLayerViews.close();
+            projectionLayerViews = null;
+        }
         if(glContextCreated) {
             glfwFreeCallbacks(windowHandle);
             glfwDestroyWindow(windowHandle);

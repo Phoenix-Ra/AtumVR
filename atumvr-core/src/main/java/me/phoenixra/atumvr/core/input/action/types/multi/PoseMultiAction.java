@@ -12,6 +12,9 @@ import me.phoenixra.atumvr.core.input.action.XRActionSet;
 import me.phoenixra.atumvr.core.input.action.XRMultiAction;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Matrix4f;
+import org.joml.Quaternionf;
+import org.joml.Vector3f;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.openxr.*;
 import org.lwjgl.system.MemoryStack;
@@ -67,8 +70,8 @@ public class PoseMultiAction extends XRMultiAction<AtumVRPoseRecord> {
 
     @Override
     public void update() {
-        for (var entry : subActionsAsPose) {
-            try (MemoryStack stack = MemoryStack.stackPush()) {
+        try (MemoryStack stack = MemoryStack.stackPush()) {
+            for (var entry : subActionsAsPose) {
                 var state = XrActionStatePose.calloc(stack)
                         .type(actionType.getStateId());
                 getInfo.subactionPath(entry.getPathHandle());
@@ -84,17 +87,9 @@ public class PoseMultiAction extends XRMultiAction<AtumVRPoseRecord> {
                 var loc = XRUtils.xrLocationFromSpace(
                         vrProvider, xrSpace.get(entry), stack
                 );
-                AtumVRPoseRecord entryState = loc == null
-                        ? AtumVRPoseRecord.EMPTY
-                        :
-                        new AtumVRPoseRecord(
-                                XRUtils.normalizeXrPose(loc.pose()),
-                                XRUtils.normalizeXrQuaternion(loc.pose().orientation()),
-                                XRUtils.normalizeXrVector(loc.pose().position$())
-                        );
 
                 entry.update(
-                        entryState,
+                        entry.writePose(loc == null ? null : loc.pose()),
                         System.nanoTime(),
                         true,
                         state.isActive()
@@ -111,12 +106,30 @@ public class PoseMultiAction extends XRMultiAction<AtumVRPoseRecord> {
 
     public static class SubActionPose extends SubAction<AtumVRPoseRecord> implements VRActionDataPose {
 
+        private final Matrix4f matrix = new Matrix4f();
+        private final Quaternionf orientation = new Quaternionf();
+        private final Vector3f position = new Vector3f();
+        private final AtumVRPoseRecord pose = new AtumVRPoseRecord(matrix, orientation, position);
 
         public SubActionPose(@NotNull VRActionIdentifier id,
                              @NotNull String path,
                              @NotNull AtumVRPoseRecord initialState) {
             super(id, path, initialState);
 
+        }
+
+
+        protected AtumVRPoseRecord writePose(@Nullable XrPosef xrPose) {
+            if (xrPose == null) {
+                matrix.identity();
+                orientation.identity();
+                position.zero();
+                return pose;
+            }
+            XRUtils.normalizeXrPose(xrPose, matrix);
+            XRUtils.normalizeXrQuaternion(xrPose.orientation(), orientation);
+            XRUtils.normalizeXrVector(xrPose.position$(), position);
+            return pose;
         }
 
         @Override
