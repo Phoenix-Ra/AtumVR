@@ -29,10 +29,10 @@ public class XRBodyEmulator {
     private final Quaternionf anchorYaw = new Quaternionf();
     private float animSeconds;
 
-    private final Vector3f scratchOffset = new Vector3f();
-    private final Vector3f scratchWorld = new Vector3f();
-    private final Vector3f scratchForward = new Vector3f();
-    private final Matrix4f scratchMatrix = new Matrix4f();
+    private final Vector3f cachedOffset = new Vector3f();
+    private final Vector3f cachedPosition = new Vector3f();
+    private final Vector3f cachedForward = new Vector3f();
+    private final Matrix4f cachedMatrix = new Matrix4f();
 
     public XRBodyEmulator(@NotNull XRProvider vrProvider) {
         this.vrProvider = vrProvider;
@@ -42,15 +42,15 @@ public class XRBodyEmulator {
     public void computePose(@Nullable AtumVRBodyJoint joint, @NotNull AtumVRPoseMutable out) {
         refreshAnchor();
 
-        preset.offset(joint, animSeconds, scratchOffset);
-        anchorYaw.transform(scratchOffset, scratchWorld);
-        scratchWorld.add(anchorPos);
+        preset.offset(joint, animSeconds, cachedOffset);
+        anchorYaw.transform(cachedOffset, cachedPosition);
+        cachedPosition.add(anchorPos);
 
-        scratchMatrix.translationRotate(
-                scratchWorld.x(), scratchWorld.y(), scratchWorld.z(),
+        cachedMatrix.translationRotate(
+                cachedPosition.x(), cachedPosition.y(), cachedPosition.z(),
                 anchorYaw
         );
-        out.update(scratchMatrix, anchorYaw, scratchWorld);
+        out.update(cachedMatrix, anchorYaw, cachedPosition);
     }
 
     private void refreshAnchor() {
@@ -66,8 +66,8 @@ public class XRBodyEmulator {
             AtumVRPose hmdPose = hmd.getPose();
             anchorPos.set(hmdPose.position());
 
-            hmdPose.orientation().transform(0f, 0f, -1f, scratchForward);
-            float yaw = (float) Math.atan2(-scratchForward.x(), -scratchForward.z());
+            hmdPose.orientation().transform(0f, 0f, -1f, cachedForward);
+            float yaw = (float) Math.atan2(-cachedForward.x(), -cachedForward.z());
             anchorYaw.identity().rotateY(yaw);
         } else {
             anchorPos.set(0f, 0f, 0f);

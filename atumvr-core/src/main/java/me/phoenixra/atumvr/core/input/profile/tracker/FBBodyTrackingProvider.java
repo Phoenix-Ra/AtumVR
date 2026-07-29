@@ -107,9 +107,9 @@ public class FBBodyTrackingProvider implements XRTrackerProvider {
     private XrBodyJointLocationsFB locations;
     private XrBodyJointLocationFB.Buffer jointLocations;
 
-    private final Matrix4f scratchMatrix = new Matrix4f();
-    private final Quaternionf scratchOrientation = new Quaternionf();
-    private final Vector3f scratchPosition = new Vector3f();
+    private final Matrix4f cachedMatrix = new Matrix4f();
+    private final Quaternionf cachedOrientation = new Quaternionf();
+    private final Vector3f cachedPosition = new Vector3f();
 
 
     public FBBodyTrackingProvider(@NotNull XRProvider vrProvider) {
@@ -263,9 +263,9 @@ public class FBBodyTrackingProvider implements XRTrackerProvider {
             }
             XrPosef xrPose = location.pose();
             poses.get(joint).update(
-                    XRUtils.normalizeXrPose(xrPose, scratchMatrix),
-                    XRUtils.normalizeXrQuaternion(xrPose.orientation(), scratchOrientation),
-                    XRUtils.normalizeXrVector(xrPose.position$(), scratchPosition)
+                    XRUtils.normalizeXrPose(xrPose, cachedMatrix),
+                    XRUtils.normalizeXrQuaternion(xrPose.orientation(), cachedOrientation),
+                    XRUtils.normalizeXrVector(xrPose.position$(), cachedPosition)
             );
             tracked.add(joint);
         }

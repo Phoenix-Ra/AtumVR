@@ -43,10 +43,11 @@ public class XRDeviceHMD extends XRDevice implements AtumVRDeviceHMD, AtumVRBody
     private final AtumVRPoseMutable neckPose = new AtumVRPoseMutable();
     private final Vector3f neckPosition = new Vector3f();
     private final Quaternionf neckOrientation = new Quaternionf();
-    private final Vector3f scratchForward = new Vector3f();
-    private final Matrix4f scratchMatrix = new Matrix4f();
-    private final Quaternionf scratchOrientation = new Quaternionf();
-    private final Vector3f scratchPosition = new Vector3f();
+
+    private final Vector3f cachedForward = new Vector3f();
+    private final Matrix4f cachedMatrix = new Matrix4f();
+    private final Quaternionf cachedOrientation = new Quaternionf();
+    private final Vector3f cachedPosition = new Vector3f();
 
     private final XrSpace space;
 
@@ -80,9 +81,9 @@ public class XRDeviceHMD extends XRDevice implements AtumVRDeviceHMD, AtumVRBody
 
     private void writePose(@NotNull XrPosef xrPose, @NotNull AtumVRPoseMutable out) {
         out.update(
-                XRUtils.normalizeXrPose(xrPose, scratchMatrix),
-                XRUtils.normalizeXrQuaternion(xrPose.orientation(), scratchOrientation),
-                XRUtils.normalizeXrVector(xrPose.position$(), scratchPosition)
+                XRUtils.normalizeXrPose(xrPose, cachedMatrix),
+                XRUtils.normalizeXrQuaternion(xrPose.orientation(), cachedOrientation),
+                XRUtils.normalizeXrVector(xrPose.position$(), cachedPosition)
         );
     }
 
@@ -141,15 +142,15 @@ public class XRDeviceHMD extends XRDevice implements AtumVRDeviceHMD, AtumVRBody
         pose.orientation().transform(neckOffset, neckPosition)
                 .add(pose.position());
 
-        pose.orientation().transform(0f, 0f, -1f, scratchForward);
-        float yaw = (float) Math.atan2(-scratchForward.x(), -scratchForward.z());
+        pose.orientation().transform(0f, 0f, -1f, cachedForward);
+        float yaw = (float) Math.atan2(-cachedForward.x(), -cachedForward.z());
         neckOrientation.identity().rotateY(yaw);
 
-        scratchMatrix.translationRotate(
+        cachedMatrix.translationRotate(
                 neckPosition.x(), neckPosition.y(), neckPosition.z(),
                 neckOrientation
         );
-        neckPose.update(scratchMatrix, neckOrientation, neckPosition);
+        neckPose.update(cachedMatrix, neckOrientation, neckPosition);
     }
 
     /**

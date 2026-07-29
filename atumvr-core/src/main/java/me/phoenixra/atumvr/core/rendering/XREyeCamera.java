@@ -26,8 +26,8 @@ public class XREyeCamera {
     @Getter
     protected final Matrix4f projectionMatrix = new Matrix4f();
 
-    private final Quaternionf scratchOrientation = new Quaternionf();
-    private final Vector3f scratchPosition = new Vector3f();
+    private final Quaternionf cachedOrientation = new Quaternionf();
+    private final Vector3f cachedPosition = new Vector3f();
 
 
     public XREyeCamera(XRProvider vrProvider) {
@@ -38,22 +38,22 @@ public class XREyeCamera {
         XrPosef p = vrProvider.getInputHandler()
                 .getDevice(XRDeviceHMD.ID, XRDeviceHMD.class)
                 .getXrView(eyeType).pose();
-        scratchOrientation.set(
+        cachedOrientation.set(
                 p.orientation().x(),
                 p.orientation().y(),
                 p.orientation().z(),
                 p.orientation().w()
         ).conjugate();
 
-        scratchPosition.set(
+        cachedPosition.set(
                 p.position$().x(),
                 p.position$().y(),
                 p.position$().z()
         );
 
         viewMatrix.identity()
-                .rotate(scratchOrientation)
-                .translate(-scratchPosition.x, -scratchPosition.y, -scratchPosition.z);
+                .rotate(cachedOrientation)
+                .translate(-cachedPosition.x, -cachedPosition.y, -cachedPosition.z);
     }
 
     public void updateProjectionMatrix(EyeType eyeType,

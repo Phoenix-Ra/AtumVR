@@ -7,9 +7,6 @@ import java.util.Objects;
 
 /**
  * Mutable {@link AtumColor}. All channel operations modify this instance and return {@code this}.
- * <p>
- * Intended as a reusable scratch color on hot paths (e.g. per-frame tinting) to avoid
- * allocations. Not thread-safe. Integer getters are computed on demand from the floats.
  */
 @Getter
 public class AtumColorMutable implements AtumColor {
