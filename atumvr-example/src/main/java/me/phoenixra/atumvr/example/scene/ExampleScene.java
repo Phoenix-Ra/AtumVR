@@ -1,7 +1,9 @@
 package me.phoenixra.atumvr.example.scene;
 
+import me.phoenixra.atumvr.api.enums.ControllerType;
 import me.phoenixra.atumvr.api.enums.EyeType;
 import me.phoenixra.atumvr.api.input.body.AtumVRBodyJoint;
+import me.phoenixra.atumvr.api.input.body.hand.AtumVRHandJoint;
 import me.phoenixra.atumvr.core.rendering.XRRenderer;
 import me.phoenixra.atumvr.core.rendering.XRScene;
 import me.phoenixra.atumvr.example.ExampleVRProvider;
@@ -26,6 +28,9 @@ public class ExampleScene extends XRScene {
     private final List<ExampleMannequinPart> mannequinParts = new ArrayList<>();
     private final Vector3f mannequinOffset = new Vector3f(0f, 0f, 2.5f);
     private int lastTrackedJointCount = -1;
+
+    private final List<ExampleHandJointPart> handParts = new ArrayList<>();
+    private int lastTrackedHandJointCount = -1;
 
     private float timer;
     public ExampleScene(@NotNull XRRenderer vrRenderer) {
@@ -92,6 +97,7 @@ public class ExampleScene extends XRScene {
         }
 
         initMannequin();
+        initHands();
 
         System.out.println("Successfully attached vertices to frame buffer");
     }
@@ -112,6 +118,25 @@ public class ExampleScene extends XRScene {
         }
         getProvider().getLogger().logInfo(
                 "Mannequin initialized with " + mannequinParts.size() + " body part(s)"
+        );
+    }
+
+    private void initHands() {
+        StbTexture handTexture = new StbTexture("textures/test.png");
+        for (ControllerType side : ControllerType.values()) {
+            for (int i = 0; i < AtumVRHandJoint.COUNT; i++) {
+                ExampleHandJointPart part = new ExampleHandJointPart(
+                        getProvider(),
+                        side,
+                        AtumVRHandJoint.fromIndex(i),
+                        handTexture
+                );
+                part.init();
+                handParts.add(part);
+            }
+        }
+        getProvider().getLogger().logInfo(
+                "Hands initialized with " + handParts.size() + " joint part(s)"
         );
     }
 
@@ -144,8 +169,16 @@ public class ExampleScene extends XRScene {
             updateShaderVariables(eyeType, part.getModelMatrix());
             part.render();
         }
+        for(ExampleHandJointPart part : handParts){
+            if(!part.isJointTracked()){
+                continue;
+            }
+            updateShaderVariables(eyeType, part.getModelMatrix());
+            part.render();
+        }
         if(eyeType == EyeType.LEFT){
             logTrackedJointCountIfChanged();
+            logTrackedHandJointCountIfChanged();
         }
 
         GL30.glUseProgram(0);
@@ -158,6 +191,18 @@ public class ExampleScene extends XRScene {
             lastTrackedJointCount = trackedNow;
             getProvider().getLogger().logInfo(
                     "Tracked body joints: " + trackedNow + " / " + mannequinParts.size()
+            );
+        }
+    }
+
+    private void logTrackedHandJointCountIfChanged(){
+        var hands = getProvider().getInputHandler().getVRHands();
+        int trackedNow = hands.getLeftHand().getTrackedJoints().size()
+                + hands.getRightHand().getTrackedJoints().size();
+        if(trackedNow != lastTrackedHandJointCount){
+            lastTrackedHandJointCount = trackedNow;
+            getProvider().getLogger().logInfo(
+                    "Tracked hand joints: " + trackedNow + " / " + handParts.size()
             );
         }
     }
@@ -228,6 +273,10 @@ public class ExampleScene extends XRScene {
             part.destroy();
         }
         mannequinParts.clear();
+        for(ExampleHandJointPart part : handParts){
+            part.destroy();
+        }
+        handParts.clear();
     }
 
     @Override

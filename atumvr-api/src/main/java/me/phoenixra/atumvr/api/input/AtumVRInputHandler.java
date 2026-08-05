@@ -3,6 +3,7 @@ package me.phoenixra.atumvr.api.input;
 import me.phoenixra.atumvr.api.AtumVRProvider;
 import me.phoenixra.atumvr.api.input.action.AtumVRActionSet;
 import me.phoenixra.atumvr.api.input.body.AtumVRBodyView;
+import me.phoenixra.atumvr.api.input.body.hand.AtumVRHandsView;
 import me.phoenixra.atumvr.api.input.device.AtumVRDevice;
 import me.phoenixra.atumvr.api.input.profile.VRInteractionProfileType;
 import org.jetbrains.annotations.NotNull;
@@ -78,6 +79,13 @@ public interface AtumVRInputHandler {
      * @return the VR Body view
      */
     @NotNull AtumVRBodyView getVRBody();
+
+    /**
+     * Get VR Hands view (hand tracking)
+     *
+     * @return the VR Hands view
+     */
+    @NotNull AtumVRHandsView getVRHands();
 
 
     /**

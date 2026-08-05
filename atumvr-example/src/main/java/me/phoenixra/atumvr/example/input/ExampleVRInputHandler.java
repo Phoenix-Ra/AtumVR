@@ -6,6 +6,7 @@ import me.phoenixra.atumvr.api.input.device.AtumVRDeviceController;
 import me.phoenixra.atumvr.core.input.body.XRCommonBodyView;
 import me.phoenixra.atumvr.core.input.device.XRDeviceController;
 import me.phoenixra.atumvr.core.input.profile.XRProfileManager;
+import me.phoenixra.atumvr.core.input.profile.tracker.hand.EXTHandTrackingProvider;
 import me.phoenixra.atumvr.core.input.profile.tracker.ViveTrackerProvider;
 import me.phoenixra.atumvr.example.ExampleHandEnum;
 import me.phoenixra.atumvr.api.enums.ControllerType;
@@ -25,6 +26,8 @@ public class ExampleVRInputHandler extends XRInputHandler {
     private XRProfileManager profileSetHolder;
     @Getter
     private ViveTrackerProvider trackerProvider;
+    @Getter
+    private EXTHandTrackingProvider handTrackingProvider;
 
     private final ExampleHandEnum pulsatingHand = ExampleHandEnum.MAIN;
     @Getter
@@ -46,9 +49,12 @@ public class ExampleVRInputHandler extends XRInputHandler {
         // no real trackers needed to see the mannequin move
         trackerProvider.setEmulated(true);
 
+        handTrackingProvider = new EXTHandTrackingProvider(getVrProvider());
+
         return List.of(
                 new XRCommonBodyView(getVrProvider()),
-                trackerProvider
+                trackerProvider,
+                handTrackingProvider
         );
     }
 

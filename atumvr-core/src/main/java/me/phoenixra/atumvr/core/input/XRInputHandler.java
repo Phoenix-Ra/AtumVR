@@ -12,7 +12,9 @@ import me.phoenixra.atumvr.core.input.action.XRAction;
 import me.phoenixra.atumvr.core.input.action.XRActionSet;
 import me.phoenixra.atumvr.core.input.action.types.HapticPulseAction;
 import me.phoenixra.atumvr.api.input.body.AtumVRBodyView;
+import me.phoenixra.atumvr.api.input.body.hand.AtumVRHandsView;
 import me.phoenixra.atumvr.core.input.body.XRBody;
+import me.phoenixra.atumvr.core.input.body.hand.XRHands;
 import me.phoenixra.atumvr.core.input.device.XRDevice;
 import me.phoenixra.atumvr.core.input.profile.XRInteractionProfile;
 import me.phoenixra.atumvr.core.input.profile.tracker.XRTrackerProvider;
@@ -52,6 +54,7 @@ public abstract class XRInputHandler implements AtumVRInputHandler {
             Collections.unmodifiableList(trackerProviders);
 
     private final XRBody vrBody;
+    private final XRHands vrHands;
 
     private final Map<String, String> lastLoggedInteractionProfile = new HashMap<>();
 
@@ -59,6 +62,7 @@ public abstract class XRInputHandler implements AtumVRInputHandler {
     public XRInputHandler(@NotNull XRProvider vrProvider){
         this.vrProvider = vrProvider;
         this.vrBody = new XRBody();
+        this.vrHands = new XRHands();
     }
 
     // -------- SETTING UP --------
@@ -103,6 +107,7 @@ public abstract class XRInputHandler implements AtumVRInputHandler {
             //LOAD BODY VIEWS
             trackerProviders.clear();
             vrBody.clearSources();
+            vrHands.clearSources();
             for(AtumVRBodyView bodyView : generateBodyViews(stack)){
                 if(bodyView instanceof XRTrackerProvider provider){
                     if(!provider.isSupported()){
@@ -116,6 +121,9 @@ public abstract class XRInputHandler implements AtumVRInputHandler {
                     loadedActionSets.addAll(provider.getActionSets());
                 }
                 vrBody.addSource(bodyView);
+                if(bodyView instanceof AtumVRHandsView handsView){
+                    vrHands.addSource(handsView);
+                }
             }
 
             loadedActionSets.forEach(XRActionSet::init);
@@ -198,6 +206,7 @@ public abstract class XRInputHandler implements AtumVRInputHandler {
             entry.update();
         }
         vrBody.update();
+        vrHands.update();
 
     }
 
@@ -306,6 +315,11 @@ public abstract class XRInputHandler implements AtumVRInputHandler {
     @Override
     public @NotNull XRBody getVRBody() {
         return vrBody;
+    }
+
+    @Override
+    public @NotNull XRHands getVRHands() {
+        return vrHands;
     }
 
     /**
@@ -541,6 +555,7 @@ public abstract class XRInputHandler implements AtumVRInputHandler {
         }
         trackerProviders.clear();
         vrBody.clearSources();
+        vrHands.clearSources();
 
         actionSets.values().forEach(XRActionSet::destroy);
         actionSets.clear();

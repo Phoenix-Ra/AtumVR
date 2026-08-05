@@ -13,6 +13,7 @@ import me.phoenixra.atumvr.core.enums.XRSessionState;
 import me.phoenixra.atumvr.core.rendering.XRRenderer;
 import me.phoenixra.atumvr.core.session.XRSession;
 import me.phoenixra.atumvr.core.input.XRInputHandler;
+import me.phoenixra.atumvr.core.input.profile.tracker.hand.EXTHandTrackingProvider;
 import me.phoenixra.atumvr.core.input.profile.tracker.FBBodyTrackingProvider;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.opengl.GL30;
@@ -134,6 +135,7 @@ public abstract class XRProvider implements AtumVRProvider {
      *     <li>{@link BDControllerInteraction#XR_BD_CONTROLLER_INTERACTION_EXTENSION_NAME}</li>
      *     <li>{@link HTCXViveTrackerInteraction#XR_HTCX_VIVE_TRACKER_INTERACTION_EXTENSION_NAME}</li>
      *     <li>{@link FBBodyTracking#XR_FB_BODY_TRACKING_EXTENSION_NAME} with the META full body and fidelity additions</li>
+     *     <li>{@link EXTHandTracking#XR_EXT_HAND_TRACKING_EXTENSION_NAME} with the data source addition</li>
      * </ul>
      *
      * <p>
@@ -154,7 +156,10 @@ public abstract class XRProvider implements AtumVRProvider {
 
                 FBBodyTrackingProvider.EXTENSION_NAME,
                 FBBodyTrackingProvider.EXTENSION_FULL_BODY_META,
-                FBBodyTrackingProvider.EXTENSION_FIDELITY_META
+                FBBodyTrackingProvider.EXTENSION_FIDELITY_META,
+
+                EXTHandTrackingProvider.EXTENSION_NAME,
+                EXTHandTrackingProvider.EXTENSION_DATA_SOURCE
         );
     }
 
