@@ -54,9 +54,7 @@ public class EXTHandTrackingProvider implements XRTrackerProvider, AtumVRHandsVi
     @Getter
     private final boolean hardwareSupported;
 
-    /**
-     * Whether the runtime reports what the skeleton is derived from
-     */
+
     @Getter
     private final boolean dataSourceSupported;
 
@@ -120,8 +118,7 @@ public class EXTHandTrackingProvider implements XRTrackerProvider, AtumVRHandsVi
                 .hand(xrHandSide)
                 .handJointSet(EXTHandTracking.XR_HAND_JOINT_SET_DEFAULT_EXT);
         if (dataSourceSupported) {
-            // accept both real hands and controller-derived skeletons,
-            // apps filter via AtumVRHandView#getDataSource
+            // accept both hand and controller source
             createInfo.next(
                     XrHandTrackingDataSourceInfoEXT.calloc(stack)
                             .type$Default()

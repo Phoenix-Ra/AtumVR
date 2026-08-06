@@ -49,10 +49,7 @@ public interface AtumVRHandView {
         return getJointPose(joint) != null;
     }
 
-    /**
-     * Joint collision sphere radius in meters,
-     * 0 if the provider doesn't report radii
-     */
+
     default float getJointRadius(@NotNull AtumVRHandJoint joint) {
         return 0f;
     }
@@ -68,21 +65,14 @@ public interface AtumVRHandView {
         }
     }
 
-    /**
-     * Get currently tracked joints
-     *
-     * @return the set of tracked joints
-     */
+
     default @NotNull Set<AtumVRHandJoint> getTrackedJoints() {
         EnumSet<AtumVRHandJoint> out = EnumSet.noneOf(AtumVRHandJoint.class);
         collectJoints((joint, pose) -> out.add(joint));
         return out;
     }
 
-    /**
-     * What the runtime derives the skeleton from,
-     * UNKNOWN when the runtime doesn't report it
-     */
+
     default @NotNull DataSource getDataSource() {
         return DataSource.UNKNOWN;
     }

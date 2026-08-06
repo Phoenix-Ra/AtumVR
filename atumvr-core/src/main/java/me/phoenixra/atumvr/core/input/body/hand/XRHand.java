@@ -24,7 +24,7 @@ public class XRHand implements AtumVRHandView {
     private final ControllerType side;
 
     private final AtumVRPoseMutable[] poses = new AtumVRPoseMutable[AtumVRHandJoint.COUNT];
-    private final float[] radii = new float[AtumVRHandJoint.COUNT];
+    private final float[] radius = new float[AtumVRHandJoint.COUNT];
 
     private final EnumSet<AtumVRHandJoint> trackedJoints = EnumSet.noneOf(AtumVRHandJoint.class);
     private final Set<AtumVRHandJoint> trackedJointsView = Collections.unmodifiableSet(trackedJoints);
@@ -58,7 +58,7 @@ public class XRHand implements AtumVRHandView {
                             float radius) {
         int index = joint.ordinal();
         poses[index].update(matrix, orientation, position);
-        radii[index] = radius;
+        this.radius[index] = radius;
         trackedJoints.add(joint);
     }
 
@@ -82,7 +82,7 @@ public class XRHand implements AtumVRHandView {
 
     @Override
     public float getJointRadius(@NotNull AtumVRHandJoint joint) {
-        return trackedJoints.contains(joint) ? radii[joint.ordinal()] : 0f;
+        return trackedJoints.contains(joint) ? radius[joint.ordinal()] : 0f;
     }
 
     @Override
