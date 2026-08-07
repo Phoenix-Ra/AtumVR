@@ -5,6 +5,7 @@ plugins {
 
 dependencies {
     implementation(project(":atumvr-core"))
+    implementation("net.java.dev.jna:jna:5.14.0")
 
     api("org.lwjgl:lwjgl-stb")
     api("org.lwjgl:lwjgl-stb::natives-windows")

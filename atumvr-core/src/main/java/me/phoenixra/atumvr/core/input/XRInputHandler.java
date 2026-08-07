@@ -13,11 +13,13 @@ import me.phoenixra.atumvr.core.input.action.XRActionSet;
 import me.phoenixra.atumvr.core.input.action.types.HapticPulseAction;
 import me.phoenixra.atumvr.api.input.body.AtumVRBodyView;
 import me.phoenixra.atumvr.api.input.body.hand.AtumVRHandsView;
+import me.phoenixra.atumvr.api.input.treadmill.AtumVRTreadmillView;
 import me.phoenixra.atumvr.core.input.body.XRBody;
-import me.phoenixra.atumvr.core.input.body.hand.XRHands;
 import me.phoenixra.atumvr.core.input.device.XRDevice;
 import me.phoenixra.atumvr.core.input.profile.XRInteractionProfile;
 import me.phoenixra.atumvr.core.input.profile.tracker.XRTrackerProvider;
+import me.phoenixra.atumvr.core.input.profile.tracker.hand.XRHandsProvider;
+import me.phoenixra.atumvr.core.input.treadmill.XRTreadmillProvider;
 import me.phoenixra.atumvr.core.input.profile.types.*;
 import me.phoenixra.atumvr.core.session.XRInstance;
 import org.jetbrains.annotations.NotNull;
@@ -53,8 +55,10 @@ public abstract class XRInputHandler implements AtumVRInputHandler {
     private final List<XRTrackerProvider> trackerProvidersView =
             Collections.unmodifiableList(trackerProviders);
 
+    private @Nullable XRHandsProvider handsProvider;
+    private @Nullable XRTreadmillProvider treadmillProvider;
+
     private final XRBody vrBody;
-    private final XRHands vrHands;
 
     private final Map<String, String> lastLoggedInteractionProfile = new HashMap<>();
 
@@ -62,7 +66,6 @@ public abstract class XRInputHandler implements AtumVRInputHandler {
     public XRInputHandler(@NotNull XRProvider vrProvider){
         this.vrProvider = vrProvider;
         this.vrBody = new XRBody();
-        this.vrHands = new XRHands();
     }
 
     // -------- SETTING UP --------
@@ -88,6 +91,28 @@ public abstract class XRInputHandler implements AtumVRInputHandler {
         return List.of();
     }
 
+    /**
+     * Generate hands provider candidates in priority order,
+     * the first supported one becomes the hands source
+     *
+     * @param stack the memory stack to use
+     * @return the list containing hands provider candidates
+     */
+    protected @NotNull List<? extends XRHandsProvider> generateHandsProviders(@NotNull MemoryStack stack){
+        return List.of();
+    }
+
+    /**
+     * Generate treadmill provider candidates in priority order,
+     * the first supported one becomes the treadmill
+     *
+     * @param stack the memory stack to use
+     * @return the list containing treadmill provider candidates
+     */
+    protected @NotNull List<? extends XRTreadmillProvider> generateTreadmillProviders(@NotNull MemoryStack stack){
+        return List.of();
+    }
+
 
     // -------- LIFECYCLE --------
 
@@ -106,24 +131,50 @@ public abstract class XRInputHandler implements AtumVRInputHandler {
 
             //LOAD BODY VIEWS
             trackerProviders.clear();
+            handsProvider = null;
+            treadmillProvider = null;
             vrBody.clearSources();
-            vrHands.clearSources();
+
             for(AtumVRBodyView bodyView : generateBodyViews(stack)){
                 if(bodyView instanceof XRTrackerProvider provider){
                     if(!provider.isSupported()){
-                        vrProvider.getLogger().logInfo(
-                                "Tracker provider " + provider.getClass().getSimpleName()
-                                        + " is unsupported by the user's hardware - skipping"
-                        );
+                        logUnsupportedProvider(provider);
                         continue;
                     }
                     trackerProviders.add(provider);
                     loadedActionSets.addAll(provider.getActionSets());
                 }
                 vrBody.addSource(bodyView);
-                if(bodyView instanceof AtumVRHandsView handsView){
-                    vrHands.addSource(handsView);
+            }
+
+            //LOAD HANDS PROVIDER (single slot, first supported candidate wins)
+            for(XRHandsProvider provider : generateHandsProviders(stack)){
+                if(!provider.isSupported()){
+                    logUnsupportedProvider(provider);
+                    continue;
                 }
+                if(handsProvider != null){
+                    logProviderSlotTaken(provider, handsProvider);
+                    continue;
+                }
+                handsProvider = provider;
+                // e.g. hand skeletons also deliver wrist/palm body joints
+                if(provider instanceof AtumVRBodyView bodyView){
+                    vrBody.addSource(bodyView);
+                }
+            }
+
+            //LOAD TREADMILL PROVIDER (single slot, first supported candidate wins)
+            for(XRTreadmillProvider provider : generateTreadmillProviders(stack)){
+                if(!provider.isSupported()){
+                    logUnsupportedProvider(provider);
+                    continue;
+                }
+                if(treadmillProvider != null){
+                    logProviderSlotTaken(provider, treadmillProvider);
+                    continue;
+                }
+                treadmillProvider = provider;
             }
 
             loadedActionSets.forEach(XRActionSet::init);
@@ -152,6 +203,12 @@ public abstract class XRInputHandler implements AtumVRInputHandler {
 
 
             trackerProviders.forEach(XRTrackerProvider::onAttached);
+            if(handsProvider != null){
+                handsProvider.onAttached();
+            }
+            if(treadmillProvider != null){
+                treadmillProvider.onAttached();
+            }
 
             //LOAD DEVICES
             devices.clear();
@@ -165,6 +222,21 @@ public abstract class XRInputHandler implements AtumVRInputHandler {
             }
 
         }
+    }
+
+    private void logUnsupportedProvider(@NotNull Object provider) {
+        vrProvider.getLogger().logInfo(
+                provider.getClass().getSimpleName()
+                        + " is unsupported by the user's hardware - skipping"
+        );
+    }
+
+    private void logProviderSlotTaken(@NotNull Object provider, @NotNull Object active) {
+        vrProvider.getLogger().logInfo(
+                provider.getClass().getSimpleName()
+                        + " skipped - slot already taken by "
+                        + active.getClass().getSimpleName()
+        );
     }
 
 
@@ -202,11 +274,16 @@ public abstract class XRInputHandler implements AtumVRInputHandler {
         for (XRTrackerProvider entry : trackerProviders) {
             entry.update();
         }
+        if (handsProvider != null) {
+            handsProvider.update();
+        }
+        if (treadmillProvider != null) {
+            treadmillProvider.update();
+        }
         for (XRDevice entry : devices.values()) {
             entry.update();
         }
         vrBody.update();
-        vrHands.update();
 
     }
 
@@ -318,8 +395,13 @@ public abstract class XRInputHandler implements AtumVRInputHandler {
     }
 
     @Override
-    public @NotNull XRHands getVRHands() {
-        return vrHands;
+    public @NotNull AtumVRHandsView getVRHands() {
+        return handsProvider != null ? handsProvider : AtumVRHandsView.EMPTY;
+    }
+
+    @Override
+    public @NotNull AtumVRTreadmillView getVRTreadmill() {
+        return treadmillProvider != null ? treadmillProvider : AtumVRTreadmillView.EMPTY;
     }
 
     /**
@@ -345,6 +427,24 @@ public abstract class XRInputHandler implements AtumVRInputHandler {
             }
         }
         return null;
+    }
+
+    /**
+     * Get the active hands provider
+     *
+     * @return the provider, or null if none is supported
+     */
+    public @Nullable XRHandsProvider getHandsProvider() {
+        return handsProvider;
+    }
+
+    /**
+     * Get the active treadmill provider
+     *
+     * @return the provider, or null if none is supported
+     */
+    public @Nullable XRTreadmillProvider getTreadmillProvider() {
+        return treadmillProvider;
     }
 
     @Override
@@ -545,23 +645,34 @@ public abstract class XRInputHandler implements AtumVRInputHandler {
         stopActiveHaptics();
 
         for (XRTrackerProvider provider : trackerProviders) {
-            try {
-                provider.destroy();
-            } catch (Throwable t) {
-                vrProvider.getLogger().logError(
-                        provider.getClass().getSimpleName() + ".destroy() failed: " + t.getMessage()
-                );
-            }
+            destroySafely(provider, provider::destroy);
+        }
+        if (handsProvider != null) {
+            destroySafely(handsProvider, handsProvider::destroy);
+            handsProvider = null;
+        }
+        if (treadmillProvider != null) {
+            destroySafely(treadmillProvider, treadmillProvider::destroy);
+            treadmillProvider = null;
         }
         trackerProviders.clear();
         vrBody.clearSources();
-        vrHands.clearSources();
 
         actionSets.values().forEach(XRActionSet::destroy);
         actionSets.clear();
         devices.clear();
         paths.clear();
         lastLoggedInteractionProfile.clear();
+    }
+
+    private void destroySafely(@NotNull Object provider, @NotNull Runnable destroy) {
+        try {
+            destroy.run();
+        } catch (Throwable t) {
+            vrProvider.getLogger().logError(
+                    provider.getClass().getSimpleName() + ".destroy() failed: " + t.getMessage()
+            );
+        }
     }
 
     public void stopActiveHaptics() {

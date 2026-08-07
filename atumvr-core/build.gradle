@@ -5,6 +5,10 @@ plugins {
 
 dependencies {
     api(project(":atumvr-api"))
+
+    //vendor treadmill providers; the app supplies JNA at runtime
+    //(minecraft already bundles it, standalone apps add their own)
+    compileOnly("net.java.dev.jna:jna:5.14.0")
 }
 task javadocJar(type: Jar, dependsOn: javadoc) {
     archiveClassifier.set('javadoc')

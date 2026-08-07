@@ -8,6 +8,9 @@ import org.jetbrains.annotations.NotNull;
  */
 public interface AtumVRHandsView {
 
+    AtumVRHandsView EMPTY = side -> AtumVRHandView.EMPTY;
+
+
     @NotNull AtumVRHandView getHand(@NotNull ControllerType side);
 
 

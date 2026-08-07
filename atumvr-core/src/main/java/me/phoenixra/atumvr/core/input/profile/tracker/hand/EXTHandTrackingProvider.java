@@ -3,13 +3,12 @@ package me.phoenixra.atumvr.core.input.profile.tracker.hand;
 import lombok.Getter;
 import me.phoenixra.atumvr.api.enums.ControllerType;
 import me.phoenixra.atumvr.api.input.body.AtumVRBodyJoint;
+import me.phoenixra.atumvr.api.input.body.AtumVRBodyView;
 import me.phoenixra.atumvr.api.input.body.hand.AtumVRHandJoint;
 import me.phoenixra.atumvr.api.input.body.hand.AtumVRHandView;
-import me.phoenixra.atumvr.api.input.body.hand.AtumVRHandsView;
 import me.phoenixra.atumvr.api.misc.pose.AtumVRPose;
 import me.phoenixra.atumvr.core.XRProvider;
 import me.phoenixra.atumvr.core.input.body.hand.XRHand;
-import me.phoenixra.atumvr.core.input.profile.tracker.XRTrackerProvider;
 import me.phoenixra.atumvr.core.utils.XRUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -35,9 +34,9 @@ import java.util.function.BiConsumer;
 
 /**
  * Hand skeleton provider based on XR_EXT_hand_tracking.
+ * Also delivers wrist/palm body joints as an {@link AtumVRBodyView}
  */
-//@TODO rework?
-public class EXTHandTrackingProvider implements XRTrackerProvider, AtumVRHandsView {
+public class EXTHandTrackingProvider implements XRHandsProvider, AtumVRBodyView {
 
     public static final String EXTENSION_NAME =
             EXTHandTracking.XR_EXT_HAND_TRACKING_EXTENSION_NAME;

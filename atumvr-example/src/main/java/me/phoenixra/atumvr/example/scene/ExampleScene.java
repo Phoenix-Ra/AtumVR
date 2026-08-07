@@ -29,6 +29,9 @@ public class ExampleScene extends XRScene {
     private final Vector3f mannequinOffset = new Vector3f(0f, 0f, 2.5f);
     private int lastTrackedJointCount = -1;
 
+    private long lastTreadmillTime = Long.MIN_VALUE;
+    private final Vector3f cachedTreadmillStep = new Vector3f();
+
     private final List<ExampleHandJointPart> handParts = new ArrayList<>();
     private int lastTrackedHandJointCount = -1;
 
@@ -177,11 +180,28 @@ public class ExampleScene extends XRScene {
             part.render();
         }
         if(eyeType == EyeType.LEFT){
+            applyTreadmillWalk();
             logTrackedJointCountIfChanged();
             logTrackedHandJointCountIfChanged();
         }
 
         GL30.glUseProgram(0);
+    }
+
+    private void applyTreadmillWalk(){
+        long now = getProvider().getXrDisplayTime();
+        float dt = lastTreadmillTime == Long.MIN_VALUE
+                ? 0f
+                : (now - lastTreadmillTime) * 1.0e-9f;
+        lastTreadmillTime = now;
+        if(dt <= 0f){
+            return;
+        }
+
+        var treadmill = getProvider().getInputHandler().getVRTreadmill();
+        if(treadmill.getVelocity(cachedTreadmillStep) != null){
+            mannequinOffset.add(cachedTreadmillStep.mul(dt));
+        }
     }
 
     private void logTrackedJointCountIfChanged(){

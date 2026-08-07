@@ -4,6 +4,7 @@ import me.phoenixra.atumvr.api.AtumVRProvider;
 import me.phoenixra.atumvr.api.input.action.AtumVRActionSet;
 import me.phoenixra.atumvr.api.input.body.AtumVRBodyView;
 import me.phoenixra.atumvr.api.input.body.hand.AtumVRHandsView;
+import me.phoenixra.atumvr.api.input.treadmill.AtumVRTreadmillView;
 import me.phoenixra.atumvr.api.input.device.AtumVRDevice;
 import me.phoenixra.atumvr.api.input.profile.VRInteractionProfileType;
 import org.jetbrains.annotations.NotNull;
@@ -86,6 +87,13 @@ public interface AtumVRInputHandler {
      * @return the VR Hands view
      */
     @NotNull AtumVRHandsView getVRHands();
+
+    /**
+     * Get VR Treadmill view (locomotion hardware)
+     *
+     * @return the VR Treadmill view
+     */
+    @NotNull AtumVRTreadmillView getVRTreadmill();
 
 
     /**

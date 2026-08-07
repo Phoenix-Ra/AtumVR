@@ -7,6 +7,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
+//@TODO redundant, remove
 @Getter
 public enum ViveTrackerRole {
 
