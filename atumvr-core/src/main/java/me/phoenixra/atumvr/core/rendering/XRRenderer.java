@@ -63,7 +63,7 @@ public abstract class XRRenderer implements AtumVRRenderer {
     /** Number of projection layer views, one per eye. */
     protected static final int PROJECTION_LAYER_VIEWS = 2;
 
-    /** Whether the runtime wants this frame rendered (false when the headset is off/idle). */
+    /** If the runtime wants this frame rendered (false when the headset is off/idle). */
     protected boolean frameShouldRender;
 
     /**Hidden area mesh for stencil mask*/

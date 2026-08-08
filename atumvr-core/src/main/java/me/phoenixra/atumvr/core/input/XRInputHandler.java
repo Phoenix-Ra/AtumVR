@@ -13,9 +13,11 @@ import me.phoenixra.atumvr.core.input.action.XRActionSet;
 import me.phoenixra.atumvr.core.input.action.types.HapticPulseAction;
 import me.phoenixra.atumvr.api.input.body.AtumVRBodyView;
 import me.phoenixra.atumvr.api.input.body.hand.AtumVRHandsView;
+import me.phoenixra.atumvr.api.input.haptics.AtumVRBodyHaptics;
 import me.phoenixra.atumvr.api.input.treadmill.AtumVRTreadmillView;
 import me.phoenixra.atumvr.core.input.body.XRBody;
 import me.phoenixra.atumvr.core.input.device.XRDevice;
+import me.phoenixra.atumvr.core.input.haptics.XRBodyHapticsProvider;
 import me.phoenixra.atumvr.core.input.profile.XRInteractionProfile;
 import me.phoenixra.atumvr.core.input.profile.tracker.XRTrackerProvider;
 import me.phoenixra.atumvr.core.input.profile.tracker.hand.XRHandsProvider;
@@ -57,6 +59,7 @@ public abstract class XRInputHandler implements AtumVRInputHandler {
 
     private @Nullable XRHandsProvider handsProvider;
     private @Nullable XRTreadmillProvider treadmillProvider;
+    private @Nullable XRBodyHapticsProvider bodyHapticsProvider;
 
     private final XRBody vrBody;
 
@@ -113,6 +116,17 @@ public abstract class XRInputHandler implements AtumVRInputHandler {
         return List.of();
     }
 
+    /**
+     * Generate body haptics provider candidates in priority order,
+     * the first supported one becomes the body haptics vendor
+     *
+     * @param stack the memory stack to use
+     * @return the list containing body haptics provider candidates
+     */
+    protected @NotNull List<? extends XRBodyHapticsProvider> generateBodyHapticsProviders(@NotNull MemoryStack stack){
+        return List.of();
+    }
+
 
     // -------- LIFECYCLE --------
 
@@ -133,6 +147,7 @@ public abstract class XRInputHandler implements AtumVRInputHandler {
             trackerProviders.clear();
             handsProvider = null;
             treadmillProvider = null;
+            bodyHapticsProvider = null;
             vrBody.clearSources();
 
             for(AtumVRBodyView bodyView : generateBodyViews(stack)){
@@ -177,6 +192,19 @@ public abstract class XRInputHandler implements AtumVRInputHandler {
                 treadmillProvider = provider;
             }
 
+            //LOAD BODY HAPTICS PROVIDER (single slot, first supported candidate wins)
+            for(XRBodyHapticsProvider provider : generateBodyHapticsProviders(stack)){
+                if(!provider.isSupported()){
+                    logUnsupportedProvider(provider);
+                    continue;
+                }
+                if(bodyHapticsProvider != null){
+                    logProviderSlotTaken(provider, bodyHapticsProvider);
+                    continue;
+                }
+                bodyHapticsProvider = provider;
+            }
+
             loadedActionSets.forEach(XRActionSet::init);
 
             long[] actionSetsArray = new long[loadedActionSets.size()];
@@ -208,6 +236,9 @@ public abstract class XRInputHandler implements AtumVRInputHandler {
             }
             if(treadmillProvider != null){
                 treadmillProvider.onAttached();
+            }
+            if(bodyHapticsProvider != null){
+                bodyHapticsProvider.onAttached();
             }
 
             //LOAD DEVICES
@@ -279,6 +310,9 @@ public abstract class XRInputHandler implements AtumVRInputHandler {
         }
         if (treadmillProvider != null) {
             treadmillProvider.update();
+        }
+        if (bodyHapticsProvider != null) {
+            bodyHapticsProvider.update();
         }
         for (XRDevice entry : devices.values()) {
             entry.update();
@@ -404,6 +438,11 @@ public abstract class XRInputHandler implements AtumVRInputHandler {
         return treadmillProvider != null ? treadmillProvider : AtumVRTreadmillView.EMPTY;
     }
 
+    @Override
+    public @NotNull AtumVRBodyHaptics getVRBodyHaptics() {
+        return bodyHapticsProvider != null ? bodyHapticsProvider : AtumVRBodyHaptics.EMPTY;
+    }
+
     /**
      * Get the tracker providers that survived {@link XRTrackerProvider#isSupported()}
      *
@@ -445,6 +484,15 @@ public abstract class XRInputHandler implements AtumVRInputHandler {
      */
     public @Nullable XRTreadmillProvider getTreadmillProvider() {
         return treadmillProvider;
+    }
+
+    /**
+     * Get the active body haptics provider
+     *
+     * @return the provider, or null if none is supported
+     */
+    public @Nullable XRBodyHapticsProvider getBodyHapticsProvider() {
+        return bodyHapticsProvider;
     }
 
     @Override
@@ -654,6 +702,10 @@ public abstract class XRInputHandler implements AtumVRInputHandler {
         if (treadmillProvider != null) {
             destroySafely(treadmillProvider, treadmillProvider::destroy);
             treadmillProvider = null;
+        }
+        if (bodyHapticsProvider != null) {
+            destroySafely(bodyHapticsProvider, bodyHapticsProvider::destroy);
+            bodyHapticsProvider = null;
         }
         trackerProviders.clear();
         vrBody.clearSources();

@@ -59,7 +59,7 @@ public enum VRInteractionProfileType {
     }
 
     /**
-     * Whether this is a controller profile.
+     * If this is a controller profile.
      *
      * @return true/false
      */
@@ -68,7 +68,7 @@ public enum VRInteractionProfileType {
     }
 
     /**
-     * Whether this is a tracker profile.
+     * If this is a tracker profile.
      *
      * @return true/false
      */

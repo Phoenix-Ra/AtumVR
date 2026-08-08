@@ -9,6 +9,8 @@ import me.phoenixra.atumvr.core.input.profile.XRProfileManager;
 import me.phoenixra.atumvr.core.input.profile.tracker.hand.EXTHandTrackingProvider;
 import me.phoenixra.atumvr.core.input.profile.tracker.hand.XRHandsProvider;
 import me.phoenixra.atumvr.core.input.profile.tracker.ViveTrackerProvider;
+import me.phoenixra.atumvr.core.input.haptics.XRBodyHapticsProvider;
+import me.phoenixra.atumvr.core.input.haptics.bhaptics.BHapticsProvider;
 import me.phoenixra.atumvr.core.input.treadmill.XRTreadmillEmulator;
 import me.phoenixra.atumvr.core.input.treadmill.XRTreadmillProvider;
 import me.phoenixra.atumvr.core.input.treadmill.infinadeck.InfinadeckTreadmillProvider;
@@ -81,6 +83,11 @@ public class ExampleVRInputHandler extends XRInputHandler {
                 new InfinadeckTreadmillProvider(getVrProvider()),
                 treadmillEmulator
         );
+    }
+
+    @Override
+    protected @NotNull List<? extends XRBodyHapticsProvider> generateBodyHapticsProviders(@NotNull MemoryStack stack) {
+        return List.of(new BHapticsProvider(getVrProvider()));
     }
 
     @Override

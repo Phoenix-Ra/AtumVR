@@ -91,7 +91,7 @@ public class FBBodyTrackingProvider implements XRTrackerProvider {
     private final boolean hardwareSupported;
 
     /**
-     * Whether the tracker delivers leg joints
+     * If the tracker delivers leg joints
      */
     @Getter
     private boolean fullBody;

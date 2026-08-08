@@ -39,7 +39,7 @@ public interface AtumVRTreadmillView {
 
 
     /**
-     * Whether the hardware is connected and delivering data
+     * If the hardware is connected and delivering data
      */
     boolean isActive();
 

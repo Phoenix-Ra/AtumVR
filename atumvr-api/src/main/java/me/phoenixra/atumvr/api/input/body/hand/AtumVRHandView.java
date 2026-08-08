@@ -37,7 +37,7 @@ public interface AtumVRHandView {
 
 
     /**
-     * Whether the hand is currently tracked as a whole
+     * If the hand is currently tracked as a whole
      */
     boolean isTracked();
 
