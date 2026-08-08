@@ -63,6 +63,25 @@ public abstract class XRInputHandler implements AtumVRInputHandler {
 
     private final XRBody vrBody;
 
+    private boolean bodyTrackingEnabled = true;
+    private boolean handTrackingEnabled = true;
+    private boolean treadmillEnabled = true;
+    private boolean bodyHapticsEnabled = true;
+
+    private boolean initialized;
+
+    private final List<XRActionSet> appActionSets = new ArrayList<>();
+    // action sets synced this frame, rebuilt on init and on feature toggles
+    private final List<XRActionSet> activeActionSets = new ArrayList<>();
+    // generated body views in priority order, incl. tracker providers
+    private final List<AtumVRBodyView> bodyViewSources = new ArrayList<>();
+
+    // detection of these is deferred until the feature is first enabled
+    private List<? extends XRTreadmillProvider> treadmillCandidates = List.of();
+    private List<? extends XRBodyHapticsProvider> bodyHapticsCandidates = List.of();
+    private boolean treadmillResolved;
+    private boolean bodyHapticsResolved;
+
     private final Map<String, String> lastLoggedInteractionProfile = new HashMap<>();
 
 
@@ -141,10 +160,15 @@ public abstract class XRInputHandler implements AtumVRInputHandler {
 
             //LOAD ACTION SETS
             actionSets.clear();
-            List<XRActionSet> loadedActionSets = new ArrayList<>(generateActionSets(stack));
+            appActionSets.clear();
+            appActionSets.addAll(generateActionSets(stack));
+            List<XRActionSet> loadedActionSets = new ArrayList<>(appActionSets);
 
             //LOAD BODY VIEWS
+            //action sets of disabled providers are still created and attached,
+            //attaching is once per session and runtime enabling needs them
             trackerProviders.clear();
+            bodyViewSources.clear();
             handsProvider = null;
             treadmillProvider = null;
             bodyHapticsProvider = null;
@@ -159,7 +183,7 @@ public abstract class XRInputHandler implements AtumVRInputHandler {
                     trackerProviders.add(provider);
                     loadedActionSets.addAll(provider.getActionSets());
                 }
-                vrBody.addSource(bodyView);
+                bodyViewSources.add(bodyView);
             }
 
             //LOAD HANDS PROVIDER (single slot, first supported candidate wins)
@@ -173,36 +197,21 @@ public abstract class XRInputHandler implements AtumVRInputHandler {
                     continue;
                 }
                 handsProvider = provider;
-                // e.g. hand skeletons also deliver wrist/palm body joints
-                if(provider instanceof AtumVRBodyView bodyView){
-                    vrBody.addSource(bodyView);
-                }
             }
 
-            //LOAD TREADMILL PROVIDER (single slot, first supported candidate wins)
-            for(XRTreadmillProvider provider : generateTreadmillProviders(stack)){
-                if(!provider.isSupported()){
-                    logUnsupportedProvider(provider);
-                    continue;
-                }
-                if(treadmillProvider != null){
-                    logProviderSlotTaken(provider, treadmillProvider);
-                    continue;
-                }
-                treadmillProvider = provider;
+            //LOAD TREADMILL / BODY HAPTICS CANDIDATES
+            //selection is deferred while the feature is disabled,
+            //so their hardware detection costs nothing until enabled
+            treadmillResolved = false;
+            treadmillCandidates = List.copyOf(generateTreadmillProviders(stack));
+            if(treadmillEnabled){
+                resolveTreadmillProvider();
             }
 
-            //LOAD BODY HAPTICS PROVIDER (single slot, first supported candidate wins)
-            for(XRBodyHapticsProvider provider : generateBodyHapticsProviders(stack)){
-                if(!provider.isSupported()){
-                    logUnsupportedProvider(provider);
-                    continue;
-                }
-                if(bodyHapticsProvider != null){
-                    logProviderSlotTaken(provider, bodyHapticsProvider);
-                    continue;
-                }
-                bodyHapticsProvider = provider;
+            bodyHapticsResolved = false;
+            bodyHapticsCandidates = List.copyOf(generateBodyHapticsProviders(stack));
+            if(bodyHapticsEnabled){
+                resolveBodyHapticsProvider();
             }
 
             loadedActionSets.forEach(XRActionSet::init);
@@ -230,10 +239,13 @@ public abstract class XRInputHandler implements AtumVRInputHandler {
             );
 
 
-            trackerProviders.forEach(XRTrackerProvider::onAttached);
-            if(handsProvider != null){
+            if(bodyTrackingEnabled){
+                trackerProviders.forEach(XRTrackerProvider::onAttached);
+            }
+            if(handTrackingEnabled && handsProvider != null){
                 handsProvider.onAttached();
             }
+            //treadmill/haptics providers only get resolved while enabled
             if(treadmillProvider != null){
                 treadmillProvider.onAttached();
             }
@@ -246,12 +258,76 @@ public abstract class XRInputHandler implements AtumVRInputHandler {
             for(XRDevice entry : generateDevices(stack)){
                 devices.put(entry.getId(), entry);
             }
-            for(XRTrackerProvider provider : trackerProviders){
-                for(XRDevice entry : provider.getDevices()){
-                    devices.put(entry.getId(), entry);
-                }
+            if(bodyTrackingEnabled){
+                registerTrackerDevices();
             }
 
+            rebuildActiveActionSets();
+            rebuildBodySources();
+        }
+        initialized = true;
+    }
+
+    private void resolveTreadmillProvider() {
+        if(treadmillResolved) return;
+        treadmillResolved = true;
+        for(XRTreadmillProvider provider : treadmillCandidates){
+            if(!provider.isSupported()){
+                logUnsupportedProvider(provider);
+                continue;
+            }
+            if(treadmillProvider != null){
+                logProviderSlotTaken(provider, treadmillProvider);
+                continue;
+            }
+            treadmillProvider = provider;
+        }
+        treadmillCandidates = List.of();
+    }
+
+    private void resolveBodyHapticsProvider() {
+        if(bodyHapticsResolved) return;
+        bodyHapticsResolved = true;
+        for(XRBodyHapticsProvider provider : bodyHapticsCandidates){
+            if(!provider.isSupported()){
+                logUnsupportedProvider(provider);
+                continue;
+            }
+            if(bodyHapticsProvider != null){
+                logProviderSlotTaken(provider, bodyHapticsProvider);
+                continue;
+            }
+            bodyHapticsProvider = provider;
+        }
+        bodyHapticsCandidates = List.of();
+    }
+
+    private void registerTrackerDevices() {
+        for(XRTrackerProvider provider : trackerProviders){
+            for(XRDevice entry : provider.getDevices()){
+                devices.put(entry.getId(), entry);
+            }
+        }
+    }
+
+    private void rebuildActiveActionSets() {
+        activeActionSets.clear();
+        activeActionSets.addAll(appActionSets);
+        if(bodyTrackingEnabled){
+            for(XRTrackerProvider provider : trackerProviders){
+                activeActionSets.addAll(provider.getActionSets());
+            }
+        }
+    }
+
+    private void rebuildBodySources() {
+        vrBody.clearSources();
+        if(bodyTrackingEnabled){
+            bodyViewSources.forEach(vrBody::addSource);
+        }
+        // e.g. hand skeletons also deliver wrist/palm body joints
+        if(handTrackingEnabled && handsProvider instanceof AtumVRBodyView bodyView){
+            vrBody.addSource(bodyView);
         }
     }
 
@@ -276,42 +352,47 @@ public abstract class XRInputHandler implements AtumVRInputHandler {
         XrInstance instance = vrProvider.getSession().getInstance().getHandle();
         XrSession session = vrProvider.getSession().getHandle();
 
-        // Sync actions
-        try (MemoryStack stack = MemoryStack.stackPush()) {
+        // Sync actions, disabled features are excluded so
+        // the runtime skips the work for their action sets
+        if (!activeActionSets.isEmpty()) {
+            try (MemoryStack stack = MemoryStack.stackPush()) {
 
-            XrActiveActionSet.Buffer toUpdate = XrActiveActionSet
-                    .calloc(actionSets.size(), stack);
-            int i = 0;
-            for(XRActionSet actionSet : actionSets.values()) {
-                toUpdate.get(i).set(actionSet.getHandle(), XR_NULL_PATH);
-                i++;
+                XrActiveActionSet.Buffer toUpdate = XrActiveActionSet
+                        .calloc(activeActionSets.size(), stack);
+                int i = 0;
+                for (XRActionSet actionSet : activeActionSets) {
+                    toUpdate.get(i).set(actionSet.getHandle(), XR_NULL_PATH);
+                    i++;
+                }
+
+                XrActionsSyncInfo syncInfo = XrActionsSyncInfo
+                        .calloc(stack)
+                        .type(XR_TYPE_ACTIONS_SYNC_INFO)
+                        .activeActionSets(toUpdate);
+                vrProvider.checkXRError(
+                        xrSyncActions(session, syncInfo),
+                        "xrSyncActions"
+                );
+
+
             }
-
-            XrActionsSyncInfo syncInfo = XrActionsSyncInfo
-                    .calloc(stack)
-                    .type(XR_TYPE_ACTIONS_SYNC_INFO)
-                    .activeActionSets(toUpdate);
-            vrProvider.checkXRError(
-                    xrSyncActions(session, syncInfo),
-                    "xrSyncActions"
-            );
-
-
         }
 
-        for (XRActionSet entry : actionSets.values()) {
+        for (XRActionSet entry : activeActionSets) {
             entry.update();
         }
-        for (XRTrackerProvider entry : trackerProviders) {
-            entry.update();
+        if (bodyTrackingEnabled) {
+            for (XRTrackerProvider entry : trackerProviders) {
+                entry.update();
+            }
         }
-        if (handsProvider != null) {
+        if (handTrackingEnabled && handsProvider != null) {
             handsProvider.update();
         }
-        if (treadmillProvider != null) {
+        if (treadmillEnabled && treadmillProvider != null) {
             treadmillProvider.update();
         }
-        if (bodyHapticsProvider != null) {
+        if (bodyHapticsEnabled && bodyHapticsProvider != null) {
             bodyHapticsProvider.update();
         }
         for (XRDevice entry : devices.values()) {
@@ -424,23 +505,137 @@ public abstract class XRInputHandler implements AtumVRInputHandler {
     }
 
     @Override
+    public boolean isBodyTrackingEnabled() {
+        return bodyTrackingEnabled;
+    }
+
+    @Override
+    public void setBodyTrackingEnabled(boolean enabled) {
+        if (bodyTrackingEnabled == enabled) {
+            return;
+        }
+        bodyTrackingEnabled = enabled;
+        if (!initialized) {
+            return;
+        }
+        if (enabled) {
+            trackerProviders.forEach(XRTrackerProvider::onAttached);
+            registerTrackerDevices();
+        } else {
+            for (XRTrackerProvider provider : trackerProviders) {
+                for (XRDevice entry : provider.getDevices()) {
+                    devices.remove(entry.getId(), entry);
+                }
+                destroySafely(provider, provider::destroy);
+            }
+        }
+        rebuildActiveActionSets();
+        rebuildBodySources();
+        logFeatureToggled("Body tracking", enabled);
+    }
+
+    @Override
+    public boolean isHandTrackingEnabled() {
+        return handTrackingEnabled;
+    }
+
+    @Override
+    public void setHandTrackingEnabled(boolean enabled) {
+        if (handTrackingEnabled == enabled) {
+            return;
+        }
+        handTrackingEnabled = enabled;
+        if (!initialized || handsProvider == null) {
+            return;
+        }
+        if (enabled) {
+            handsProvider.onAttached();
+        } else {
+            destroySafely(handsProvider, handsProvider::destroy);
+        }
+        rebuildBodySources();
+        logFeatureToggled("Hand tracking", enabled);
+    }
+
+    @Override
+    public boolean isTreadmillEnabled() {
+        return treadmillEnabled;
+    }
+
+    @Override
+    public void setTreadmillEnabled(boolean enabled) {
+        if (treadmillEnabled == enabled) {
+            return;
+        }
+        treadmillEnabled = enabled;
+        if (!initialized) {
+            return;
+        }
+        if (enabled) {
+            resolveTreadmillProvider();
+            if (treadmillProvider != null) {
+                treadmillProvider.onAttached();
+                logFeatureToggled("Treadmill", true);
+            }
+        } else if (treadmillProvider != null) {
+            destroySafely(treadmillProvider, treadmillProvider::destroy);
+            logFeatureToggled("Treadmill", false);
+        }
+    }
+
+    @Override
+    public boolean isBodyHapticsEnabled() {
+        return bodyHapticsEnabled;
+    }
+
+    @Override
+    public void setBodyHapticsEnabled(boolean enabled) {
+        if (bodyHapticsEnabled == enabled) {
+            return;
+        }
+        bodyHapticsEnabled = enabled;
+        if (!initialized) {
+            return;
+        }
+        if (enabled) {
+            resolveBodyHapticsProvider();
+            if (bodyHapticsProvider != null) {
+                bodyHapticsProvider.onAttached();
+                logFeatureToggled("Body haptics", true);
+            }
+        } else if (bodyHapticsProvider != null) {
+            destroySafely(bodyHapticsProvider, bodyHapticsProvider::destroy);
+            logFeatureToggled("Body haptics", false);
+        }
+    }
+
+    private void logFeatureToggled(@NotNull String feature, boolean enabled) {
+        vrProvider.getLogger().logInfo(
+                feature + (enabled ? " enabled" : " disabled") + " at runtime"
+        );
+    }
+
+    @Override
     public @NotNull XRBody getVRBody() {
         return vrBody;
     }
 
     @Override
     public @NotNull AtumVRHandsView getVRHands() {
-        return handsProvider != null ? handsProvider : AtumVRHandsView.EMPTY;
+        return handTrackingEnabled && handsProvider != null
+                ? handsProvider : AtumVRHandsView.EMPTY;
     }
 
     @Override
     public @NotNull AtumVRTreadmillView getVRTreadmill() {
-        return treadmillProvider != null ? treadmillProvider : AtumVRTreadmillView.EMPTY;
+        return treadmillEnabled && treadmillProvider != null
+                ? treadmillProvider : AtumVRTreadmillView.EMPTY;
     }
 
     @Override
     public @NotNull AtumVRBodyHaptics getVRBodyHaptics() {
-        return bodyHapticsProvider != null ? bodyHapticsProvider : AtumVRBodyHaptics.EMPTY;
+        return bodyHapticsEnabled && bodyHapticsProvider != null
+                ? bodyHapticsProvider : AtumVRBodyHaptics.EMPTY;
     }
 
     /**
@@ -481,6 +676,7 @@ public abstract class XRInputHandler implements AtumVRInputHandler {
      * Get the active treadmill provider
      *
      * @return the provider, or null if none is supported
+     *         or the feature has never been enabled
      */
     public @Nullable XRTreadmillProvider getTreadmillProvider() {
         return treadmillProvider;
@@ -490,6 +686,7 @@ public abstract class XRInputHandler implements AtumVRInputHandler {
      * Get the active body haptics provider
      *
      * @return the provider, or null if none is supported
+     *         or the feature has never been enabled
      */
     public @Nullable XRBodyHapticsProvider getBodyHapticsProvider() {
         return bodyHapticsProvider;
@@ -690,6 +887,7 @@ public abstract class XRInputHandler implements AtumVRInputHandler {
 
     @Override
     public void destroy() {
+        initialized = false;
         stopActiveHaptics();
 
         for (XRTrackerProvider provider : trackerProviders) {
@@ -708,10 +906,17 @@ public abstract class XRInputHandler implements AtumVRInputHandler {
             bodyHapticsProvider = null;
         }
         trackerProviders.clear();
+        bodyViewSources.clear();
+        treadmillCandidates = List.of();
+        bodyHapticsCandidates = List.of();
+        treadmillResolved = false;
+        bodyHapticsResolved = false;
         vrBody.clearSources();
 
         actionSets.values().forEach(XRActionSet::destroy);
         actionSets.clear();
+        appActionSets.clear();
+        activeActionSets.clear();
         devices.clear();
         paths.clear();
         lastLoggedInteractionProfile.clear();

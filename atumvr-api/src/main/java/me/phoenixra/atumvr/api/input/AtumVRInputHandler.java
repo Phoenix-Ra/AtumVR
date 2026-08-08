@@ -76,6 +76,57 @@ public interface AtumVRInputHandler {
     Collection<? extends AtumVRDevice> getDevices();
 
     /**
+     * Toggle body tracking at runtime (tracker providers and the VR body aggregate).
+     * <p>
+     *     Disabling releases the providers' resources and skips their per-frame
+     *     updates, so the feature costs nothing until enabled again
+     * </p>
+     *
+     * @param enabled the new state
+     */
+    void setBodyTrackingEnabled(boolean enabled);
+
+    boolean isBodyTrackingEnabled();
+
+    /**
+     * Toggle hand tracking at runtime.
+     * <p>
+     *     Disabling releases the providers' resources and skips their per-frame
+     *     updates, so the feature costs nothing until enabled again
+     * </p>
+     * @param enabled the new state
+     */
+    void setHandTrackingEnabled(boolean enabled);
+
+    boolean isHandTrackingEnabled();
+
+    /**
+     * Toggle treadmill input at runtime.
+     * <p>
+     *     Disabling releases the providers' resources and skips their per-frame
+     *     updates, so the feature costs nothing until enabled again
+     * </p>
+     *
+     * @param enabled the new state
+     */
+    void setTreadmillEnabled(boolean enabled);
+
+    boolean isTreadmillEnabled();
+
+    /**
+     * Toggle body haptics at runtime.
+     * <p>
+     *     Disabling releases the providers' resources and skips their per-frame
+     *     updates, so the feature costs nothing until enabled again
+     * </p>
+     *
+     * @param enabled the new state
+     */
+    void setBodyHapticsEnabled(boolean enabled);
+
+    boolean isBodyHapticsEnabled();
+
+    /**
      * Get VR Body view
      *
      * @return the VR Body view

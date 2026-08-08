@@ -208,7 +208,7 @@ public class KATTreadmillProvider implements XRTreadmillProvider {
             sdk.LEDConst(0f);
         } catch (Throwable ignored) {
         }
-        active = false;
+        setIdle(false);
     }
 
 

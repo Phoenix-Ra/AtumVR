@@ -53,6 +53,7 @@ public class KATLegacyTreadmillProvider implements XRTreadmillProvider {
 
     private WalkerBase sdk;
     private Boolean supported;
+    private boolean halted;
 
     @Getter @Setter
     private float maxSpeedMps = 4f;
@@ -123,6 +124,23 @@ public class KATLegacyTreadmillProvider implements XRTreadmillProvider {
             vrProvider.getLogger().logError("Legacy KAT init failed: " + t.getMessage());
         }
         return false;
+    }
+
+
+    @Override
+    public void onAttached() {
+        // destroy() halts the walker software, a runtime re-enable relaunches it
+        if (sdk == null || !halted) {
+            return;
+        }
+        try {
+            sdk.Init(1);
+            sdk.Launch();
+            halted = false;
+            readFailed = false;
+        } catch (Throwable t) {
+            vrProvider.getLogger().logError("Legacy KAT relaunch failed: " + t.getMessage());
+        }
     }
 
 
@@ -201,7 +219,10 @@ public class KATLegacyTreadmillProvider implements XRTreadmillProvider {
             sdk.Halt();
         } catch (Throwable ignored) {
         }
+        halted = true;
         active = false;
+        motion.zero();
+        speed = 0f;
     }
 
 

@@ -105,6 +105,11 @@ public class BHapticsProvider implements XRBodyHapticsProvider, BHaptics {
 
     @Override
     public void onAttached() {
+        // re-entrant after destroy(), a runtime re-enable starts a fresh connection
+        shuttingDown = false;
+        connecting.set(false);
+        sendInFlight.set(false);
+        connectFailureLogged = false;
         executor = Executors.newSingleThreadScheduledExecutor(runnable -> {
             Thread thread = new Thread(runnable, "AtumVR-BHaptics");
             thread.setDaemon(true);
@@ -194,9 +199,7 @@ public class BHapticsProvider implements XRBodyHapticsProvider, BHaptics {
         connectedPositions = Set.of();
         activeKeys = Set.of();
         connectedDeviceCount = 0;
-        synchronized (registeredPatterns) {
-            registeredPatterns.clear();
-        }
+        // registered patterns are kept, they get resent when reconnected after a re-enable
     }
 
     private void awaitSendIdle(long timeoutMillis) {

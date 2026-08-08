@@ -42,6 +42,7 @@ public class InfinadeckTreadmillProvider implements XRTreadmillProvider {
 
     private InfinadeckAPI sdk;
     private Boolean supported;
+    private boolean deinited;
 
     private boolean active;
     private boolean readFailed;
@@ -102,6 +103,31 @@ public class InfinadeckTreadmillProvider implements XRTreadmillProvider {
             vrProvider.getLogger().logError("Infinadeck init failed: " + t.getMessage());
         }
         return false;
+    }
+
+
+    @Override
+    public void onAttached() {
+        // destroy() closes the API connection, a runtime re-enable reopens it
+        if (sdk == null || !deinited) {
+            return;
+        }
+        try {
+            IntByReference error = new IntByReference();
+            sdk.InitInternal(error, false);
+            if (error.getValue() != 0) {
+                sdk.InitInternal(error, true);
+            }
+            deinited = error.getValue() != 0;
+            if (deinited) {
+                vrProvider.getLogger().logError(
+                        "Infinadeck reconnection failed, error code " + error.getValue()
+                );
+            }
+            readFailed = false;
+        } catch (Throwable t) {
+            vrProvider.getLogger().logError("Infinadeck re-init failed: " + t.getMessage());
+        }
     }
 
 
@@ -184,7 +210,8 @@ public class InfinadeckTreadmillProvider implements XRTreadmillProvider {
             sdk.DeInitInternal();
         } catch (Throwable ignored) {
         }
-        active = false;
+        deinited = true;
+        setIdle(false);
     }
 
 
