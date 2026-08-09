@@ -16,6 +16,7 @@ dependencies {
     api("org.lwjgl:lwjgl-opengl")
     api("org.lwjgl:lwjgl-glfw")
     api("org.lwjgl:lwjgl-openxr")
+    api("org.lwjgl:lwjgl-vulkan")
 
     api("org.lwjgl:lwjgl::natives-windows")
     api("org.lwjgl:lwjgl-opengl::natives-windows")

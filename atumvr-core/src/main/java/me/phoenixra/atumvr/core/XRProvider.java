@@ -9,6 +9,7 @@ import me.phoenixra.atumvr.core.enums.XREvent;
 import me.phoenixra.atumvr.api.exceptions.AtumVRException;
 import me.phoenixra.atumvr.api.rendering.AtumVRRenderContext;
 import me.phoenixra.atumvr.core.enums.XRActionResult;
+import me.phoenixra.atumvr.core.enums.XRGraphicsApi;
 import me.phoenixra.atumvr.core.enums.XRSessionState;
 import me.phoenixra.atumvr.core.rendering.XRRenderer;
 import me.phoenixra.atumvr.core.session.XRSession;
@@ -16,6 +17,7 @@ import me.phoenixra.atumvr.core.input.XRInputHandler;
 import me.phoenixra.atumvr.core.input.profile.tracker.hand.EXTHandTrackingProvider;
 import me.phoenixra.atumvr.core.input.profile.tracker.FBBodyTrackingProvider;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.GL31;
 import org.lwjgl.openxr.*;
@@ -163,6 +165,11 @@ public abstract class XRProvider implements AtumVRProvider {
         );
     }
 
+
+
+    public @Nullable XRGraphicsApi getGraphicsApiPreference(){
+        return null;
+    }
 
     /**
      * Retrieves the list of supported swap chain formats.

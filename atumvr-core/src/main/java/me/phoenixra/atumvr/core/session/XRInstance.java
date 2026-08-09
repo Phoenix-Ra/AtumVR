@@ -3,8 +3,11 @@ package me.phoenixra.atumvr.core.session;
 import lombok.Getter;
 import me.phoenixra.atumvr.api.exceptions.AtumVRException;
 import me.phoenixra.atumvr.core.XRProvider;
+import me.phoenixra.atumvr.core.enums.XRGraphicsApi;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.PointerBuffer;
+import org.lwjgl.opengl.GL;
+import org.lwjgl.opengl.GL11;
 import org.lwjgl.openxr.*;
 import org.lwjgl.system.MemoryStack;
 
@@ -13,13 +16,13 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 /**
  * XR session instance (low-level OpenXR stuff)
  */
 public class XRInstance {
-    private final static String GRAPHICS_EXTENSION = KHROpenGLEnable.XR_KHR_OPENGL_ENABLE_EXTENSION_NAME;
 
     private final XRProvider vrProvider;
 
@@ -41,6 +44,9 @@ public class XRInstance {
     private Set<String> availableExtensions = Set.of();
     @Getter
     private Set<String> enabledExtensions = Set.of();
+
+    @Getter
+    private XRGraphicsApi graphicsApi;
 
     private XrDebugUtilsMessengerEXT debugMessenger;
 
@@ -132,22 +138,17 @@ public class XRInstance {
         availableExtensions = Set.copyOf(available);
 
 
+        graphicsApi = resolveGraphicsApi();
+
         // 2) Define desired extensions in priority order
         List<String> desiredExtensions = new ArrayList<>(List.of(
-                GRAPHICS_EXTENSION,
+                graphicsApi.getExtensionName(),
 
                 EXTDebugUtils.XR_EXT_DEBUG_UTILS_EXTENSION_NAME,
                 FBDisplayRefreshRate.XR_FB_DISPLAY_REFRESH_RATE_EXTENSION_NAME,
                 KHRVisibilityMask.XR_KHR_VISIBILITY_MASK_EXTENSION_NAME //@TODO test mask for performance improvements
         ));
         desiredExtensions.addAll(vrProvider.getXRAppExtensions());
-
-        // Ensure graphics extension is present
-        if (!availableExtensions.contains(GRAPHICS_EXTENSION)) {
-            throw new AtumVRException(
-                    "Missing required graphics extension: " + GRAPHICS_EXTENSION
-            );
-        }
 
         // Keep only what the runtime offers, preserving priority order and dropping duplicates
         Set<String> enabled = new LinkedHashSet<>();
@@ -175,6 +176,70 @@ public class XRInstance {
         return extensionsPointer;
     }
 
+
+    private XRGraphicsApi resolveGraphicsApi() {
+        XRGraphicsApi forced = vrProvider.getGraphicsApiPreference();
+        if (forced != null) {
+            if (!availableExtensions.contains(forced.getExtensionName())) {
+                throw new AtumVRException(
+                        "Forced graphics API " + forced + " requires " + forced.getExtensionName()
+                                + " which the runtime does not support"
+                );
+            }
+            vrProvider.getLogger().logInfo("Graphics API forced to " + forced);
+            return forced;
+        }
+        boolean openglSupported = availableExtensions.contains(XRGraphicsApi.OPENGL.getExtensionName());
+        boolean vulkanSupported = availableExtensions.contains(XRGraphicsApi.VULKAN.getExtensionName());
+        if (openglSupported) {
+            String arcRenderer = detectIntelArcRenderer();
+            if (arcRenderer != null) {
+                if (vulkanSupported) {
+                    vrProvider.getLogger().logInfo(
+                            "Intel Arc GPU detected [" + arcRenderer
+                                    + "], using the Vulkan bridge"
+                    );
+                    return XRGraphicsApi.VULKAN;
+                }
+                vrProvider.getLogger().logInfo(
+                        "Intel Arc GPU detected [" + arcRenderer + "] but the runtime lacks "
+                                + XRGraphicsApi.VULKAN.getExtensionName() + ", staying on OpenGL"
+                );
+            }
+            return XRGraphicsApi.OPENGL;
+        }
+        if (vulkanSupported) {
+            vrProvider.getLogger().logInfo(
+                    "Runtime lacks " + XRGraphicsApi.OPENGL.getExtensionName()
+                            + ", using the Vulkan presentation bridge"
+            );
+            return XRGraphicsApi.VULKAN;
+        }
+        throw new AtumVRException(
+                "Runtime supports neither " + XRGraphicsApi.OPENGL.getExtensionName()
+                        + " nor " + XRGraphicsApi.VULKAN.getExtensionName()
+        );
+    }
+
+    /**
+     * @return the GL renderer string if the current GPU is an Intel Arc, otherwise null
+     */
+    private String detectIntelArcRenderer() {
+        try {
+            GL.getCapabilities();
+        } catch (IllegalStateException noContext) {
+            vrProvider.getLogger().logDebug(
+                    "No current GL context while resolving the graphics API, skipping GPU detection"
+            );
+            return null;
+        }
+        String renderer = GL11.glGetString(GL11.GL_RENDERER);
+        if (renderer == null) {
+            return null;
+        }
+        String lower = renderer.toLowerCase(Locale.ROOT);
+        return lower.contains("intel") && lower.contains("arc") ? renderer : null;
+    }
 
     public boolean isExtensionEnabled(@NotNull String extensionName){
         return enabledExtensions.contains(extensionName);

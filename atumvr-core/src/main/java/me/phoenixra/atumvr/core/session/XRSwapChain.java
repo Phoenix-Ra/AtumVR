@@ -2,6 +2,7 @@ package me.phoenixra.atumvr.core.session;
 
 import lombok.Getter;
 import me.phoenixra.atumvr.core.XRProvider;
+import me.phoenixra.atumvr.core.enums.XRGraphicsApi;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.openxr.*;
@@ -129,6 +130,10 @@ public class XRSwapChain {
                 "xrEnumerateSwapchainFormats", "values"
         );
 
+        if (vrProvider.getSession().getGraphicsApi() == XRGraphicsApi.VULKAN) {
+            return vrProvider.getSession().getVulkanBridge().pickSwapchainFormat(available);
+        }
+
         for (long want : desiredSwapChainFormats) {
             for (int i = 0; i < available.capacity(); i++) {
                 if (available.get(i) == want) {
@@ -149,10 +154,15 @@ public class XRSwapChain {
             long format,
             MemoryStack stack)
     {
+        long usageFlags = XR_SWAPCHAIN_USAGE_COLOR_ATTACHMENT_BIT;
+        if (vrProvider.getSession().getGraphicsApi() == XRGraphicsApi.VULKAN) {
+            //the bridge copies into the swapchain image instead of rendering to it
+            usageFlags |= XR_SWAPCHAIN_USAGE_TRANSFER_DST_BIT;
+        }
         XrSwapchainCreateInfo info = XrSwapchainCreateInfo.calloc(stack)
                 .type(XR_TYPE_SWAPCHAIN_CREATE_INFO)
                 .next(NULL)
-                .usageFlags(XR_SWAPCHAIN_USAGE_COLOR_ATTACHMENT_BIT)
+                .usageFlags(usageFlags)
                 .format(format)
                 .sampleCount(1)
                 .width(viewConfig.recommendedImageRectWidth())

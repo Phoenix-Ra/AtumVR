@@ -2,6 +2,8 @@ package me.phoenixra.atumvr.core.session;
 
 import lombok.Getter;
 import me.phoenixra.atumvr.api.AtumVRSession;
+import me.phoenixra.atumvr.core.enums.XRGraphicsApi;
+import me.phoenixra.atumvr.core.session.vulkan.XRVulkanBridge;
 import me.phoenixra.atumvr.core.utils.XRUtils;
 import me.phoenixra.atumvr.core.XRProvider;
 import org.jetbrains.annotations.NotNull;
@@ -39,6 +41,9 @@ public class XRSession implements AtumVRSession {
     @Getter
     protected XRSystem system;
 
+    @Getter
+    protected XRVulkanBridge vulkanBridge;
+
     public XRSession(@NotNull XRProvider vrProvider){
         this.vrProvider = vrProvider;
         instance = new XRInstance(vrProvider);
@@ -59,16 +64,35 @@ public class XRSession implements AtumVRSession {
     }
 
 
+    /**
+     * Get the active graphics API, resolved during instance init
+     *
+     * @return the graphics API
+     */
+    public XRGraphicsApi getGraphicsApi() {
+        return instance.getGraphicsApi();
+    }
+
     private void initSession(MemoryStack stack){
 
         long systemId = system.getSystemId();
 
-        Struct<?> graphicsBind = system.createGraphicsBinding(
-                stack,
-                instance.getHandle(),
-                systemId,
-                vrProvider.getRenderer().getWindowHandle()
-        );
+        Struct<?> graphicsBind;
+        if (instance.getGraphicsApi() == XRGraphicsApi.VULKAN) {
+            vulkanBridge = new XRVulkanBridge(vrProvider);
+            graphicsBind = vulkanBridge.createGraphicsBinding(
+                    stack,
+                    instance.getHandle(),
+                    systemId
+            );
+        } else {
+            graphicsBind = system.createGraphicsBinding(
+                    stack,
+                    instance.getHandle(),
+                    systemId,
+                    vrProvider.getRenderer().getWindowHandle()
+            );
+        }
         var sessionInfo = XrSessionCreateInfo.calloc(stack)
                 .type(XR10.XR_TYPE_SESSION_CREATE_INFO)
                 .next(graphicsBind.address())
@@ -169,6 +193,13 @@ public class XRSession implements AtumVRSession {
             this.handle = null;
         }
 
+        if (this.vulkanBridge != null) {
+            try { vulkanBridge.destroy(); } catch (Throwable t) {
+                vrProvider.getLogger().logError("vulkanBridge.destroy() failed: " + t.getMessage());
+            }
+            this.vulkanBridge = null;
+        }
+
         try { system.destroy(); }   catch (Throwable ignored) {}
         try { instance.destroy(); } catch (Throwable ignored) {}
     }
@@ -196,7 +227,7 @@ public class XRSession implements AtumVRSession {
         try {
             XR10.xrRequestExitSession(handle);
         } catch (Throwable ignored) {
-            // Session may already be in IDLE / EXITING — that's fine.
+            // Session may already be in IDLE / EXITING
         }
 
         XrEventDataBuffer eventBuffer = instance.getXrEventBuffer();
