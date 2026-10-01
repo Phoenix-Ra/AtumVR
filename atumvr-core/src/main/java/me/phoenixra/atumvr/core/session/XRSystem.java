@@ -9,6 +9,9 @@ import org.lwjgl.glfw.GLFWNativeGLX;
 import org.lwjgl.glfw.GLFWNativeWGL;
 import org.lwjgl.glfw.GLFWNativeWin32;
 import org.lwjgl.glfw.GLFWNativeX11;
+import org.lwjgl.opengl.GLX;
+import org.lwjgl.opengl.GLX12;
+import org.lwjgl.opengl.WGL;
 import org.lwjgl.openxr.*;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.Platform;
@@ -16,6 +19,7 @@ import org.lwjgl.system.Struct;
 import org.lwjgl.system.linux.X11;
 import org.lwjgl.system.windows.User32;
 
+import java.nio.IntBuffer;
 import java.nio.LongBuffer;
 import java.util.Objects;
 
@@ -93,6 +97,7 @@ public class XRSystem {
         }
     }
 
+
     public Struct<?> createGraphicsBinding(MemoryStack stack,
                                             XrInstance instance,
                                             long systemID,
@@ -105,19 +110,48 @@ public class XRSystem {
         );
         //Bind the OpenGL context to the OpenXR instance and create the session
         if (Platform.get() == Platform.WINDOWS) {
+            long deviceContext;
+            long glContext;
+            if (windowHandle != NULL) {
+                deviceContext = User32.GetDC(GLFWNativeWin32.glfwGetWin32Window(windowHandle));
+                glContext = GLFWNativeWGL.glfwGetWGLContext(windowHandle);
+            } else {
+                deviceContext = WGL.wglGetCurrentDC();
+                glContext = wglGetCurrentContext();
+                if (glContext == NULL) {
+                    throw new AtumVRException("No OpenGL context");
+                }
+            }
             return XrGraphicsBindingOpenGLWin32KHR.calloc(stack).set(
                     KHROpenGLEnable.XR_TYPE_GRAPHICS_BINDING_OPENGL_WIN32_KHR,
                     NULL,
-                    User32.GetDC(GLFWNativeWin32.glfwGetWin32Window(windowHandle)),
-                    GLFWNativeWGL.glfwGetWGLContext(windowHandle)
+                    deviceContext,
+                    glContext
             );
         } else if (Platform.get() == Platform.LINUX) {
-            long xDisplay = GLFWNativeX11.glfwGetX11Display();
+            long xDisplay;
+            long glXContext;
+            long glXWindowHandle;
+            int fbXID;
+            if (windowHandle != NULL) {
+                xDisplay = GLFWNativeX11.glfwGetX11Display();
 
-            long glXContext = GLFWNativeGLX.glfwGetGLXContext(windowHandle);
-            long glXWindowHandle = GLFWNativeGLX.glfwGetGLXWindow(windowHandle);
+                glXContext = GLFWNativeGLX.glfwGetGLXContext(windowHandle);
+                glXWindowHandle = GLFWNativeGLX.glfwGetGLXWindow(windowHandle);
 
-            int fbXID = glXQueryDrawable(xDisplay, glXWindowHandle, GLX_FBCONFIG_ID);
+                fbXID = glXQueryDrawable(xDisplay, glXWindowHandle, GLX_FBCONFIG_ID);
+            } else {
+                xDisplay = GLX12.glXGetCurrentDisplay();
+                glXContext = GLX.glXGetCurrentContext();
+                glXWindowHandle = GLX.glXGetCurrentDrawable();
+                if (xDisplay == NULL || glXContext == NULL) {
+                    throw new AtumVRException("No GLX context");
+                }
+
+                IntBuffer fbConfigId = stack.mallocInt(1);
+                glXQueryContext(xDisplay, glXContext, GLX_FBCONFIG_ID, fbConfigId);
+                fbXID = fbConfigId.get(0);
+            }
             PointerBuffer fbConfigBuf = glXChooseFBConfig(
                     xDisplay, X11.XDefaultScreen(xDisplay),
                     stackInts(GLX_FBCONFIG_ID, fbXID, 0)
@@ -142,5 +176,18 @@ public class XRSystem {
     }
     public void destroy(){
 
+    }
+
+    private static long wglGetCurrentContext() {
+        try {
+            try {
+                return (long) WGL.class.getMethod("wglGetCurrentContext").invoke(null);
+            } catch (NoSuchMethodException e) {
+                return (long) WGL.class.getMethod("wglGetCurrentContext", IntBuffer.class)
+                        .invoke(null, (Object) null);
+            }
+        } catch (ReflectiveOperationException e) {
+            throw new AtumVRException("Could not query OpenGL context", e);
+        }
     }
 }

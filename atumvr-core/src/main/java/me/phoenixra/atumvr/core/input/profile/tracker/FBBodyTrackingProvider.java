@@ -23,6 +23,7 @@ import org.lwjgl.openxr.XrSystemBodyTrackingPropertiesFB;
 import org.lwjgl.openxr.XrSystemProperties;
 import org.lwjgl.system.JNI;
 import org.lwjgl.system.MemoryStack;
+import org.lwjgl.system.MemoryUtil;
 
 import java.util.Collections;
 import java.util.EnumMap;
@@ -171,8 +172,9 @@ public class FBBodyTrackingProvider implements XRTrackerProvider {
 
         jointLocations = XrBodyJointLocationFB.calloc(jointCount);
         locations = XrBodyJointLocationsFB.calloc()
-                .type$Default()
-                .jointLocations(jointLocations);
+                .type$Default();
+        MemoryUtil.memPutInt(locations.address() + XrBodyJointLocationsFB.JOINTCOUNT, jointLocations.remaining());
+        MemoryUtil.memPutAddress(locations.address() + XrBodyJointLocationsFB.JOINTLOCATIONS, jointLocations.address());
         locateInfo = XrBodyJointsLocateInfoFB.calloc()
                 .type$Default()
                 .baseSpace(vrProvider.getSession().getXrAppSpace());
