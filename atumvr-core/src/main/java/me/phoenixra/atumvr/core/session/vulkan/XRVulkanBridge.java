@@ -879,9 +879,10 @@ public class XRVulkanBridge {
             vkInstance = null;
         }
         if (glSemNoBuffers != null) {
-            memFree(glSemNoBuffers);
-            memFree(glSemTextures);
-            memFree(glSemLayouts);
+            // cast to Buffer: LWJGL 3.3.3 and older have no typed memFree overloads
+            memFree((java.nio.Buffer) glSemNoBuffers);
+            memFree((java.nio.Buffer) glSemTextures);
+            memFree((java.nio.Buffer) glSemLayouts);
             glSemNoBuffers = null;
         }
     }
