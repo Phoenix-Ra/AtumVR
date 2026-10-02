@@ -12,3 +12,9 @@ For rendering, the **OpenGL** is used
 This project is **not a full game engine**. Instead, it is intended to be a VR integration layer you can plug into your own engine or framework - so you don’t have to wrestle with low-level VR APIs directly.
 
 [WIKI for more details](https://github.com/Phoenix-Ra/AtumVR/wiki)
+
+## License
+
+Licensed under the [Apache License 2.0](LICENSE).
+
+Copyright (c) 2024 Phoenix-Ra and AtumVR contributors
